@@ -1,0 +1,203 @@
+{%- liquid
+  # A cleared color setting returns blank, and background: ; is invalid
+  assign bought_background = section.settings.bought_background
+  if bought_background == blank
+    assign bought_background = '#466E2E33'
+  endif
+
+  assign bought_products = section.settings.bought_products
+
+  assign bought_count = 0
+  for bought_item in bought_products
+    unless bought_item.id == product.id
+      assign bought_count = bought_count | plus: 1
+    endunless
+  endfor
+
+  assign bought_pages = bought_count | plus: 1 | divided_by: 2
+  assign bought_pages_desk = bought_count | plus: 3 | divided_by: 4
+
+  assign bought_carousel_label = section.settings.bought_heading | strip_html | strip
+
+  assign bought_desk_static = true
+  assign bought_card_class = 'basis-[calc(50%-5px)] shrink-0 lg:min-w-0 lg:flex-1'
+  if bought_count > 4
+    assign bought_desk_static = false
+    assign bought_card_class = 'basis-[calc(50%-5px)] shrink-0 lg:min-w-0 lg:basis-[calc(100%/4.2)]'
+  endif
+  assign bought_dot_class = 'h-1.5 w-1.5 shrink-0 rounded-full bg-black/30 transition-all aria-[current=true]:w-5 aria-[current=true]:border-[0.5px] aria-[current=true]:border-black aria-[current=true]:bg-white'
+-%}
+
+{%- if bought_count > 0 -%}
+  <div
+    class="frequently-bought-together mb-[var(--bought-bottom-mobile)] mt-[var(--bought-top-mobile)] lg:mb-[var(--bought-bottom-desktop)] lg:mt-[var(--bought-top-desktop)]"
+    style="
+      --bought-top-mobile: {{ section.settings.bought_top_mobile }}px;
+      --bought-bottom-mobile: {{ section.settings.bought_bottom_mobile }}px;
+      --bought-top-desktop: {{ section.settings.bought_top_desktop }}px;
+      --bought-bottom-desktop: {{ section.settings.bought_bottom_desktop }}px;
+    "
+  >
+    <div
+      class="frequently-bought-together__band py-6 lg:py-[52px]"
+      style="background: {{ bought_background | escape }};"
+    >
+      <div class="page-width">
+        <div class="flex flex-col gap-5 lg:gap-6">
+          {%- render 'section-header', heading: section.settings.bought_heading -%}
+
+          <div class="flex flex-col gap-2.5">
+            <div
+              class="frequently-bought-together__viewport relative overflow-x-auto scrollbar-hide data-[embla=ready]:overflow-hidden"
+              data-bought-carousel
+              data-desktop-static="{{ bought_desk_static }}"
+              data-carousel-label="{{ bought_carousel_label | escape }}"
+            >
+              <div class="frequently-bought-together__container flex gap-2.5 lg:gap-5">
+                {%- for bought_item in bought_products -%}
+                  {%- unless bought_item.id == product.id -%}
+                    {%- render 'product-card',
+                      card_product: bought_item,
+                      hide_price: true,
+                      show_button_price: true,
+                      show_featured_image: false,
+                      card_class: bought_card_class
+                    -%}
+                  {%- endunless -%}
+                {%- endfor -%}
+              </div>
+            </div>
+
+            {%- if bought_pages > 1 -%}
+              <div
+                class="frequently-bought-together__dots flex justify-center gap-1 lg:hidden"
+                data-bought-dots="mobile"
+              >
+                {%- for bought_page in (1..bought_pages) -%}
+                  <button
+                    class="{{ bought_dot_class }}"
+                    type="button"
+                    disabled
+                    data-bought-dot
+                    {% if forloop.first %}
+                      aria-current="true"
+                    {% endif %}
+                    aria-label="{{ 'general.slide' | t: number: forloop.index, total: bought_pages }}"
+                  ></button>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+
+            {%- unless bought_desk_static -%}
+              {%- if bought_pages_desk > 1 -%}
+                <div
+                  class="frequently-bought-together__dots hidden justify-center gap-1 lg:flex"
+                  data-bought-dots="desktop"
+                >
+                  {%- for bought_page in (1..bought_pages_desk) -%}
+                    <button
+                      class="{{ bought_dot_class }}"
+                      type="button"
+                      disabled
+                      data-bought-dot
+                      {% if forloop.first %}
+                        aria-current="true"
+                      {% endif %}
+                      aria-label="{{ 'general.slide' | t: number: forloop.index, total: bought_pages_desk }}"
+                    ></button>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+            {%- endunless -%}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ 'frequently-bought-together.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Bought Together",
+  "class": "bought-together-section",
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "bought_heading",
+      "label": "Heading",
+      "default": "<p>Complete Your Pain-Relief Kit</p>",
+      "info": "Shows above the cards. Italicise a word to draw the curved underline under it. Leave empty to show the cards alone."
+    },
+    {
+      "type": "product_list",
+      "id": "bought_products",
+      "label": "Products",
+      "info": "Companion products for this product. Four fit the row; more than four turn it into a swipeable carousel. The product being viewed is skipped automatically. Leave empty to hide the whole section."
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color_background",
+      "id": "bought_background",
+      "label": "Background",
+      "default": "#466E2E33"
+    },
+    {
+      "type": "range",
+      "id": "bought_top_mobile",
+      "label": "Space above (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "bought_bottom_mobile",
+      "label": "Space below (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "bought_top_desktop",
+      "label": "Space above (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "bought_bottom_desktop",
+      "label": "Space below (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bought Together"
+    }
+  ]
+}
+{% endschema %}

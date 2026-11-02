@@ -1,0 +1,40 @@
+{
+  "sections": {
+    "announcement_bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement_1": {
+          "type": "announcement",
+          "settings": {
+            "announce_text": "<p>4.5 ★ Avg Ratings</p>",
+            "announce_link": ""
+          }
+        },
+        "announcement_2": {
+          "type": "announcement",
+          "settings": {
+            "announce_text": "<p>Free Delivery Over ₹499</p>",
+            "announce_link": ""
+          }
+        }
+      },
+      "block_order": ["announcement_1", "announcement_2"],
+      "settings": {
+        "announce_layout": "static",
+        "announce_size": "compact",
+        "announce_background": "#466e2e",
+        "announce_text_color": "#ffffff",
+        "announce_speed": 4,
+        "announce_top_mobile": 0,
+        "announce_bottom_mobile": 0,
+        "announce_top_desktop": 0,
+        "announce_bottom_desktop": 0
+      }
+    },
+    "main": {
+      "type": "page",
+      "settings": {}
+    }
+  },
+  "order": ["announcement_bar", "main"]
+}

@@ -1,0 +1,93 @@
+{% doc %}
+  @param {object} block - Discount Banner block, supplying settings and shopify_attributes
+{% enddoc %}
+
+{%- liquid
+  assign disc_bg_image = block.settings.discount_background
+  assign disc_bg_color = block.settings.discount_fill
+  assign disc_leaf_image = block.settings.discount_leaf_image
+  assign disc_category = block.settings.discount_category
+  assign disc_title = block.settings.discount_title
+  assign disc_tagline = block.settings.discount_tagline
+  assign disc_btn_label = block.settings.discount_button_text
+  assign disc_btn_link = block.settings.discount_button_link
+  assign disc_btn_color = block.settings.discount_button_color
+
+  assign disc_class = 'group relative isolate flex items-center justify-between overflow-hidden min-h-[97px] shrink-0 basis-[calc(100%/1.3)] p-5 text-white rounded-xl lg:min-h-[140px] lg:basis-auto lg:flex-1 lg:p-6 lg:rounded-[20px]'
+-%}
+
+{%- capture disc_style_attr -%}
+  {%- if disc_bg_image == blank and disc_bg_color != blank -%}
+    style="background: {{ disc_bg_color | escape }};"
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- capture disc_body -%}
+  {%- if disc_bg_image != blank -%}
+    <div class="absolute inset-0 -z-10">
+      {%- render 'image',
+        image: disc_bg_image,
+        alt: '',
+        class_name: 'h-full w-full object-cover',
+        decoding: 'async',
+        responsive_widths: '390:314,1024:454'
+      -%}
+    </div>
+  {%- endif -%}
+
+  {%- if disc_leaf_image != blank -%}
+    <div
+      class="absolute -right-0 -top-0 h-15 w-15 lg:-right-1 lg:-top-0 lg:h-auto lg:w-16 opacity-5 lg:opacity-20"
+      aria-hidden="true"
+    >
+      {%- render 'image', image: disc_leaf_image, alt: '', class_name: 'h-full w-full object-contain' -%}
+    </div>
+  {%- endif -%}
+
+  <div class="flex-1 flex flex-col gap-0.5 transition-transform duration-300 lg:gap-1 [@media(hover:hover)]:group-hover:-translate-y-0.5">
+    {%- if disc_category != blank -%}
+      <div class="text-[8px]/[10.42px] font-semibold uppercase tracking-normal lg:text-[10px]/[13.02px]">
+        {{ disc_category | escape }}
+      </div>
+    {%- endif -%}
+
+    {%- if disc_title != blank -%}
+      <div class="font-primary text-offer-display font-bold lg:text-offer-display-d max-374:text-[28px]">{{ disc_title }}</div>
+    {%- endif -%}
+
+    {%- if disc_tagline != blank -%}
+      <div class="text-[12px]/[16.8px] tracking-normal text-white/75 lg:text-[14px]/[19.6px] lg:text-white">
+        {{ disc_tagline | escape }}
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- if disc_btn_label != blank -%}
+    <div class="flex flex-col justify-end self-stretch">
+      {%- render 'button',
+        label: disc_btn_label,
+        variant: 'pill',
+        size: 'pill',
+        icon: 'chevron-right',
+        icon_class: 'h-2.5 w-2.5 [stroke-width:1px] transition-transform duration-300 lg:h-3 lg:w-3 lg:[stroke-width:2px] [@media(hover:hover)]:group-hover:translate-x-1',
+        text_color: disc_btn_color,
+        class_name: '[@media(hover:hover)]:group-hover:opacity-90'
+      -%}
+    </div>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- if disc_btn_link != blank -%}
+  <a
+    href="{{ disc_btn_link | escape }}"
+    class="{{ disc_class }}"
+    {{ disc_style_attr }}
+    {{ block.shopify_attributes }}
+  >
+    {{ disc_body }}
+  </a>
+{%- else -%}
+  <div class="{{ disc_class }}" {{ disc_style_attr }} {{ block.shopify_attributes }}>
+    {{ disc_body }}
+  </div>
+{%- endif -%}

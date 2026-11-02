@@ -1,0 +1,209 @@
+{%- liquid
+  assign lifestyle_heading = section.settings.lifestyle_heading
+  assign lifestyle_heading_plain = lifestyle_heading | strip_html | strip
+
+  assign lifestyle_has_blocks = false
+  if section.blocks.size > 0
+    assign lifestyle_has_blocks = true
+  endif
+
+  assign lifestyle_bg = section.settings.lifestyle_background
+  if lifestyle_bg == blank
+    assign lifestyle_bg = 'linear-gradient(#FFFFFF 0%, #DAE2D5 100%)'
+  endif
+
+  assign lifestyle_label = lifestyle_heading_plain | default: 'Shop by lifestyle'
+
+  assign lifestyle_desk_static = true
+  assign lifestyle_desk_cols = 'lg:auto-cols-fr'
+  if section.blocks.size > 5
+    assign lifestyle_desk_static = false
+    assign lifestyle_desk_cols = 'lg:auto-cols-[calc((100%-70px)/5)]'
+  endif
+-%}
+
+{%- if lifestyle_heading_plain != blank or lifestyle_has_blocks -%}
+  <div
+    class="shop-by-lifestyle mt-[var(--lifestyle-top-mobile)] mb-[var(--lifestyle-bottom-mobile)] lg:mt-[var(--lifestyle-top-desktop)] lg:mb-[var(--lifestyle-bottom-desktop)]"
+    style="
+      --lifestyle-top-mobile: {{ section.settings.lifestyle_top_mobile }}px;
+      --lifestyle-bottom-mobile: {{ section.settings.lifestyle_bottom_mobile }}px;
+      --lifestyle-top-desktop: {{ section.settings.lifestyle_top_desktop }}px;
+      --lifestyle-bottom-desktop: {{ section.settings.lifestyle_bottom_desktop }}px;
+      background: {{ lifestyle_bg | escape }};
+    "
+  >
+    {%- if lifestyle_heading_plain != blank -%}
+      <div class="page-width mb-6">
+        {%- render 'section-header',
+          heading: lifestyle_heading,
+          class_name: 'text-left text-section-heading lg:text-center lg:text-section-heading-d'
+        -%}
+      </div>
+    {%- endif -%}
+
+    {%- if lifestyle_has_blocks -%}
+      <div
+        class="shop-by-lifestyle__carousel pr-5 lg:pr-0 overflow-hidden"
+        data-carousel-label="{{ lifestyle_label | escape }}"
+        data-desktop-static="{{ lifestyle_desk_static }}"
+      >
+        <div class="page-width grid grid-flow-col grid-rows-[1fr_auto_auto] auto-cols-[calc(100%/2.2)] gap-x-2.5 h-[185px] {{ lifestyle_desk_cols }} lg:gap-x-[17.5px] lg:gap-y-2 lg:h-[300px]">
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+              {%- when 'lifestyle-card' -%}
+                {%- render 'lifestyle-card', block: block -%}
+            {%- endcase -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+
+  <script src="{{ 'shop-by-lifestyle.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Shop By Lifestyle",
+  "class": "shop-lifestyle-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "lifestyle_heading",
+      "label": "Heading",
+      "default": "<p>Shop by <em>Lifestyle</em></p>"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color_background",
+      "id": "lifestyle_background",
+      "label": "Background",
+      "default": "linear-gradient(#FFFFFF 0%, #DAE2D5 100%)"
+    },
+    {
+      "type": "range",
+      "id": "lifestyle_top_mobile",
+      "label": "Space above (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "lifestyle_bottom_mobile",
+      "label": "Space below (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "lifestyle_top_desktop",
+      "label": "Space above (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "lifestyle_bottom_desktop",
+      "label": "Space below (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "lifestyle-card",
+      "name": "Lifestyle Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "lifestyle_image",
+          "label": "Image"
+        },
+        {
+          "type": "video",
+          "id": "lifestyle_video",
+          "label": "Video",
+          "info": "Takes priority over the image."
+        },
+        {
+          "type": "richtext",
+          "id": "lifestyle_title",
+          "label": "Title"
+        },
+        {
+          "type": "richtext",
+          "id": "lifestyle_subline",
+          "label": "Subtitle"
+        },
+        {
+          "type": "url",
+          "id": "lifestyle_link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop By Lifestyle",
+      "blocks": [
+        {
+          "type": "lifestyle-card",
+          "settings": {
+            "lifestyle_title": "<p>Desk Worker</p>",
+            "lifestyle_subline": "<p>Back Pain • Neck Relief • Hydration</p>"
+          }
+        },
+        {
+          "type": "lifestyle-card",
+          "settings": {
+            "lifestyle_title": "<p>Active Lifestyle</p>",
+            "lifestyle_subline": "<p>Recovery • Muscle Care • Hydration</p>"
+          }
+        },
+        {
+          "type": "lifestyle-card",
+          "settings": {
+            "lifestyle_title": "<p>Travel</p>",
+            "lifestyle_subline": "<p>Period Care • Relief • Energy</p>"
+          }
+        },
+        {
+          "type": "lifestyle-card",
+          "settings": {
+            "lifestyle_title": "<p>College Life</p>",
+            "lifestyle_subline": "<p>Energy • Comfort • Everyday Care</p>"
+          }
+        },
+        {
+          "type": "lifestyle-card",
+          "settings": {
+            "lifestyle_title": "<p>Family Care</p>",
+            "lifestyle_subline": "<p>Trusted • Everyday Health</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

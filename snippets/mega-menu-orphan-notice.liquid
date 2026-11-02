@@ -1,0 +1,45 @@
+{% doc %}
+  Theme-editor-only warning for a mega-menu block whose Menu item matches no top-level menu item.
+  Lists the valid handles so the field can be corrected without leaving the editor. Rows come from the
+  block's own pickers, so sub-items are irrelevant here.
+
+  @param {object} section - The header section, for settings and blocks
+{% enddoc %}
+
+{%- if request.design_mode -%}
+  {%- liquid
+    assign menu_links = linklists[section.settings.header_menu].links
+    assign orphan_handles = ''
+    assign valid_handles = ''
+
+    for link in menu_links
+      assign valid_handles = valid_handles | append: ', ' | append: link.handle
+    endfor
+    assign valid_handles = valid_handles | remove_first: ', '
+
+    for block in section.blocks
+      assign parent_handle = block.settings.mega_parent_handle | handleize
+      assign is_bound = false
+
+      for link in menu_links
+        assign link_title_handle = link.title | handleize
+        if link.handle == parent_handle or link_title_handle == parent_handle
+          assign is_bound = true
+          break
+        endif
+      endfor
+
+      unless is_bound
+        assign orphan_label = parent_handle | default: '(empty)'
+        assign orphan_handles = orphan_handles | append: ' ' | append: orphan_label
+      endunless
+    endfor
+  -%}
+
+  {%- if orphan_handles != blank -%}
+    <p class="bg-error px-5 py-2 font-secondary text-[14px]/[20px] text-primary-foreground lg:px-15">
+      Mega menu block(s) with Menu item{{ orphan_handles }} match no top-level menu item, so they
+      render no panel. Use one of these instead: {{ valid_handles | default: 'no menu item in this menu has sub-items' }}.
+    </p>
+  {%- endif -%}
+{%- endif -%}

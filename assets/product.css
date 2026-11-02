@@ -1,0 +1,202 @@
+.pdp-offers__card {
+  position: relative;
+}
+
+.pdp-offers__card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(to bottom right, #84cc16, #365314);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.pdp-offers__code {
+  outline: 0.6px dashed rgb(var(--color-primary));
+  outline-offset: -0.6px;
+}
+
+img.pdp-helps__image {
+  outline: 0.5px solid #e5e5e5;
+  outline-offset: -0.5px;
+}
+
+.pdp-offers__copy .pdp-offers__copy-label {
+  display: grid;
+  grid-area: 1 / 1;
+  place-items: center;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.pdp-offers__copy .pdp-offers__copy-label--done {
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+.pdp-offers__copy[data-offer-copied="true"] .pdp-offers__copy-label {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.pdp-offers__copy[data-offer-copied="true"] .pdp-offers__copy-label--done {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sticky-atc {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 40;
+  padding-block: 12px;
+  background-color: rgb(var(--color-background));
+  box-shadow: 0 -2px 12px rgb(0 0 0 / 0.12);
+  visibility: hidden;
+  transform: translateY(100%);
+  transition:
+    transform 300ms ease-out,
+    visibility 0s linear 300ms;
+}
+
+.sticky-atc[data-sticky-visible="true"] {
+  visibility: visible;
+  transform: translateY(0);
+  transition:
+    transform 300ms ease-out,
+    visibility 0s linear 0s;
+}
+
+.sticky-atc .sticky-atc__thumb {
+  outline: 1px solid rgb(var(--color-accent) / 0.4);
+  outline-offset: -1px;
+}
+
+.product-details .product-details__viewport--animating {
+  overflow: hidden;
+  height: var(--details-panel-h, auto);
+  transition: height 300ms ease;
+}
+
+.product-details .product-details__tab {
+  position: relative;
+}
+
+.product-details .product-details__tab::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -2px;
+  height: 2px;
+  background-color: rgb(var(--color-accent));
+  transform: scaleX(0);
+  transition: transform 250ms ease;
+}
+
+.product-details .product-details__tab[aria-selected="true"]::after {
+  transform: scaleX(1);
+}
+
+.product-details .product-details__panel--enter {
+  animation: product-details-panel-in 260ms ease both;
+}
+
+@keyframes product-details-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sticky-atc {
+    padding-block: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .sticky-atc,
+  .sticky-atc[data-sticky-visible="true"],
+  .pdp-offers__copy .pdp-offers__copy-label,
+  .product-details .product-details__viewport--animating,
+  .product-details .product-details__tab::after {
+    transition: none;
+  }
+
+  .product-details .product-details__panel--enter {
+    animation: none;
+  }
+}
+
+/* PDP description: rich text from the product description stacks top to bottom */
+.pdp-description__body > * + * {
+  margin-top: 12px;
+}
+
+.pdp-description__body h2,
+.pdp-description__body h3,
+.pdp-description__body h4 {
+  font-weight: 600;
+}
+
+.pdp-description__body ul {
+  padding-left: 1.25em;
+  list-style: disc;
+}
+
+.pdp-description__body ol {
+  padding-left: 1.25em;
+  list-style: decimal;
+}
+
+.pdp-description__body li + li {
+  margin-top: 4px;
+}
+
+/* PDP description banners: show at their own shape, no cropping */
+.pdp-description__media {
+  width: 100%;
+}
+
+.pdp-description__media-image,
+.pdp-description__media-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (min-width: 1024px) {
+  .pdp-description__body > * + * {
+    margin-top: 16px;
+  }
+}
+
+/* PDP Helps With: long labels wrap inside the 80px tile instead of running into the next one */
+picture.pdp-helps__image + span {
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+/* PDP key benefits: icon is an uploaded image that fills its tile */
+.pdp-benefit__icon-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

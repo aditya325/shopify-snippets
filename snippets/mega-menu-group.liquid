@@ -1,0 +1,45 @@
+{% doc %}
+  One link group inside a Shop By Need pane, rendered as chips or as underlined green links.
+
+  @param {string} [heading] - Group heading. Omitted when blank
+  @param {object[]} [links] - mega_menu_link entries. Renders nothing when empty
+  @param {string} [style] - 'chips' or 'links' (default: chips)
+  @param {string} [chip_color] - Chip background colour. chips only (default: #fde047)
+{% enddoc %}
+
+{%- liquid
+  assign group_is_links = false
+  if style == 'links'
+    assign group_is_links = true
+  endif
+
+  if group_is_links
+    assign group_track_class = 'scrollbar-hide flex gap-5 overflow-x-auto lg:flex-wrap lg:gap-4 lg:overflow-visible'
+    assign group_link_class = 'shrink-0 whitespace-nowrap font-secondary text-[14px] font-semibold leading-[21px] tracking-[-0.16px] text-primary underline transition-opacity duration-200 motion-reduce:transition-none [@media(hover:hover)]:hover:opacity-70'
+  else
+    assign group_track_class = 'flex flex-wrap gap-2.5 lg:gap-3'
+    assign group_link_class = 'rounded-full bg-[var(--chip-bg)] px-4 py-2 font-secondary text-[14px] font-medium leading-[17px] text-foreground transition-[filter,transform] duration-200 motion-reduce:transition-none [@media(hover:hover)]:hover:brightness-95 [@media(hover:hover)]:hover:-translate-y-px'
+  endif
+-%}
+
+{%- if links != blank -%}
+  <div class="mega-menu__group flex flex-col gap-4">
+    {%- if heading != blank -%}
+      <h3 class="font-primary text-[16px]/[24px] font-medium text-foreground">{{ heading | escape }}</h3>
+    {%- endif -%}
+
+    <div
+      class="{{ group_track_class }}"
+      {% unless group_is_links %}
+        style="--chip-bg: {{ chip_color | default: '#fde047' }};"
+      {% endunless %}
+    >
+      {%- for group_link in links -%}
+        {%- assign group_link_url = group_link.collection.value.url -%}
+        {%- if group_link.title != blank and group_link_url != blank -%}
+          <a class="{{ group_link_class }}" href="{{ group_link_url }}">{{ group_link.title | escape }}</a>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}

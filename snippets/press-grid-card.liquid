@@ -1,0 +1,75 @@
+{% doc %}
+  Press Grid Card
+
+  Resolves one press-grid item to the card primitives and renders it in the requested variant. Every
+  source-to-primitive mapping in the grid happens here — the layout snippet only places the output —
+  so the featured cell and the five standard cards resolve their fields through the same path.
+
+  Blocks carry their own fields, typed by the merchant. Articles come from the archive, where the
+  publisher and the external destination live on metafields.
+
+  @param {object} card_item - A block object, or an article handle when card_kind is 'article' (required)
+  @param {string} card_kind - 'block' or 'article' (required)
+  @param {string} [card_variant] - 'featured' for the 2x2 hero cell, otherwise the standard card (default: standard)
+  @param {article[]} [card_source] - The article array handles resolve against. Required when card_kind is 'article'
+  @param {string} [card_media_class] - Media height utility, forwarded to press-card. Ignored by the featured variant
+
+  h-full on the wrapper is load-bearing in the side column: its parent is lg:flex-1, and without it
+  press-card's own h-full would measure this div's auto height instead of the split 310.
+{% enddoc %}
+
+{%- liquid
+  assign card_item = card_item | default: blank
+
+  unless card_item != blank
+    break
+  endunless
+
+  if card_variant == 'featured'
+    assign item_date_format = '%b %d, %Y'
+  else
+    assign item_date_format = '%b %d'
+  endif
+
+  if card_kind == 'article'
+    assign item_article = card_source | where: 'handle', card_item | first
+    assign item_image = item_article.image
+    assign item_title = item_article.title
+    assign item_publisher = item_article.metafields.custom.publisher.value
+    assign item_url = item_article.metafields.custom.external_url.value
+    assign item_attributes = ''
+
+    assign item_date = ''
+    if item_article.published_at != blank
+      assign item_date = item_article.published_at | date: item_date_format
+    endif
+  else
+    assign item_image = card_item.settings.card_image
+    assign item_title = card_item.settings.card_title
+    assign item_publisher = card_item.settings.card_publisher
+    assign item_date = card_item.settings.card_date
+    assign item_url = card_item.settings.card_url
+    assign item_attributes = card_item.shopify_attributes
+  endif
+-%}
+
+<div class="h-full" {{ item_attributes }}>
+  {%- if card_variant == 'featured' -%}
+    {%- render 'press-featured-card',
+      feat_image: item_image,
+      feat_title: item_title,
+      feat_publisher: item_publisher,
+      feat_date: item_date,
+      feat_url: item_url
+    -%}
+  {%- else -%}
+    {%- render 'press-card',
+      card_image: item_image,
+      card_title: item_title,
+      card_publisher: item_publisher,
+      card_date: item_date,
+      card_url: item_url,
+      card_media_class: card_media_class
+    -%}
+  {%- endif -%}
+</div>

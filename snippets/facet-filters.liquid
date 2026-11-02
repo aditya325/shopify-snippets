@@ -1,0 +1,222 @@
+{% doc %}
+  Facet Filters
+
+  Storefront filter groups styled to the Amrutanjan PLP design. Accepts any
+  object exposing `.filters`, and keeps the `data-*` contract assets/collection.js reads.
+
+  @param {object} filter_source - Object exposing .filters (required)
+  @param {string} [filter_variant] - 'sidebar' (default) or 'sheet' for the mobile bottom sheet
+
+  @example
+  {% render 'facet-filters', filter_source: collection, filter_variant: 'sheet' %}
+{% enddoc %}
+
+{%- liquid
+  assign filter_source = filter_source | default: blank
+
+  unless filter_source != blank
+    break
+  endunless
+
+  assign filter_variant = filter_variant | default: 'sidebar'
+
+  # The sheet is a denser scale with its own divider and no count badges
+  assign visible_limit = 5
+
+  if filter_variant == 'sheet'
+    assign stack_class = 'flex flex-col'
+    assign group_class = 'search-filter-group border-b border-[#e5e5e5] px-5 py-[18px]'
+    assign group_title_class = 'font-secondary text-[14px] font-semibold leading-[21px] tracking-normal text-foreground'
+    assign row_gap_class = 'space-y-2.5'
+    assign row_text_class = 'font-secondary text-[14px] leading-[21px] tracking-normal'
+  else
+    assign stack_class = 'flex flex-col gap-4'
+    assign group_class = 'search-filter-group border-b border-[#f5f5f5] pb-5'
+    assign group_title_class = 'font-secondary text-[20px] font-semibold leading-6 tracking-normal text-foreground'
+    assign row_gap_class = 'space-y-3'
+    assign row_text_class = 'font-secondary text-[16px] leading-6 tracking-normal'
+  endif
+-%}
+
+<div class="{{ stack_class }}">
+  {%- for filter in filter_source.filters -%}
+  {%- liquid
+    assign group_active = filter.active_values.size
+    if filter.type == 'price_range'
+      assign group_active = 0
+      if filter.min_value.value or filter.max_value.value
+        assign group_active = 1
+      endif
+    endif
+  -%}
+
+  {%- capture group_title -%}
+    <span class="flex items-center gap-2">
+      <span class="{{ group_title_class }}">
+        {{- filter.label -}}
+      </span>
+      {%- if group_active > 0 and filter_variant != 'sheet' -%}
+        <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary font-secondary text-[14px] font-bold leading-5 text-primary-foreground">
+          {{- group_active -}}
+        </span>
+      {%- endif -%}
+    </span>
+  {%- endcapture -%}
+
+  {%- capture filter_content -%}
+    {%- case filter.type -%}
+      {%- when 'list' -%}
+        <ul class="{{ row_gap_class }}" data-filter-values>
+          {%- for value in filter.values -%}
+            {%- liquid
+              assign is_empty = false
+              if value.count == 0 and value.active == false
+                assign is_empty = true
+              endif
+            -%}
+            <li{% if forloop.index > visible_limit %} class="hidden" data-filter-value-extra{% endif %}>
+              <label class="flex cursor-pointer items-center gap-2.5">
+                <input
+                  type="checkbox"
+                  class="peer sr-only"
+                  name="{{ value.param_name }}"
+                  value="{{ value.value }}"
+                  data-filter-checkbox
+                  {% if value.active %}
+                    checked
+                  {% endif %}
+                  {% if is_empty %}
+                    disabled
+                  {% endif %}
+                >
+                <span class="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[3px] border-[1.2px] border-[#a3a3a3] text-transparent transition-colors peer-checked:border-accent peer-checked:text-accent peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary">
+                  {%- render 'icon-checkmark', size: 10, class: 'h-2.5 w-2.5' -%}
+                </span>
+                <span class="min-w-0 flex-1 {{ row_text_class }} {% if is_empty %}text-[#a3a3a3]{% else %}text-foreground{% endif %}">
+                  {{- value.label -}}
+                </span>
+                <span class="shrink-0 {{ row_text_class }} text-[#525252]">
+                  {{- value.count -}}
+                </span>
+              </label>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        {%- if filter.values.size > visible_limit -%}
+          <div class="pt-1">
+            <button
+              type="button"
+              class="inline-flex items-center gap-2 font-secondary text-[16px] font-semibold leading-6 text-foreground transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [@media(hover:hover)]:hover:text-primary"
+              data-filter-show-more
+              data-label-more="{{ 'facets.show_more' | t | escape }}"
+              data-label-less="{{ 'facets.show_less' | t | escape }}"
+              aria-expanded="false"
+            >
+              <span class="flex h-[17px] w-2 shrink-0 items-center justify-center" data-unfold-more>
+                {%- render 'icon-unfold', unfold_state: 'more', class: 'h-[17px] w-2' -%}
+              </span>
+              <span class="hidden h-[17px] w-2 shrink-0 items-center justify-center" data-unfold-less>
+                {%- render 'icon-unfold', unfold_state: 'less', class: 'h-[17px] w-2' -%}
+              </span>
+              <span data-filter-show-more-label>{{ 'facets.show_more' | t }}</span>
+            </button>
+          </div>
+        {%- endif -%}
+
+      {%- when 'price_range' -%}
+        {%- liquid
+          assign price_range_max = filter.range_max | money_without_currency | replace: ',', '' | split: '.' | first | strip
+          assign price_current_min = filter.min_value.value | money_without_currency | replace: ',', '' | split: '.' | first | strip | default: '0'
+          assign price_current_max = filter.max_value.value | money_without_currency | replace: ',', '' | split: '.' | first | strip | default: price_range_max
+        -%}
+        <div
+          data-price-slider
+          data-range-min="0"
+          data-range-max="{{ price_range_max }}"
+          data-current-min="{{ price_current_min }}"
+          data-current-max="{{ price_current_max }}"
+        >
+          <div class="flex items-center gap-2.5 pb-3">
+            <div class="flex h-12 min-w-0 flex-1 items-center gap-2 rounded-full border border-[#f5f5f5] bg-background px-5">
+              <span class="shrink-0 font-secondary text-[16px] font-semibold leading-6 text-foreground">
+                {{- cart.currency.symbol -}}
+              </span>
+              <input
+                type="number"
+                class="facet-price-input min-w-0 flex-1 border-0 bg-transparent p-0 text-right font-secondary text-[14px] font-medium leading-5 text-[#525252] focus:outline-none"
+                name="{{ filter.min_value.param_name }}"
+                min="0"
+                max="{{ price_range_max }}"
+                value="{{ price_current_min }}"
+                data-filter-price
+                data-price-input-min
+                aria-label="{{ 'collections.filter_min' | t }}"
+              >
+            </div>
+
+            <span class="h-px w-2.5 shrink-0 bg-foreground"></span>
+
+            <div class="flex h-12 min-w-0 flex-1 items-center gap-2 rounded-full border border-[#f5f5f5] bg-background px-5">
+              <span class="shrink-0 font-secondary text-[16px] font-semibold leading-6 text-foreground">
+                {{- cart.currency.symbol -}}
+              </span>
+              <input
+                type="number"
+                class="facet-price-input min-w-0 flex-1 border-0 bg-transparent p-0 text-right font-secondary text-[14px] font-medium leading-5 text-[#525252] focus:outline-none"
+                name="{{ filter.max_value.param_name }}"
+                min="0"
+                max="{{ price_range_max }}"
+                value="{{ price_current_max }}"
+                data-filter-price
+                data-price-input-max
+                aria-label="{{ 'collections.filter_max' | t }}"
+              >
+            </div>
+          </div>
+
+          <div class="relative h-7">
+            <div class="pointer-events-none absolute left-0 top-1/2 h-[3px] w-full -translate-y-1/2 rounded-[10px] bg-[#e5e5e5]"></div>
+            <div
+              class="pointer-events-none absolute top-1/2 h-[3px] -translate-y-1/2 rounded-[10px] bg-accent"
+              data-slider-fill
+            ></div>
+            <input
+              type="range"
+              class="facet-price-slider__input pointer-events-none absolute left-0 top-0 m-0 h-full w-full appearance-none bg-transparent"
+              min="0"
+              max="{{ price_range_max }}"
+              value="{{ price_current_min }}"
+              step="1"
+              data-slider-min
+              aria-label="{{ 'collections.filter_min' | t }}"
+            >
+            <input
+              type="range"
+              class="facet-price-slider__input pointer-events-none absolute left-0 top-0 m-0 h-full w-full appearance-none bg-transparent"
+              min="0"
+              max="{{ price_range_max }}"
+              value="{{ price_current_max }}"
+              step="1"
+              data-slider-max
+              aria-label="{{ 'collections.filter_max' | t }}"
+            >
+          </div>
+        </div>
+    {%- endcase -%}
+  {%- endcapture -%}
+
+  {% render 'accordion',
+    title: group_title,
+    content: filter_content,
+    unique_id: forloop.index,
+    default_open: true,
+    icon_type: 'chevron',
+    icon_size: 28,
+    icon_box_class: 'h-8 w-8',
+    class_name: group_class,
+    title_class: 'gap-2.5',
+    content_class: 'pt-3'
+  %}
+{%- endfor -%}
+</div>

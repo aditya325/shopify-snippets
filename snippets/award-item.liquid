@@ -1,0 +1,63 @@
+{% doc %}
+  Award Item
+
+  One award in the Awards & Recognition strip — the picked award image above the award's name, year
+  and awarding body. Blocks with no image fall back to a tinted badge tile holding the generic award
+  icon, so a half-populated section still keeps its row alignment. Desktop centres the text under the
+  image; mobile left-aligns it, which is what the design draws and why the alignment utilities are
+  lg-scoped rather than unconditional.
+
+  @param {object} block - Award Item block (required)
+{% enddoc %}
+
+{%- liquid
+  assign block = block | default: blank
+
+  unless block != blank
+    break
+  endunless
+
+  assign award_icon = block.settings.award_icon
+  assign award_title = block.settings.award_title
+  assign award_year = block.settings.award_year
+  assign award_body = block.settings.award_body
+-%}
+
+<div class="award-item flex flex-col gap-3 lg:items-center lg:gap-6" {{ block.shopify_attributes }}>
+  {%- if award_icon != blank -%}
+    {%- render 'image',
+      image: award_icon,
+      alt: award_title,
+      class_name: 'award-item__image block h-[140px] w-[140px] shrink-0 object-contain',
+      base_width: 280,
+      mobile_width: 280,
+      breakpoint: 1024,
+      lazy: true,
+      decoding: 'async'
+    -%}
+  {%- else -%}
+    <div class="award-item__tile flex h-[140px] w-[140px] shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/[0.08] p-5">
+      {%- render 'icon-award', class: 'h-16 w-16 text-primary' -%}
+    </div>
+  {%- endif -%}
+
+  <div class="award-item__text flex flex-col gap-1 lg:items-center">
+    {%- if award_title != blank -%}
+      <h3 class="award-item__title font-primary text-[16px]/[24px] font-medium text-foreground lg:text-center lg:text-[18px]/[23px]">
+        {{- award_title | escape -}}
+      </h3>
+    {%- endif -%}
+
+    {%- if award_year != blank -%}
+      <p class="award-item__year text-[12px]/[16px] font-bold text-primary lg:text-[14px]/[18.2px]">
+        {{- award_year | escape -}}
+      </p>
+    {%- endif -%}
+
+    {%- if award_body != blank -%}
+      <p class="award-item__body text-label-sm text-[#525252] lg:text-center lg:text-[13px]/[16.9px]">
+        {{- award_body | escape -}}
+      </p>
+    {%- endif -%}
+  </div>
+</div>

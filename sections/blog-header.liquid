@@ -1,0 +1,99 @@
+{%- liquid
+  assign bhead_crumb_class = 'text-[10px] leading-[13px] lg:text-[12px] lg:leading-4'
+  assign bhead_crumb_label = section.settings.bhead_crumb_label | default: blog.title
+  assign bhead_heading = section.settings.bhead_heading | default: blog.title
+-%}
+
+<div
+  class="blog-header mb-[var(--bhead-bottom-mobile)] mt-[var(--bhead-top-mobile)] lg:mb-[var(--bhead-bottom-desktop)] lg:mt-[var(--bhead-top-desktop)]"
+  style="
+    --bhead-top-mobile: {{ section.settings.bhead_top_mobile }}px;
+    --bhead-bottom-mobile: {{ section.settings.bhead_bottom_mobile }}px;
+    --bhead-top-desktop: {{ section.settings.bhead_top_desktop }}px;
+    --bhead-bottom-desktop: {{ section.settings.bhead_bottom_desktop }}px;
+  "
+>
+  <div class="blog-header__breadcrumbs page-width w-full py-2.5">
+    {%- render 'breadcrumbs', breadcrumb_current: bhead_crumb_label, class_name: bhead_crumb_class -%}
+  </div>
+
+  {%- if bhead_heading != blank -%}
+    <div class="blog-header__title page-width w-full py-5">
+      {%- render 'section-header', heading: bhead_heading, heading_level: 'h1' -%}
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Blog Header",
+  "class": "blog-header-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "bhead_heading",
+      "label": "Bhead Heading",
+      "info": "Page title. Leave blank to use the blog's own title."
+    },
+    {
+      "type": "text",
+      "id": "bhead_crumb_label",
+      "label": "Bhead Crumb Label",
+      "info": "Trailing breadcrumb label. Leave blank to use the blog's own title."
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "bhead_top_mobile",
+      "label": "Space Above (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "bhead_bottom_mobile",
+      "label": "Space Below (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "bhead_top_desktop",
+      "label": "Space Above (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "bhead_bottom_desktop",
+      "label": "Space Below (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog Header"
+    }
+  ]
+}
+{% endschema %}

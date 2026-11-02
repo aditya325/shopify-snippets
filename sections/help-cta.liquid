@@ -1,0 +1,156 @@
+{%- liquid
+  assign help_heading = section.settings.help_heading
+  assign help_heading_plain = help_heading | strip_html | strip
+  assign help_body = section.settings.help_body
+  assign help_body_plain = help_body | strip_html | strip
+  assign help_cta_label = section.settings.help_cta_label | strip
+  assign help_cta_link = section.settings.help_cta_link
+
+  assign help_has_cta = false
+  if help_cta_label != blank and help_cta_link != blank
+    assign help_has_cta = true
+  endif
+
+  assign help_has_content = false
+  if help_heading_plain != blank or help_body_plain != blank or help_has_cta
+    assign help_has_content = true
+  endif
+
+  assign help_card_class = 'help-cta__card flex flex-col gap-3 rounded-[15px] bg-[linear-gradient(180deg,rgb(var(--color-primary)/0.1)_0%,rgb(var(--color-primary)/0.2)_100%)] p-3 lg:flex-row lg:items-center lg:gap-5 lg:rounded-xl lg:p-8'
+  assign help_cta_class = 'w-full h-10 rounded-lg text-[14px]/[21px] tracking-[-0.16px] lg:h-[52px] lg:w-[370px] lg:rounded-xl lg:text-subheading-d lg:tracking-normal'
+  assign help_icon_class = 'h-[18px] w-[18px] lg:h-[22px] lg:w-[22px]'
+-%}
+
+{%- if help_has_content -%}
+  <div
+    class="help-cta mb-[var(--help-bottom-mobile)] mt-[var(--help-top-mobile)] lg:mb-[var(--help-bottom-desktop)] lg:mt-[var(--help-top-desktop)]"
+    style="
+      --help-top-mobile: {{ section.settings.help_top_mobile }}px;
+      --help-bottom-mobile: {{ section.settings.help_bottom_mobile }}px;
+      --help-top-desktop: {{ section.settings.help_top_desktop }}px;
+      --help-bottom-desktop: {{ section.settings.help_bottom_desktop }}px;
+    "
+  >
+    <div class="help-cta__inner page-width">
+      <div class="{{ help_card_class }}">
+        <div class="help-cta__content flex min-w-0 flex-col gap-3 lg:flex-1 lg:gap-5">
+          {%- if help_heading_plain != blank -%}
+            {%- render 'section-header',
+              heading: help_heading,
+              heading_level: 'h2',
+              class_name: 'text-left text-foreground'
+            -%}
+          {%- endif -%}
+
+          {%- if help_body_plain != blank -%}
+            <div
+              class="help-cta__body font-secondary text-[14px]/[22px] font-normal text-[#525252] lg:text-subheading-d"
+            >
+              {{ help_body }}
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- if help_has_cta -%}
+          <div class="help-cta__actions mt-3 shrink-0 lg:mt-0">
+            {%- render 'button',
+              label: help_cta_label,
+              link: help_cta_link,
+              variant: 'primary',
+              size: 'lg',
+              with_arrow: true,
+              class_name: help_cta_class,
+              icon_class: help_icon_class
+            -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Help CTA",
+  "class": "help-cta-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "help_heading",
+      "label": "Help Heading",
+      "default": "<p>Need Help Faster?</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "help_body",
+      "label": "Help Body",
+      "default": "<p>Find answers to the most common questions about orders, products, subscriptions and more.</p>"
+    },
+    {
+      "type": "text",
+      "id": "help_cta_label",
+      "label": "Help CTA Label",
+      "default": "Browse FAQs"
+    },
+    {
+      "type": "url",
+      "id": "help_cta_link",
+      "label": "Help CTA Link",
+      "info": "The button is hidden until both label and link are set."
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "help_top_mobile",
+      "label": "Space Above (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "help_bottom_mobile",
+      "label": "Space Below (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "help_top_desktop",
+      "label": "Space Above (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "help_bottom_desktop",
+      "label": "Space Below (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "Help CTA"
+    }
+  ]
+}
+{% endschema %}

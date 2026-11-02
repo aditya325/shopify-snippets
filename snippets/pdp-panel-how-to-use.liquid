@@ -1,0 +1,42 @@
+{% doc %}
+  How to Use tab body — steps row plus the Pro-Tip banner (544:27035 / 544:33387).
+
+  @param {object[]} steps - how_to_use_step metaobject entries (required)
+  @param {string} [pro_tip] - Pro-Tip banner text; the banner is omitted when blank
+{% enddoc %}
+
+{%- liquid
+  assign pro_tip_segments = pro_tip | split: ':'
+  assign pro_tip_label = ''
+  assign pro_tip_body = pro_tip
+
+  if pro_tip_segments.size > 1
+    assign pro_tip_label = pro_tip_segments | first | append: ':'
+    assign pro_tip_body = pro_tip | remove_first: pro_tip_label | strip
+  endif
+-%}
+
+<div class="flex flex-col gap-3 lg:gap-5">
+  <div class="flex flex-col gap-3 lg:flex-row lg:gap-5">
+    {%- for step in steps -%}
+      {% render 'pdp-step-card', step: step, index: forloop.index %}
+    {%- endfor -%}
+  </div>
+
+  {%- if pro_tip != blank -%}
+    <div
+      class="flex items-start gap-3 rounded-[15px] bg-primary/5 p-3.5 outline outline-1 -outline-offset-1 outline-primary/40 lg:items-center lg:rounded-xl lg:p-4"
+    >
+      <span class="grid size-[22px] shrink-0 place-items-center rounded-full bg-primary lg:size-7">
+        {% render 'icon-star-outline', class: 'size-[11px] text-white lg:size-3.5' %}
+      </span>
+
+      <p class="text-[14px]/[20px] tracking-normal text-foreground">
+        {%- if pro_tip_label != blank -%}
+          <span class="font-semibold text-primary">{{ pro_tip_label | escape }}</span>
+        {% endif -%}
+        {{ pro_tip_body | escape }}
+      </p>
+    </div>
+  {%- endif -%}
+</div>

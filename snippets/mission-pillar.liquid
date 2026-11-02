@@ -1,0 +1,37 @@
+{% doc %}
+  Mission Pillar
+
+  One card in the Mission Vision row — a pill tag above its description. The left accent bar is an
+  inset box-shadow, not a border, so it sits inside the 0.5px card outline rather than doubling it.
+
+  @param {object} block - Mission Pillar block, supplying settings and shopify_attributes
+{% enddoc %}
+
+{%- liquid
+  assign pillar_tag = block.settings.pillar_tag
+  assign pillar_desc = block.settings.pillar_desc
+  assign pillar_desc_plain = pillar_desc | strip_html | strip
+-%}
+
+{%- if pillar_tag != blank or pillar_desc_plain != blank -%}
+  <div
+    class="mission-vision__card flex flex-1 flex-col gap-3 overflow-hidden rounded-[20px] border-[0.5px] border-[#D8D9E0] bg-background p-[18px] shadow-[inset_4px_0px_0px_0px_theme(colors.accent)] lg:self-stretch lg:p-5"
+    {{ block.shopify_attributes }}
+  >
+    {%- if pillar_tag != blank -%}
+      <p
+        class="mission-vision__tag self-start rounded-[10px] bg-accent px-5 py-1.5 font-primary text-[16px]/[24px] font-medium uppercase tracking-normal text-green-dark lg:text-[18px]/[27px]"
+      >
+        {{- pillar_tag | escape -}}
+      </p>
+    {%- endif -%}
+
+    {%- if pillar_desc_plain != blank -%}
+      <div
+        class="mission-vision__desc font-secondary text-[16px]/[24px] tracking-[-0.18px] text-[#525252] lg:text-subheading-d lg:tracking-normal"
+      >
+        {{ pillar_desc }}
+      </div>
+    {%- endif -%}
+  </div>
+{%- endif -%}

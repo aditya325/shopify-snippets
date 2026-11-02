@@ -1,0 +1,261 @@
+{%- liquid
+  assign subscribe_logo = section.settings.subscribe_logo
+  assign subscribe_title = section.settings.subscribe_title
+  assign subscribe_subline = section.settings.subscribe_subline
+  assign subscribe_gradient = section.settings.subscribe_gradient
+  assign subscribe_desk_video = section.settings.subscribe_desktop_video
+  assign subscribe_mob_video = section.settings.subscribe_mobile_video
+  assign subscribe_desk_image = section.settings.subscribe_desktop_image
+  assign subscribe_mob_image = section.settings.subscribe_mobile_image
+
+  assign subscribe_has_media = false
+  if subscribe_desk_video != blank or subscribe_mob_video != blank
+    assign subscribe_has_media = true
+  elsif subscribe_desk_image != blank or subscribe_mob_image != blank
+    assign subscribe_has_media = true
+  endif
+-%}
+
+{%- capture subscribe_card_style -%}
+  {%- if subscribe_gradient != blank -%}
+    style="background: {{ subscribe_gradient }};"
+  {%- endif -%}
+{%- endcapture -%}
+
+<div
+  class="subscribe-letter mt-[var(--subscribe-top-mobile)] mb-[var(--subscribe-bottom-mobile)] lg:mt-[var(--subscribe-top-desktop)] lg:mb-[var(--subscribe-bottom-desktop)]"
+  style="
+    --subscribe-top-mobile: {{ section.settings.subscribe_top_mobile }}px;
+    --subscribe-bottom-mobile: {{ section.settings.subscribe_bottom_mobile }}px;
+    --subscribe-top-desktop: {{ section.settings.subscribe_top_desktop }}px;
+    --subscribe-bottom-desktop: {{ section.settings.subscribe_bottom_desktop }}px;
+  "
+>
+  <div class="page-width px-2.5 lg:px-15">
+    <div
+      class="subscribe-letter__card relative overflow-hidden rounded-xl p-3.5 lg:rounded-[20px] lg:px-10 lg:py-9"
+      {{ subscribe_card_style }}
+    >
+      {%- if subscribe_has_media -%}
+        <div class="absolute inset-0">
+          {%- if subscribe_desk_video != blank -%}
+            {{
+              subscribe_desk_video
+              | video_tag:
+                autoplay: true,
+                loop: true,
+                muted: true,
+                controls: false,
+                loading: 'lazy',
+                image_size: '1400x',
+                class: 'h-full w-full object-cover max-lg:hidden'
+            }}
+          {%- elsif subscribe_desk_image != blank -%}
+            {%- render 'image',
+              image: subscribe_desk_image,
+              alt: '',
+              class_name: 'h-full w-full object-cover max-lg:hidden',
+              decoding: 'async',
+              responsive_widths: '1024:2000'
+            -%}
+          {%- endif -%}
+
+          {%- if subscribe_mob_video != blank -%}
+            {{
+              subscribe_mob_video
+              | video_tag:
+                autoplay: true,
+                loop: true,
+                muted: true,
+                controls: false,
+                loading: 'lazy',
+                image_size: '750x',
+                class: 'h-full w-full object-cover lg:hidden'
+            }}
+          {%- elsif subscribe_mob_image != blank -%}
+            {%- render 'image',
+              image: subscribe_mob_image,
+              alt: '',
+              class_name: 'h-full w-full object-cover lg:hidden',
+              decoding: 'async',
+              responsive_widths: '390:750'
+            -%}
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- render 'subscribe-save',
+        layout: 'band',
+        section_id: section.id,
+        logo: subscribe_logo,
+        title: subscribe_title,
+        subline: subscribe_subline,
+        blocks: section.blocks
+      %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Subscribe Letter",
+  "class": "subscribe-letter-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "image_picker",
+      "id": "subscribe_logo",
+      "label": "Logo"
+    },
+    {
+      "type": "richtext",
+      "id": "subscribe_title",
+      "label": "Title",
+      "default": "<p>Subscribe & <em>Save 15%</em></p>"
+    },
+    {
+      "type": "text",
+      "id": "subscribe_subline",
+      "label": "Subtitle",
+      "default": "On your monthly essentials"
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "video",
+      "id": "subscribe_desktop_video",
+      "label": "Desktop background video",
+      "info": "Takes priority over image and gradient."
+    },
+    {
+      "type": "video",
+      "id": "subscribe_mobile_video",
+      "label": "Mobile background video"
+    },
+    {
+      "type": "image_picker",
+      "id": "subscribe_desktop_image",
+      "label": "Desktop background image",
+      "info": "Takes priority over the gradient."
+    },
+    {
+      "type": "image_picker",
+      "id": "subscribe_mobile_image",
+      "label": "Mobile background image"
+    },
+    {
+      "type": "color_background",
+      "id": "subscribe_gradient",
+      "label": "Background gradient",
+      "default": "radial-gradient(137% 630% at -25% 40%, #F4C430 0%, #72832F 42%, #466E2E 77%)"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "subscribe_top_mobile",
+      "label": "Space above (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "subscribe_bottom_mobile",
+      "label": "Space below (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "subscribe_top_desktop",
+      "label": "Space above (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "subscribe_bottom_desktop",
+      "label": "Space below (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "usp-item",
+      "name": "USP Item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "usp_icon",
+          "label": "Icon"
+        },
+        {
+          "type": "richtext",
+          "id": "usp_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "usp_description",
+          "label": "Description"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Subscribe Letter",
+      "blocks": [
+        {
+          "type": "usp-item",
+          "settings": {
+            "usp_title": "<p>Free Delivery</p>",
+            "usp_description": "On every order"
+          }
+        },
+        {
+          "type": "usp-item",
+          "settings": {
+            "usp_title": "<p>Save Extra 15%</p>",
+            "usp_description": "Lorem Ipsum dummy"
+          }
+        },
+        {
+          "type": "usp-item",
+          "settings": {
+            "usp_title": "<p>7-Day Returns</p>",
+            "usp_description": "Easy & hassle-free"
+          }
+        },
+        {
+          "type": "usp-item",
+          "settings": {
+            "usp_title": "<p>Cancel Anytime</p>",
+            "usp_description": "Easy & hassle-free"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,97 @@
+{% doc %}
+  Press Card
+
+  The News & Events card — image, a publisher/date meta row, headline and a Read More affordance. No
+  category badge; that is what distinguishes it from article-card.
+
+  Takes primitives rather than an article, because two sources feed the same card: the Press Grid's
+  merchant-authored blocks and the All News archive's blog articles. Callers map; this snippet renders.
+
+  Three things follow article-card's documented rules and are easy to break:
+
+  relative lives on the ROOT and never on the anchor, so the headline's ::after covers the whole card.
+  A relative on the anchor would scope the pseudo-element to the headline and leave the image inert.
+
+  The read affordance is a span, never an anchor — it sits under the stretched ::after and is purely
+  visual, which is what keeps this card to a single anchor.
+
+  ml-auto on the date, not justify-between on the row: with the publisher unset the row has one child,
+  and justify-between would left-align the date instead of holding the right edge.
+
+  Press coverage is third-party, so card_url is always an external destination and never an on-store
+  article. With it blank the headline still renders, unlinked, and the read affordance is suppressed.
+
+  @param {string} card_title - Headline (required)
+  @param {image} [card_image] - Card image
+  @param {string} [card_publisher] - Publication name
+  @param {string} [card_date] - Pre-formatted date, e.g. "Sep 28"
+  @param {string} [card_url] - External article URL
+  @param {string} [card_media_class] - Media height utility. The nav pane's Figma draws 160, the press grid's 154 (default: h-[160px])
+{% enddoc %}
+
+{%- liquid
+  assign card_title = card_title | default: blank
+
+  unless card_title != blank
+    break
+  endunless
+
+  assign card_image_alt = card_image.alt | default: card_title
+  assign card_media_class = card_media_class | default: 'h-[160px]'
+-%}
+
+<article class="press-card group relative flex h-full flex-col overflow-hidden rounded-[15px] border border-[#E5E5E5] tracking-normal lg:rounded-[20px]">
+  {%- if card_image != blank -%}
+    <div class="press-card__media relative {{ card_media_class }} w-full shrink-0 overflow-hidden">
+      {%- render 'image',
+        image: card_image,
+        alt: card_image_alt,
+        class_name: 'absolute inset-0 block h-full w-full object-cover',
+        base_width: 848,
+        mobile_width: 700,
+        breakpoint: 1024,
+        lazy: true,
+        decoding: 'async'
+      -%}
+    </div>
+  {%- endif -%}
+
+  <div class="press-card__body flex flex-1 flex-col justify-between gap-2.5 p-3 lg:gap-3 lg:p-4">
+    <div class="press-card__head flex flex-col gap-2">
+      {%- if card_publisher != blank or card_date != blank -%}
+        <div class="press-card__meta flex items-center gap-2 whitespace-nowrap">
+          {%- if card_publisher != blank -%}
+            <span class="press-card__publisher text-[14px]/[21px] font-semibold tracking-[-0.16px] text-primary">
+              {{- card_publisher | escape -}}
+            </span>
+          {%- endif -%}
+
+          {%- if card_date != blank -%}
+            <span class="press-card__date ml-auto text-[12px]/[16px] text-[#525252]">{{ card_date }}</span>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      <h3 class="press-card__title line-clamp-3 text-label-lg font-medium text-foreground lg:text-[20px]/[30px]">
+        {%- if card_url != blank -%}
+          <a href="{{ card_url }}" class="after:absolute after:inset-0" target="_blank" rel="noopener noreferrer">
+            {{- card_title | escape -}}
+            <span class="sr-only">{{ 'blog.opens_external' | t }}</span>
+          </a>
+        {%- else -%}
+          {{- card_title | escape -}}
+        {%- endif -%}
+      </h3>
+    </div>
+
+    {%- if card_url != blank -%}
+      {%- comment -%} capitalize because the locale string is "Read more" and the design shows "Read More" {%- endcomment -%}
+      <span class="press-card__read flex items-center gap-2 text-[16px]/[21px] font-semibold capitalize text-primary">
+        {{- 'blog.read_more' | t -}}
+        {%- render 'icon-chevron-right',
+          class: 'h-[18px] w-[18px] shrink-0 transition-transform duration-300 [@media(hover:hover)]:group-hover:translate-x-1'
+        -%}
+      </span>
+    {%- endif -%}
+  </div>
+</article>

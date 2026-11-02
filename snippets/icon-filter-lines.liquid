@@ -1,0 +1,25 @@
+{% doc %}
+  Filter Lines Icon
+
+  Three tapering horizontal rules. Distinct from icon-filter's funnel.
+
+  @param {number} [size] - Square size in pixels (default: 20)
+  @param {string} [class] - Sizing and stroke-weight classes (optional)
+{% enddoc %}
+
+{%- assign icon_size = size | default: 20 -%}
+<svg
+  class="{{ class }}"
+  width="{{ icon_size }}"
+  height="{{ icon_size }}"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  aria-hidden="true"
+>
+  <line x1="3" y1="7" x2="21" y2="7"/>
+  <line x1="6" y1="12" x2="18" y2="12"/>
+  <line x1="9" y1="17" x2="15" y2="17"/>
+</svg>

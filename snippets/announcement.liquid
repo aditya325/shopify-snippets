@@ -1,0 +1,43 @@
+{% doc %}
+  @param {object} block - Announcement block, supplying settings and shopify_attributes
+  @param {string} [size] - Text/weight variant: 'default' (12/16px, semibold, uppercase, 1px tracking) or 'compact' (10/12px, medium, capitalize, no tracking). Defaults to 'default'.
+  @param {boolean} [static_layout] - True when rendered inside the static (non-carousel) layout — drops the full-width carousel-slide sizing for a content-width item.
+{% enddoc %}
+
+{%- liquid
+  assign announce_text = block.settings.announce_text
+  assign announce_text_plain = announce_text | strip_html | strip
+  assign announce_link = block.settings.announce_link
+  assign announce_size = size | default: 'default'
+
+  # The richtext toolbar offers Link, and an anchor inside an anchor force-closes the outer one
+  assign announce_body = announce_text
+  if announce_link != blank and announce_text contains '<a'
+    assign announce_body = announce_text | strip_html
+  endif
+
+  assign announce_text_class = 'announcement-bar__text max-w-full font-secondary text-[12px] font-semibold leading-[18px] tracking-[1px] uppercase text-center whitespace-nowrap overflow-hidden lg:text-[16px] lg:leading-[24px]'
+  if announce_size == 'compact'
+    assign announce_text_class = 'announcement-bar__text max-w-full font-secondary text-[10px] font-medium leading-4 tracking-normal capitalize text-center whitespace-nowrap overflow-hidden lg:text-[12px]'
+  endif
+
+  assign announce_slide_class = 'announcement-bar__slide flex shrink-0 basis-full items-center justify-center'
+  if static_layout
+    assign announce_slide_class = 'announcement-bar__slide flex shrink-0 items-center justify-center'
+  endif
+-%}
+
+{%- if announce_text_plain != blank -%}
+  <div
+    class="{{ announce_slide_class }}"
+    {{ block.shopify_attributes }}
+  >
+    {%- if announce_link != blank -%}
+      <a href="{{ announce_link | escape }}" class="{{ announce_text_class }}">
+        {{- announce_body -}}
+      </a>
+    {%- else -%}
+      <div class="{{ announce_text_class }}">{{ announce_body }}</div>
+    {%- endif -%}
+  </div>
+{%- endif -%}

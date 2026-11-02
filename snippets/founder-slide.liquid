@@ -1,0 +1,100 @@
+{% doc %}
+  Founder Slide
+
+  One Founder Slide block, rendered as a carousel slide.
+
+  The clamp lives on data-clamped rather than data-expanded so it can be released before the collapse
+  animation and restored after it, instead of snapping the text back while the box is still moving.
+
+  @param {object} block - Founder Slide block, supplying settings and shopify_attributes
+  @param {number} index - Zero-based slide index, used to build unique ids
+  @param {string} section_id - The section id, used to keep ids unique across instances
+{% enddoc %}
+
+{%- liquid
+  assign founder_heading = block.settings.founder_heading
+  assign founder_desc = block.settings.founder_desc
+  assign founder_name = block.settings.founder_name
+  assign founder_designation = block.settings.founder_designation
+  assign founder_image = block.settings.founder_profile_img
+
+  assign founder_heading_plain = founder_heading | strip_html | strip
+  assign founder_desc_plain = founder_desc | strip_html | strip
+  assign founder_desc_id = 'founder-body-' | append: section_id | append: '-' | append: index
+-%}
+
+<div
+  class="founder-carousel__slide flex shrink-0 basis-full flex-col gap-3 lg:gap-6"
+  data-founder-slide
+  data-expanded="false"
+  {{ block.shopify_attributes }}
+>
+  {%- if founder_heading_plain != blank -%}
+    {%- render 'section-header', heading: founder_heading, class_name: 'text-left' -%}
+  {%- endif -%}
+
+  <div class="founder-carousel__text flex flex-col gap-[18px]">
+    {%- if founder_desc_plain != blank -%}
+      <div class="founder-carousel__quote flex flex-col">
+        <div
+          class="founder-carousel__body overflow-hidden max-h-[var(--founder-body-max,132px)] font-secondary text-[16px]/[22px] font-medium tracking-[-0.18px] text-[#2b4934] transition-[max-height] duration-[350ms] ease-[ease] [&>*]:m-0 data-[clamped=true]:line-clamp-6 motion-reduce:transition-none lg:max-h-[var(--founder-body-max,108px)] lg:data-[clamped=true]:line-clamp-3 lg:text-[24px]/[36px] lg:tracking-[-0.15px]"
+          id="{{ founder_desc_id }}"
+          data-founder-body
+          data-clamped="true"
+        >
+          {{ founder_desc }}
+        </div>
+
+        <div class="founder-carousel__more flex items-center pt-1 lg:pt-2">
+          <button
+            class="font-secondary text-[16px]/[24px] font-semibold tracking-normal text-[#1b3b26] underline lg:text-[18px]/[27px]"
+            type="button"
+            aria-expanded="false"
+            aria-controls="{{ founder_desc_id }}"
+            data-founder-toggle
+            data-label-more="{{ 'general.read_more' | t: fallback: 'Read more' }}"
+            data-label-less="{{ 'general.read_less' | t: fallback: 'Read less' }}"
+          >
+            {{- 'general.read_more' | t: fallback: 'Read more' -}}
+          </button>
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if founder_image != blank or founder_name != blank or founder_designation != blank -%}
+      <div class="founder-carousel__profile flex flex-col items-end gap-3 lg:flex-row lg:items-end lg:gap-4">
+        <div class="founder-carousel__person flex w-full min-w-0 flex-1 items-center gap-3 lg:gap-4">
+          {%- if founder_image != blank -%}
+            <div
+              class="founder-carousel__avatar size-[46px] shrink-0 overflow-hidden rounded-lg border border-[rgba(30,68,47,0.2)] bg-[#e6e4d8] lg:size-[70px]"
+            >
+              {%- render 'image',
+                image: founder_image,
+                alt: '',
+                class_name: 'h-full w-full object-cover',
+                decoding: 'async',
+                responsive_widths: '390:92,1024:140'
+              -%}
+            </div>
+          {%- endif -%}
+
+          {%- if founder_name != blank or founder_designation != blank -%}
+            <div class="founder-carousel__meta flex min-w-0 flex-1 flex-col gap-0.5 lg:gap-1">
+              {%- if founder_name != blank -%}
+                <p class="font-secondary text-[16px]/[24px] font-bold tracking-normal text-[#1e442f] lg:text-[18px]/[27px]">
+                  {{- founder_name | escape -}}
+                </p>
+              {%- endif -%}
+
+              {%- if founder_designation != blank -%}
+                <p class="font-secondary text-[12px] font-medium leading-normal tracking-normal text-[#2b4934] opacity-85 lg:text-label-md">
+                  {{- founder_designation | escape -}}
+                </p>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</div>

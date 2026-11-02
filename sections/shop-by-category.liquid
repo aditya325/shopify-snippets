@@ -1,0 +1,255 @@
+{%- liquid
+  assign category_heading = section.settings.category_heading
+  assign category_heading_plain = category_heading | strip_html | strip
+
+  assign category_has_blocks = false
+  if section.blocks.size > 0
+    assign category_has_blocks = true
+  endif
+
+  assign category_heading_html = category_heading | strip_newlines
+  assign category_heading_html = category_heading_html | replace: '</p> <p>', '</p><p>'
+  assign category_heading_html = category_heading_html | replace: '</p><p>', '<br />'
+  assign category_heading_html = category_heading_html | replace: '<p>', '' | replace: '</p>', ''
+  assign category_heading_html = category_heading_html | replace: '<br>', '<br />' | replace: '<br/>', '<br />'
+
+  assign category_heading_break = '<span class="hidden lg:inline"> </span><br class="lg:hidden" />'
+
+  if section.settings.category_align == 'left'
+    assign category_heading_class = 'text-left text-section-heading lg:text-left lg:text-section-heading-d'
+  else
+    assign category_heading_class = 'text-left text-section-heading lg:text-center lg:text-section-heading-d'
+  endif
+  assign category_heading_html = category_heading_html | replace: '<br />', category_heading_break
+
+  assign category_carousel = section.settings.category_carousel
+
+  # mobile and desktop pick their layout independently, so either can be a strip
+  if section.settings.category_mob_carousel
+    assign category_mob_list = 'shop-by-category__strip flex gap-2 overflow-x-auto scrollbar-hide -mr-4'
+    assign category_mob_card = 'w-[113px] shrink-0'
+  else
+    assign category_mob_list = 'shop-by-category__grid grid grid-cols-6 gap-2.5'
+    assign category_mob_card = 'max-lg:col-span-2 max-lg:[&:nth-child(3n+1):last-child]:col-span-6 max-lg:[&:nth-child(3n+1):nth-last-child(2)]:col-span-3 max-lg:[&:nth-child(3n+2):last-child]:col-span-3'
+  endif
+
+  if category_carousel
+    assign category_desk_list = 'scrollbar-hide lg:flex lg:snap-x lg:snap-mandatory lg:gap-5 lg:overflow-x-auto lg:mr-0'
+    assign category_desk_card = 'lg:w-auto lg:shrink-0 lg:basis-[calc((100%_-_80px)/5)] lg:snap-start'
+  else
+    assign category_desk_list = 'lg:grid lg:grid-cols-5 lg:gap-5 lg:overflow-visible lg:mr-0'
+    assign category_desk_card = 'lg:w-auto'
+  endif
+
+  assign category_list_class = category_mob_list | append: ' ' | append: category_desk_list
+  assign category_card_class = category_mob_card | append: ' ' | append: category_desk_card
+-%}
+
+{%- if category_heading_plain != blank or category_has_blocks -%}
+  <div
+    class="shop-by-category mb-[var(--category-bottom-mobile)] mt-[var(--category-top-mobile)] lg:mb-[var(--category-bottom-desktop)] lg:mt-[var(--category-top-desktop)]"
+    style="
+      --category-top-mobile: {{ section.settings.category_top_mobile }}px;
+      --category-bottom-mobile: {{ section.settings.category_bottom_mobile }}px;
+      --category-top-desktop: {{ section.settings.category_top_desktop }}px;
+      --category-bottom-desktop: {{ section.settings.category_bottom_desktop }}px;
+    "
+  >
+    <div class="page-width flex flex-col gap-6 px-4 lg:px-15">
+      {%- if category_heading_plain != blank -%}
+        {%- render 'section-header',
+          heading: category_heading_html,
+          class_name: category_heading_class
+        -%}
+      {%- endif -%}
+
+      {%- if category_has_blocks -%}
+        {%- comment -%} basis derives from the 20px desktop gap, so five cards fill the width exactly {%- endcomment -%}
+        <div class="{{ category_list_class }}">
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+              {%- when 'category-card' -%}
+                {%- render 'category-card', block: block, card_layout_class: category_card_class -%}
+            {%- endcase -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Shop By Category",
+  "class": "shop-by-category-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "category_heading",
+      "label": "Heading",
+      "default": "<p>Recovery<br><em>Starts</em> Here</p>"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "category_align",
+      "label": "Category Align",
+      "info": "Desktop heading alignment. Mobile is always left.",
+      "options": [
+        { "value": "center", "label": "Centred" },
+        { "value": "left", "label": "Left" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "checkbox",
+      "id": "category_mob_carousel",
+      "label": "Category Mob Carousel",
+      "info": "Mobile scrolling strip of 113px cards instead of the grid.",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "category_carousel",
+      "label": "Category Carousel",
+      "info": "Scrolling strip showing five cards per view on desktop. Off renders the fixed grid.",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "category_top_mobile",
+      "label": "Space above (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "category_bottom_mobile",
+      "label": "Space below (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "category_top_desktop",
+      "label": "Space above (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "category_bottom_desktop",
+      "label": "Space below (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category-card",
+      "name": "Category Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "card_image",
+          "label": "Image"
+        },
+        {
+          "type": "video",
+          "id": "card_video",
+          "label": "Video",
+          "info": "Takes priority over the image."
+        },
+        {
+          "type": "text",
+          "id": "card_title",
+          "label": "Title"
+        },
+        {
+          "type": "color",
+          "id": "card_background",
+          "label": "Background color",
+          "default": "#E0A900"
+        },
+        {
+          "type": "color",
+          "id": "card_text_color",
+          "label": "Text color",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "url",
+          "id": "card_link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop By Category",
+      "blocks": [
+        {
+          "type": "category-card",
+          "settings": {
+            "card_title": "pain relief",
+            "card_background": "#E0A900",
+            "card_text_color": "#FFFFFF"
+          }
+        },
+        {
+          "type": "category-card",
+          "settings": {
+            "card_title": "women's hygine",
+            "card_background": "#0094D1",
+            "card_text_color": "#FFFFFF"
+          }
+        },
+        {
+          "type": "category-card",
+          "settings": {
+            "card_title": "congestion",
+            "card_background": "#00949E",
+            "card_text_color": "#FFFFFF"
+          }
+        },
+        {
+          "type": "category-card",
+          "settings": {
+            "card_title": "rehydration",
+            "card_background": "#E6790F",
+            "card_text_color": "#FFFFFF"
+          }
+        },
+        {
+          "type": "category-card",
+          "settings": {
+            "card_title": "grooming",
+            "card_background": "#538A05",
+            "card_text_color": "#FFFFFF"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

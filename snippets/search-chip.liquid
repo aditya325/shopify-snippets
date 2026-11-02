@@ -1,0 +1,31 @@
+{% doc %}
+  Search Chip
+
+  One primitive for both chip groups. Variants differ only in desktop radius and flex behaviour.
+
+  @param {string} chip_label - Visible label (required)
+  @param {string} chip_url - Destination (required)
+  @param {string} chip_variant - 'recent' or 'concern'
+  @param {string} [chip_query] - Recent only: the raw query, exposed as data-query
+
+  @example
+  {% render 'search-chip', chip_label: link.title, chip_url: link.url, chip_variant: 'concern' %}
+{% enddoc %}
+
+{%- if chip_label != blank -%}
+  {%- if chip_variant == 'concern' -%}
+    {%- assign chip_variant_class = 'basis-[calc(50%-5px)] lg:flex-1 lg:basis-0 lg:rounded-[20px]' -%}
+  {%- else -%}
+    {%- assign chip_variant_class = 'lg:rounded-[30px]' -%}
+  {%- endif -%}
+
+  <a
+    href="{{ chip_url }}"
+    class="inline-flex h-[42px] max-w-full items-center justify-center rounded-[26px] border border-[#d4d4d4] px-2.5 font-secondary text-[14px] font-medium leading-5 tracking-normal text-foreground transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary lg:text-[16px] lg:leading-6 [@media(hover:hover)]:hover:border-primary {{ chip_variant_class }}"
+    {% if chip_query != blank %}
+      data-query="{{ chip_query | escape }}"
+    {% endif %}
+  >
+    <span class="min-w-0 truncate">{{ chip_label | escape }}</span>
+  </a>
+{%- endif -%}

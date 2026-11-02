@@ -1,0 +1,284 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "offer_bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement_1": {
+          "type": "announcement",
+          "settings": {
+            "announce_text": "<p>We'll usually respond within 24 hours.</p>",
+            "announce_link": ""
+          }
+        }
+      },
+      "block_order": [
+        "announcement_1"
+      ],
+      "settings": {
+        "announce_layout": "static",
+        "announce_size": "compact",
+        "announce_background": "#466e2e",
+        "announce_text_color": "#ffffff",
+        "announce_speed": 4,
+        "announce_top_mobile": 0,
+        "announce_bottom_mobile": 0,
+        "announce_top_desktop": 0,
+        "announce_bottom_desktop": 0
+      }
+    },
+    "main": {
+      "type": "page",
+      "settings": {
+        "page_crumb_label": "Contact Us",
+        "page_crumb_parent": "",
+        "page_crumb_parent_page": "",
+        "page_show_title": false,
+        "page_show_content": false,
+        "page_top_mobile": 0,
+        "page_bottom_mobile": 0,
+        "page_top_desktop": 0,
+        "page_bottom_desktop": 0
+      }
+    },
+    "help_title": {
+      "type": "about-container",
+      "settings": {
+        "container_title": "<p>How Can We Help Today?</p>",
+        "container_body": "",
+        "container_title_color": "foreground",
+        "container_title_align": "left",
+        "container_title_size_mob": "section",
+        "container_media_h_mob": 415,
+        "container_media_h_desk": 415,
+        "container_top_mobile": 24,
+        "container_bottom_mobile": 44,
+        "container_top_desktop": 20,
+        "container_bottom_desktop": 52
+      }
+    },
+    "contact_form": {
+      "type": "contact-form",
+      "settings": {
+        "form_heading": "<p>Your Voice Matters</p>",
+        "form_desk_image": "shopify://shop_images/amr-page-contact.jpg",
+        "form_name_label": "Full Name",
+        "form_name_ph": "e.g. John Doe",
+        "form_email_label": "Email Address",
+        "form_email_ph": "e.g. john@example.com",
+        "form_phone_label": "Phone Number",
+        "form_phone_ph": "e.g. +91 98765 43210",
+        "form_subject_label": "Subject",
+        "form_subject_ph": "Select a reason",
+        "form_subjects": "Product Support\nOrders\nReturns\nSubscription\nBusiness Enquiry\nFeedback\nCareers",
+        "form_msg_label": "Message",
+        "form_msg_ph": "How can we help you?",
+        "form_btn_label": "Send Message",
+        "form_ok_msg": "Message sent successfully!",
+        "form_err_msg": "Something went wrong. Please try again.",
+        "form_media_h_desk": 690,
+        "form_top_mobile": 0,
+        "form_bottom_mobile": 24,
+        "form_top_desktop": 0,
+        "form_bottom_desktop": 32
+      }
+    },
+    "contact_methods": {
+      "type": "contact-details",
+      "blocks": {
+        "method_phone": {
+          "type": "contact-method",
+          "settings": {
+            "contact_method_heading": "<p>Toll Free Number</p>",
+            "contact_method_icon": "shopify://shop_images/contact-icon-phone.svg",
+            "contact_method_value": "<p>+91 1-800-425-4545</p>"
+          }
+        },
+        "method_email": {
+          "type": "contact-method",
+          "settings": {
+            "contact_method_heading": "<p>Email</p>",
+            "contact_method_icon": "shopify://shop_images/contact-icon-email.svg",
+            "contact_method_value": "<p>support@amrutanjan.com</p>"
+          }
+        },
+        "method_address": {
+          "type": "contact-method",
+          "settings": {
+            "contact_method_heading": "<p>Address</p>",
+            "contact_method_icon": "shopify://shop_images/Frame.png",
+            "contact_method_value": "<p>No. 8, McNichols Road, Chennai 600031</p>"
+          }
+        },
+        "method_hours": {
+          "type": "contact-method",
+          "settings": {
+            "contact_method_heading": "<p>Hours</p>",
+            "contact_method_icon": "shopify://shop_images/clock.svg",
+            "contact_method_value": "<p>Mon - Sat, 9:00 AM - 6:00 PM</p>"
+          }
+        }
+      },
+      "block_order": [
+        "method_phone",
+        "method_email",
+        "method_address",
+        "method_hours"
+      ],
+      "settings": {
+        "contact_heading": "",
+        "contact_layout": "paired",
+        "contact_background": "#466e2e",
+        "contact_text_color": "#ffffff",
+        "contact_top_mobile": 0,
+        "contact_bottom_mobile": 0,
+        "contact_top_desktop": 0,
+        "contact_bottom_desktop": 0
+      }
+    },
+    "certified_logos": {
+      "type": "certified",
+      "blocks": {
+        "logo_fssai": {
+          "type": "certified-logo",
+          "settings": {
+            "logo_image": "shopify://shop_images/4c78c0f5a44ae4d9ac0cde962ea779d00c3cc3cf.png",
+            "logo_alt": "FSSAI"
+          }
+        },
+        "logo_ayush": {
+          "type": "certified-logo",
+          "settings": {
+            "logo_image": "shopify://shop_images/c22be16590d081377b09ea38fe888f4505c38c28.png",
+            "logo_alt": "Ministry of AYUSH"
+          }
+        },
+        "logo_gmp": {
+          "type": "certified-logo",
+          "settings": {
+            "logo_image": "shopify://shop_images/b8d0ee7c42637611cea5fd7c4522543f59c4c395.png",
+            "logo_alt": "GMP Good Manufacturing Practice"
+          }
+        },
+        "logo_cruelty_free": {
+          "type": "certified-logo",
+          "settings": {
+            "logo_image": "shopify://shop_images/36a5f5c0c4536653758ba5a66719a5e948747947.png",
+            "logo_alt": "Cruelty Free"
+          }
+        },
+        "logo_iso": {
+          "type": "certified-logo",
+          "settings": {
+            "logo_image": "shopify://shop_images/9a14f71de88546a8ce1aa61dea67ba415e4df4e9.png",
+            "logo_alt": "ISO 9001:2015"
+          }
+        }
+      },
+      "block_order": [
+        "logo_fssai",
+        "logo_ayush",
+        "logo_gmp",
+        "logo_cruelty_free",
+        "logo_iso"
+      ],
+      "settings": {
+        "certified_heading": "Certified, Tested & Trusted",
+        "certified_bg": "#facc151a",
+        "certified_style": "plain",
+        "certified_logo_h": 66,
+        "certified_top_mobile": 0,
+        "certified_bottom_mobile": 24,
+        "certified_top_desktop": 0,
+        "certified_bottom_desktop": 32
+      }
+    },
+    "why_trust": {
+      "type": "claims",
+      "blocks": {
+        "stat_years": {
+          "type": "claim-item",
+          "settings": {
+            "claim_value": "130+",
+            "claim_title": "<p>Years of trust</p>",
+            "claim_show_plus": false,
+            "claim_show_star": false
+          }
+        },
+        "stat_outlets": {
+          "type": "claim-item",
+          "settings": {
+            "claim_value": "1.2M+",
+            "claim_title": "<p>Retail outlets</p>",
+            "claim_show_plus": false,
+            "claim_show_star": false
+          }
+        },
+        "stat_revenue": {
+          "type": "claim-item",
+          "settings": {
+            "claim_value": "₹500 Cr+",
+            "claim_title": "<p>Revenue FY26</p>",
+            "claim_show_plus": false,
+            "claim_show_star": false
+          }
+        },
+        "stat_clinical": {
+          "type": "claim-item",
+          "settings": {
+            "claim_value": "Clinically",
+            "claim_title": "<p>Tested &amp; proven</p>",
+            "claim_show_plus": false,
+            "claim_show_star": false
+          }
+        }
+      },
+      "block_order": [
+        "stat_years",
+        "stat_outlets",
+        "stat_revenue",
+        "stat_clinical"
+      ],
+      "settings": {
+        "claims_heading": "<p>Why Trust Us</p>",
+        "claims_style": "stat",
+        "claims_mob_grid": true,
+        "claims_top_mobile": 0,
+        "claims_bottom_mobile": 24,
+        "claims_top_desktop": 0,
+        "claims_bottom_desktop": 32
+      }
+    },
+    "help_cta": {
+      "type": "help-cta",
+      "settings": {
+        "help_heading": "<p>Need Help Faster?</p>",
+        "help_body": "<p>Find answers to the most common questions about orders, products, subscriptions and more.</p>",
+        "help_cta_label": "Browse FAQs",
+        "help_cta_link": "shopify://pages/frequently-asked-questions",
+        "help_top_mobile": 0,
+        "help_bottom_mobile": 20,
+        "help_top_desktop": 0,
+        "help_bottom_desktop": 32
+      }
+    }
+  },
+  "order": [
+    "offer_bar",
+    "main",
+    "help_title",
+    "contact_form",
+    "contact_methods",
+    "certified_logos",
+    "why_trust",
+    "help_cta"
+  ]
+}

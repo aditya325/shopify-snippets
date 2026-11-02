@@ -1,0 +1,57 @@
+{% doc %}
+  CSS Variables
+
+  Loads Shopify font picker fonts and sets CSS custom properties
+  for colors and typography used throughout the theme.
+{% enddoc %}
+
+{%- liquid
+  assign font_primary = settings.type_primary_font
+  assign font_secondary = settings.type_secondary_font
+
+  assign font_primary_500 = font_primary | font_modify: 'weight', '500' | default: font_primary
+  assign font_primary_600 = font_primary | font_modify: 'weight', '600' | default: font_primary
+  assign font_primary_700 = font_primary | font_modify: 'weight', '700' | default: font_primary
+
+  assign font_secondary_400 = font_secondary | font_modify: 'weight', '400' | default: font_secondary
+  assign font_secondary_500 = font_secondary | font_modify: 'weight', '500' | default: font_secondary
+  assign font_secondary_600 = font_secondary | font_modify: 'weight', '600' | default: font_secondary
+  assign font_secondary_700 = font_secondary | font_modify: 'weight', '700' | default: font_secondary
+-%}
+
+{% style %}
+  {{ font_primary_500 | font_face: font_display: 'swap' }}
+  {{ font_primary_600 | font_face: font_display: 'swap' }}
+  {{ font_primary_700 | font_face: font_display: 'swap' }}
+  {{ font_secondary_400 | font_face: font_display: 'swap' }}
+  {{ font_secondary_500 | font_face: font_display: 'swap' }}
+  {{ font_secondary_600 | font_face: font_display: 'swap' }}
+  {{ font_secondary_700 | font_face: font_display: 'swap' }}
+
+  :root {
+    --font-primary--family: {{ settings.type_primary_font.family }}, {{ settings.type_primary_font.fallback_families }};
+    --font-secondary--family: {{ settings.type_secondary_font.family }}, {{ settings.type_secondary_font.fallback_families }};
+
+    /* Primary brand */
+    --color-primary: {{ settings.color_primary | color_extract: 'red' }} {{ settings.color_primary | color_extract: 'green' }} {{ settings.color_primary | color_extract: 'blue' }};
+    --color-accent: {{ settings.color_accent | color_extract: 'red' }} {{ settings.color_accent | color_extract: 'green' }} {{ settings.color_accent | color_extract: 'blue' }};
+    --color-brand-yellow: {{ settings.color_brand_yellow | color_extract: 'red' }} {{ settings.color_brand_yellow | color_extract: 'green' }} {{ settings.color_brand_yellow | color_extract: 'blue' }};
+    --color-green-secondary: {{ settings.color_green_secondary | color_extract: 'red' }} {{ settings.color_green_secondary | color_extract: 'green' }} {{ settings.color_green_secondary | color_extract: 'blue' }};
+    --color-green-dark: {{ settings.color_green_dark | color_extract: 'red' }} {{ settings.color_green_dark | color_extract: 'green' }} {{ settings.color_green_dark | color_extract: 'blue' }};
+
+    /* Neutrals */
+    --color-foreground: {{ settings.color_foreground | color_extract: 'red' }} {{ settings.color_foreground | color_extract: 'green' }} {{ settings.color_foreground | color_extract: 'blue' }};
+    --color-muted: {{ settings.color_muted | color_extract: 'red' }} {{ settings.color_muted | color_extract: 'green' }} {{ settings.color_muted | color_extract: 'blue' }};
+    --color-border: {{ settings.color_border | color_extract: 'red' }} {{ settings.color_border | color_extract: 'green' }} {{ settings.color_border | color_extract: 'blue' }};
+    --color-background: {{ settings.color_background | color_extract: 'red' }} {{ settings.color_background | color_extract: 'green' }} {{ settings.color_background | color_extract: 'blue' }};
+    --color-primary-foreground: {{ settings.color_primary_foreground | color_extract: 'red' }} {{ settings.color_primary_foreground | color_extract: 'green' }} {{ settings.color_primary_foreground | color_extract: 'blue' }};
+    --color-cream: {{ settings.color_cream | color_extract: 'red' }} {{ settings.color_cream | color_extract: 'green' }} {{ settings.color_cream | color_extract: 'blue' }};
+    --color-cream-alt: {{ settings.color_cream_alt | color_extract: 'red' }} {{ settings.color_cream_alt | color_extract: 'green' }} {{ settings.color_cream_alt | color_extract: 'blue' }};
+
+    /* Status */
+    --color-error: {{ settings.color_error | color_extract: 'red' }} {{ settings.color_error | color_extract: 'green' }} {{ settings.color_error | color_extract: 'blue' }};
+    --color-success: {{ settings.color_success | color_extract: 'red' }} {{ settings.color_success | color_extract: 'green' }} {{ settings.color_success | color_extract: 'blue' }};
+    --color-sale: {{ settings.color_sale | color_extract: 'red' }} {{ settings.color_sale | color_extract: 'green' }} {{ settings.color_sale | color_extract: 'blue' }};
+    --color-rating: {{ settings.color_rating | color_extract: 'red' }} {{ settings.color_rating | color_extract: 'green' }} {{ settings.color_rating | color_extract: 'blue' }};
+  }
+{% endstyle %}

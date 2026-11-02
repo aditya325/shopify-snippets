@@ -1,0 +1,86 @@
+{% doc %}
+  Section Header
+
+  Shared section heading for the eleven Phase 2 sections and both Phase 3 app
+  wrappers. Merchants mark the smile underline by italicising word(s) in the
+  richtext field. The marker is semantic, never a visual style — the marked word
+  renders upright, because Shopify's Space Grotesk ships no true italics. The arc
+  itself is drawn in assets/base.css on .has-smile-underline em::after through a
+  masked SVG, so no colour or geometry is emitted here.
+
+  @param {string} heading - Richtext heading. Blank renders nothing at all.
+  @param {string} [heading_level] - h1 or h2 (default: h2). An unrecognised value falls back to h2.
+  @param {string} [class_name] - Alignment, colour and font-size utilities for the placement
+
+  heading is rendered unescaped on purpose: richtext is markup Shopify has already
+  sanitised to its own tag allowlist, and the em marker is load-bearing. Escaping
+  it would print literal tags and lose every underline.
+
+  Shopify's <p> wrapper is passed through untouched. It fails the HTML content model
+  — a heading takes phrasing content, and <p> is flow content — but the parser does
+  not hoist it out, so the paragraphs stay inside the heading and every inherited
+  property still applies. Verified in Chrome: font-size, line-height, weight and
+  text-align all reach the <p>, and the universal margin reset in base.css leaves the
+  blocks stacked exactly one line-height apart with no gap.
+
+  That is what makes a merchant's Enter key work. Each paragraph becomes its own line
+  at the design's line-height, using a documented toolbar control. Stripping the
+  wrapper instead would weld two paragraphs into one run with no separator and no
+  space — "India,one habit" — and would leave a line break authorable only through
+  shift+Enter, which shopify.dev does not document for the theme editor.
+
+  Heading colour is set in base.css rather than as a utility here, so that a colour
+  class passed through class_name always wins on cascade order. Tailwind's ordering
+  within its utilities layer is not controllable from the class attribute.
+
+  For the same reason the default size is dropped rather than overridden: a class_name
+  carrying text-hero-heading, text-section-heading, text-strip-heading, text-offer-display
+  or text-subheading makes this snippet emit no size of its own, so exactly one font-size
+  utility reaches the element and no cascade race decides the winner. The match is a
+  substring, so lg: prefixes and -d desktop variants are covered. A size outside that
+  list is not detected and would race the default.
+
+  A section needing a non-default arc colour sets --underline-color to a complete
+  colour value on its own wrapper, not through this snippet:
+  style="--underline-color: #FFFFFF"
+
+  The tabbed-product-collection active tab draws the same arc with no marked word
+  through the .smile-underline class. That needs no heading and no call to this
+  snippet.
+
+  @example
+  {% render 'section-header', heading: section.settings.heading %}
+
+  {% render 'section-header',
+    heading: section.settings.heading,
+    heading_level: 'h1',
+    class_name: 'text-center text-white'
+  %}
+{% enddoc %}
+
+{%- liquid
+  assign heading_plain = heading | strip_html | strip
+
+  unless heading_level == 'h1'
+    assign heading_level = 'h2'
+  endunless
+
+  assign class_name = class_name | default: ''
+
+  assign header_size_class = 'text-section-heading lg:text-section-heading-d'
+  if class_name contains 'text-hero-heading' or class_name contains 'text-section-heading' or class_name contains 'text-strip-heading' or class_name contains 'text-offer-display' or class_name contains 'text-subheading'
+    assign header_size_class = ''
+  endif
+
+  assign header_class = 'has-smile-underline font-primary font-bold'
+  if header_size_class != blank
+    assign header_class = header_class | append: ' ' | append: header_size_class
+  endif
+  if class_name != blank
+    assign header_class = header_class | append: ' ' | append: class_name
+  endif
+-%}
+
+{%- if heading_plain != blank -%}
+  <{{ heading_level }} class="{{ header_class }}">{{ heading }}</{{ heading_level }}>
+{%- endif -%}

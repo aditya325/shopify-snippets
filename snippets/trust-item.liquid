@@ -1,0 +1,40 @@
+{% doc %}
+  @param {object} block - Trust Item block, supplying settings and shopify_attributes
+{% enddoc %}
+
+{%- liquid
+  assign item_icon = block.settings.item_icon
+  assign item_title = block.settings.item_title
+  assign item_title_plain = item_title | strip_html | strip
+
+  assign item_title_html = item_title | strip_newlines
+  assign item_title_html = item_title_html | replace: '</p> <p>', '</p><p>'
+  assign item_title_html = item_title_html | replace: '</p><p>', '<br />'
+  assign item_title_html = item_title_html | replace: '<p>', '' | replace: '</p>', ''
+  assign item_title_html = item_title_html | replace: '<br>', '<br />' | replace: '<br/>', '<br />'
+
+  assign item_title_break = '<span class="hidden lg:inline"> </span><br class="lg:hidden" />'
+  assign item_title_html = item_title_html | replace: '<br />', item_title_break
+-%}
+
+<div class="flex min-w-0 flex-1 flex-col items-center gap-2 lg:gap-3" {{ block.shopify_attributes }}>
+  {%- if item_icon != blank -%}
+    <img
+      class="size-[34px] shrink-0 object-contain lg:size-14"
+      src="{{ item_icon | image_url: width: 112 }}"
+      alt=""
+      width="56"
+      height="56"
+      loading="lazy"
+      aria-hidden="true"
+    >
+  {%- endif -%}
+
+  {%- if item_title_plain != blank -%}
+    <p
+      class="break-words text-center font-primary text-[12px]/[15px] font-medium tracking-normal text-foreground lg:text-[20px]/[30px]"
+    >
+      {{- item_title_html -}}
+    </p>
+  {%- endif -%}
+</div>

@@ -1,0 +1,126 @@
+{% doc %}
+  Newsletter Form
+
+  Shared email capture, renderable from any section. Wraps in a <newsletter-form>
+  Web Component that handles validation, the AJAX POST and the feedback toast, so
+  multiple instances on one page bind and submit independently.
+
+  Every dimension and colour comes from the caller through the class_name params,
+  matching the button.liquid contract.
+
+  ⚠️ HARD STORE DEPENDENCY — submitting by AJAX requires
+  Settings > Preferences > Spam protection > "Enable on contact and comment forms"
+  to be DISABLED. Enabled, Shopify returns 400 on every submit: its captcha binds to
+  form[action*='/contact'] and attaches a token on the native submit event, which a
+  custom element and fetch never trigger. No payload change can fix that. If the
+  setting is ever needed, rebuild around {% form 'customer' %} with native submission.
+
+  @param {string} [unique_id] - Suffix for the label/input id pair. Pass section.id.
+  @param {string} [label] - Visually hidden label text (default: newsletter.placeholder locale key)
+  @param {string} [placeholder] - Input placeholder (default: newsletter.placeholder locale key)
+  @param {string} [button_label] - Submit button text (default: newsletter.submit locale key)
+  @param {string} [action] - POST endpoint (default: /contact)
+  @param {string} [tag] - Value of the hidden contact[tags] input (default: newsletter)
+  @param {string} [class_name] - Classes for the <newsletter-form> root
+  @param {string} [form_class] - Classes for the input and button row
+  @param {string} [input_class] - Classes for the email input
+  @param {string} [button_variant] - Variant passed to button.liquid (default: primary)
+  @param {string} [button_class] - class_name passed to button.liquid
+  @param {string} [toast_class] - Classes for the feedback toast
+
+  Pass unique_id (section.id) for a visually-hidden <label for>. Omit it and the input falls back to aria-label —
+  collision-proof, because no id is invented. No id can be generated safely inside a snippet: a timestamp can repeat
+  within a request, and increment resets in every render scope.
+
+  Toast colours are global in base.css and identical at every call site: .newsletter-form__toast carries the base colour
+  and background, and .newsletter-form__toast--error overrides the text colour. The component toggles the modifier, so
+  do not set colours from a caller class — pass only geometry (position, spacing, radius, shadow) through toast_class.
+
+  @example
+  {% render 'newsletter-form',
+    unique_id: section.id,
+    form_class: 'flex gap-2',
+    input_class: 'flex-1 border border-white/30 bg-transparent px-4 py-3 text-sm',
+    button_class: 'h-[36px] rounded-[6px] px-[16px] text-[14px] leading-[20px] font-semibold'
+  %}
+{% enddoc %}
+
+{%- liquid
+  if unique_id != blank
+    assign newsletter_input_id = 'newsletter-email-' | append: unique_id
+  else
+    assign newsletter_input_id = blank
+  endif
+
+  if placeholder != blank
+    assign newsletter_placeholder = placeholder
+  else
+    assign newsletter_placeholder = 'newsletter.placeholder' | t
+  endif
+
+  if button_label != blank
+    assign newsletter_button_label = button_label
+  else
+    assign newsletter_button_label = 'newsletter.submit' | t
+  endif
+
+  assign newsletter_label = label | default: newsletter_placeholder
+  assign newsletter_action = action | default: '/contact'
+  assign newsletter_tag = tag | default: 'newsletter'
+  assign newsletter_button_variant = button_variant | default: 'primary'
+
+  assign newsletter_root_class = 'newsletter-form ' | append: class_name | strip
+  assign newsletter_toast_class = 'newsletter-form__toast ' | append: toast_class | strip
+  assign newsletter_button_class = 'newsletter-form__submit ' | append: button_class | strip
+
+  assign newsletter_row_class = 'newsletter-form__row ' | append: form_class | strip
+  assign newsletter_input_class = 'newsletter-form__input ' | append: input_class | strip
+-%}
+
+<newsletter-form
+  class="{{ newsletter_root_class }}"
+  data-newsletter-form
+  data-action="{{ newsletter_action | escape }}"
+>
+  <input type="hidden" name="form_type" value="customer">
+  <input type="hidden" name="utf8" value="✓">
+  <input type="hidden" name="contact[tags]" value="{{ newsletter_tag | escape }}">
+
+  <div class="{{ newsletter_row_class }}">
+    {%- if newsletter_input_id != blank -%}
+      <label class="sr-only" for="{{ newsletter_input_id }}">{{ newsletter_label | escape }}</label>
+    {%- endif -%}
+    <input
+      type="email"
+      {%- if newsletter_input_id != blank %}
+        id="{{ newsletter_input_id }}"
+      {%- else %}
+        aria-label="{{ newsletter_label | escape }}"
+      {%- endif %}
+      name="contact[email]"
+      placeholder="{{ newsletter_placeholder | escape }}"
+      autocomplete="email"
+      required
+      class="{{ newsletter_input_class }}"
+      data-newsletter-email
+    >
+    {% render 'button',
+      label: newsletter_button_label,
+      variant: newsletter_button_variant,
+      class_name: newsletter_button_class,
+      data_attributes: 'data-newsletter-submit'
+    %}
+  </div>
+
+  <div
+    class="{{ newsletter_toast_class }}"
+    data-newsletter-toast
+    aria-live="polite"
+    aria-atomic="true"
+  >
+    <span class="newsletter-form__toast-icon">
+      {%- render 'icon-checkmark', size: 16 -%}
+    </span>
+    <span data-newsletter-toast-message></span>
+  </div>
+</newsletter-form>

@@ -1,0 +1,27 @@
+{% doc %}
+  X Circle Icon
+
+  Close icon with an enclosing ring. Distinct from icon-close, which is a bare X and is used by nine
+  other call sites; the mobile drawer header is the only place the design asks for the ring.
+
+  @param {string} [class] - Additional CSS classes (optional)
+  @param {number} [size] - Icon size in pixels (default: 24)
+{% enddoc %}
+
+{%- assign icon_size = size | default: 24 -%}
+<svg
+  class="{{ class }}"
+  width="{{ icon_size }}"
+  height="{{ icon_size }}"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+>
+  <circle cx="12" cy="12" r="10"/>
+  <line x1="15" y1="9" x2="9" y2="15"/>
+  <line x1="9" y1="9" x2="15" y2="15"/>
+</svg>

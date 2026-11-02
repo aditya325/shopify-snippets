@@ -1,0 +1,27 @@
+{% doc %}
+  Sort Icon
+
+  Paired down/up arrows, as used by the search and collection sort controls.
+
+  @param {number} [size] - Square size in pixels (default: 20)
+  @param {string} [class] - Sizing and stroke-weight classes (optional)
+{% enddoc %}
+
+{%- assign icon_size = size | default: 20 -%}
+<svg
+  class="{{ class }}"
+  width="{{ icon_size }}"
+  height="{{ icon_size }}"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+>
+  <line x1="8" y1="4" x2="8" y2="20"/>
+  <polyline points="4 16 8 20 12 16"/>
+  <line x1="16" y1="20" x2="16" y2="4"/>
+  <polyline points="12 8 16 4 20 8"/>
+</svg>

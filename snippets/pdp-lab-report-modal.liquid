@@ -1,0 +1,102 @@
+{% doc %}
+  Lab Report Modal
+
+  Dialog holding the product's lab report, opened from the Description panel's trust report control
+  (544:25467 / 544:36286). Pages are rendered by assets/pdp-lab-report.js into a horizontal snap rail,
+  matching the drawn page-per-swipe layout; the browser's own PDF viewer is not used.
+
+  Scrim, close control and focus conventions follow snippets/search-modal.liquid.
+
+  @param {string} report_url - CDN URL of the PDF to display
+  @param {string} report_label - Control label, used as the dialog's accessible name
+  @param {string} report_key - Distinguishes the instances on one section, e.g. lab or ingredients
+  @param {string} section_id - Section id, scoping the element ids
+  @param {string} [fallback_label] - Label for the open-in-new-tab action, defaults to report_label
+{% enddoc %}
+
+{%- liquid
+  assign lab_scope = report_key | append: '-' | append: section_id
+  assign lab_modal_id = 'lab-report-' | append: lab_scope
+  assign lab_title_id = 'lab-report-title-' | append: lab_scope
+
+  # A cleared label must not leave an icon-only button, nor strip the focusable that follows the rail
+  assign lab_cta_label = fallback_label | default: report_label
+-%}
+
+<div
+  id="{{ lab_modal_id }}"
+  {%- comment -%} Must outrank .shopify-section-group-header-group's z-index: 100; main creates no stacking context {%- endcomment -%}
+  class="fixed inset-0 z-[110] hidden bg-black/20 font-secondary tracking-normal opacity-0 backdrop-blur-[6px] transition-opacity duration-[250ms] ease-out motion-reduce:transition-none"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="{{ lab_title_id }}"
+  aria-hidden="true"
+  data-lab-report-modal
+  data-lab-report-src="{{ report_url }}"
+  data-pdfjs-url="{{ 'pdfjs.js' | asset_url }}"
+  data-pdfjs-worker="{{ 'pdfjs-worker.js' | asset_url }}"
+>
+  <div class="flex h-full items-center justify-center">
+    <div
+      class="flex w-[calc(100vw-20px)] max-w-[370px] translate-y-4 flex-col items-end gap-1.5 opacity-0 transition-all duration-[250ms] ease-out motion-reduce:transition-none lg:w-[620px] lg:max-w-[620px]"
+      data-lab-report-panel
+    >
+      <button
+        class="flex size-[34px] shrink-0 items-center justify-center rounded-xl bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        type="button"
+        aria-label="{{ 'accessibility.close' | t }}"
+        data-lab-report-close
+      >
+        {%- render 'icon-close', size: 12, class: 'text-foreground [stroke-width:4]' -%}
+      </button>
+
+      <div class="flex h-[510px] max-h-[calc(100dvh-60px)] w-full min-h-0 flex-col gap-2.5 lg:h-[660px] lg:gap-5">
+        <h2 id="{{ lab_title_id }}" class="sr-only">{{ report_label | escape }}</h2>
+
+        <div class="relative min-h-0 flex-1">
+          <div
+            class="flex h-full snap-x snap-mandatory gap-2.5 overflow-x-auto overscroll-x-contain scrollbar-hide lg:gap-5"
+            tabindex="-1"
+            data-lab-report-rail
+          ></div>
+
+          <p
+            class="pointer-events-none absolute inset-0 flex items-center justify-center text-[14px]/[21px] text-white"
+            role="status"
+            data-lab-report-status
+            data-error-text="{{ 'products.lab_report_error' | t | escape }}"
+          >
+            {{- 'general.loading' | t -}}
+          </p>
+        </div>
+
+        <div class="mx-auto flex h-1.5 w-[300px] max-w-full shrink-0 lg:hidden" data-lab-report-track hidden>
+          <span
+            class="h-1.5 w-[var(--lab-thumb-w)] translate-x-[var(--lab-thumb-x)] rounded-full bg-[#525252]/60 transition-transform duration-150 motion-reduce:transition-none"
+            data-lab-report-thumb
+          ></span>
+        </div>
+
+        <div class="flex shrink-0 flex-col items-center gap-1.5 rounded-[20px] bg-background px-5 pb-5 pt-4">
+          {%- render 'button',
+            label: lab_cta_label,
+            link: report_url,
+            target: '_blank',
+            variant: 'secondary',
+            icon: 'file-text',
+            icon_position: 'leading',
+            icon_class: 'size-4',
+            class_name: 'h-10 w-full gap-2 rounded-[10px] text-[14px]/[21px] font-semibold tracking-[-0.16px]'
+          -%}
+
+        </div>
+      </div>
+
+      <template data-lab-report-page-template>
+        <div class="h-full shrink-0 snap-center overflow-hidden rounded-[20px] bg-background shadow-[0_4px_16px_rgba(0,0,0,0.078)]">
+          <canvas class="block h-full w-auto" data-lab-report-canvas></canvas>
+        </div>
+      </template>
+    </div>
+  </div>
+</div>

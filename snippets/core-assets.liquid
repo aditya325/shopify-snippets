@@ -1,0 +1,24 @@
+{% doc %}
+  Core Assets
+
+  Loads base CSS, Tailwind CSS, the product page CSS, and globally required JavaScript files.
+  Included in layout/theme.liquid <head>.
+{% enddoc %}
+
+{{ 'base.css' | asset_url | stylesheet_tag: preload: true }}
+{{ 'tailwind.css' | asset_url | stylesheet_tag: preload: true }}
+
+{%- if template.name == 'product' -%}
+  {{ 'product.css' | asset_url | stylesheet_tag: preload: true }}
+{%- endif -%}
+
+<script src="{{ 'pubsub.js' | asset_url }}" defer></script>
+<script src="{{ 'variant-selector.js' | asset_url }}" defer></script>
+<script src="{{ 'cart-api.js' | asset_url }}" defer></script>
+<script src="{{ 'cart-store.js' | asset_url }}" defer></script>
+<script src="{{ 'idiomorph.js' | asset_url }}" defer></script>
+<script src="{{ 'cart-drawer.js' | asset_url }}" defer></script>
+<script src="{{ 'product-form.js' | asset_url }}" defer></script>
+<script src="{{ 'embla-carousel.umd.js' | asset_url }}" defer></script>
+<script src="{{ 'embla-carousel-autoplay.umd.js' | asset_url }}" defer></script>
+<script src="{{ 'newsletter.js' | asset_url }}" defer></script>

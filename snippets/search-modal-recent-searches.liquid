@@ -1,0 +1,35 @@
+{% doc %}
+  Search Modal Recent Searches
+
+  Heading, clear control and the chip list. Chips are cloned from the template below by
+  search-recent-searches.js, never fetched: routing per-user data through a Section Rendering
+  URL returned a cached render of `/` that ignored the query string, so the chips disagreed
+  with localStorage for every visitor at once.
+
+  @example
+  {% render 'search-modal-recent-searches' %}
+{% enddoc %}
+
+<div
+  id="recent-searches-section"
+  data-recent-limit="{{ settings.recent_searches_limit }}"
+  data-search-url="{{ routes.search_url }}"
+  class="hidden flex flex-col gap-3"
+>
+  <div class="flex items-center justify-between gap-3">
+    {%- render 'search-group-heading', heading_icon: 'clock', heading_title: settings.search_recent_heading -%}
+    <button
+      type="button"
+      id="clear-recent-searches"
+      class="shrink-0 font-secondary text-[14px] leading-5 tracking-normal text-muted transition-colors hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+    >
+      {{ 'search.clear_history' | t }}
+    </button>
+  </div>
+
+  <div id="recent-searches-list" class="flex flex-wrap gap-2.5 lg:gap-5"></div>
+
+  <template id="recent-search-chip-template">
+    {%- render 'search-chip', chip_label: 'placeholder', chip_url: routes.search_url, chip_variant: 'recent' -%}
+  </template>
+</div>

@@ -1,0 +1,86 @@
+{%- liquid
+  assign hero_text_desktop = section.settings.hero_text_heading
+  assign hero_text_mobile = section.settings.hero_text_mobile_heading
+
+  assign hero_text_desktop_plain = hero_text_desktop | strip_html | strip
+  assign hero_text_mobile_plain = hero_text_mobile | strip_html | strip
+
+  if hero_text_desktop_plain == blank
+    assign hero_text_desktop = hero_text_mobile
+  endif
+
+  if hero_text_mobile_plain == blank
+    assign hero_text_mobile = hero_text_desktop
+  endif
+-%}
+
+{%- if hero_text_desktop_plain != blank or hero_text_mobile_plain != blank -%}
+  <div
+    class="hero-text [&_a]:text-primary"
+    style="margin-top: {{ section.settings.hero_text_top }}px; margin-bottom: {{ section.settings.hero_text_bottom }}px;"
+  >
+    <div class="lg:hidden">
+      {%- render 'section-header', heading: hero_text_mobile, class_name: 'text-center text-strip-heading-xs xs:text-strip-heading' -%}
+    </div>
+
+    <div class="hidden lg:block">
+      {%- render 'section-header', heading: hero_text_desktop, class_name: 'text-center text-strip-heading-d' -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Hero Text",
+  "class": "hero-text-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "hero_text_heading",
+      "label": "Heading",
+      "info": "Enter starts a new line. Link a word to colour it green. Italicise a word to draw the smile underline.",
+      "default": "<p>We’re building <a href=\"/collections/all\" title=\"Shop all\">130+</a> healthier India,</p><p>one habit at a time.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "hero_text_mobile_heading",
+      "label": "Mobile heading",
+      "info": "Enter starts a new line. Link a word to colour it green. Italicise a word to draw the smile underline.",
+      "default": "<p>We’re building <a href=\"/collections/all\" title=\"Shop all\">130+</a> healthier</p><p>India, one habit at a time.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "hero_text_top",
+      "label": "Space above",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "hero_text_bottom",
+      "label": "Space below",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Text"
+    }
+  ]
+}
+{% endschema %}

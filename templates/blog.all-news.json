@@ -1,0 +1,230 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "announcement_bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement_1": {
+          "type": "announcement",
+          "settings": {
+            "announce_text": "<p>4.5 ★ Avg Ratings</p>",
+            "announce_link": ""
+          }
+        },
+        "announcement_2": {
+          "type": "announcement",
+          "settings": {
+            "announce_text": "<p>Free Delivery Over ₹499</p>",
+            "announce_link": ""
+          }
+        }
+      },
+      "block_order": [
+        "announcement_1",
+        "announcement_2"
+      ],
+      "settings": {
+        "announce_layout": "static",
+        "announce_size": "compact",
+        "announce_background": "#466e2e",
+        "announce_text_color": "#ffffff",
+        "announce_speed": 4,
+        "announce_top_mobile": 0,
+        "announce_bottom_mobile": 0,
+        "announce_top_desktop": 0,
+        "announce_bottom_desktop": 0
+      }
+    },
+    "main": {
+      "type": "blog-header",
+      "settings": {
+        "bhead_heading": "All News",
+        "bhead_crumb_label": "News",
+        "bhead_top_mobile": 0,
+        "bhead_bottom_mobile": 0,
+        "bhead_top_desktop": 0,
+        "bhead_bottom_desktop": 0
+      }
+    },
+    "press_grid": {
+      "type": "press-grid",
+      "blocks": {
+        "lead": {
+          "type": "press-lead-card",
+          "settings": {
+            "card_image": "shopify://shop_images/press-wellness-flatlay.png",
+            "card_title": "How Amrutanjan is Reimagining Ayurvedic Wisdom for Gen Z Wellness",
+            "card_publisher": "Economic Times",
+            "card_date": "Oct 12, 2025",
+            "card_url": "https://www.incrementors.com/tools/dummy-content-generator/"
+          }
+        },
+        "item_1": {
+          "type": "press-card",
+          "settings": {
+            "card_image": "shopify://shop_images/press-sunlit-interior.png",
+            "card_title": "The Science of Better Sleep: A New Standard",
+            "card_publisher": "Health Shots",
+            "card_date": "Sep 28",
+            "card_url": "https://www.incrementors.com/tools/dummy-content-generator/"
+          }
+        },
+        "item_2": {
+          "type": "press-card",
+          "settings": {
+            "card_image": "shopify://shop_images/press-boardroom.png",
+            "card_title": "Building a 130-Year-Old Modern Startup",
+            "card_publisher": "Economic Times",
+            "card_date": "Sep 15",
+            "card_url": "https://www.incrementors.com/tools/dummy-content-generator/"
+          }
+        },
+        "item_3": {
+          "type": "press-card",
+          "settings": {
+            "card_image": "shopify://shop_images/press-sunlit-interior.png",
+            "card_title": "Sustainable Packaging: The New Frontier",
+            "card_publisher": "Times of India",
+            "card_date": "Aug 30",
+            "card_url": "https://www.incrementors.com/tools/dummy-content-generator/"
+          }
+        },
+        "item_4": {
+          "type": "press-card",
+          "settings": {
+            "card_image": "shopify://shop_images/press-boardroom.png",
+            "card_title": "Amrutanjan: A Case Study in Brand Loyalty",
+            "card_publisher": "Business Insider",
+            "card_date": "Aug 22",
+            "card_url": "https://www.incrementors.com/tools/dummy-content-generator/"
+          }
+        },
+        "item_5": {
+          "type": "press-card",
+          "settings": {
+            "card_image": "shopify://shop_images/press-boardroom.png",
+            "card_title": "Top 5 Rituals for Everyday Energy",
+            "card_publisher": "Femina",
+            "card_date": "Aug 05",
+            "card_url": "https://www.incrementors.com/tools/dummy-content-generator/"
+          }
+        }
+      },
+      "block_order": [
+        "lead",
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4",
+        "item_5"
+      ],
+      "settings": {
+        "press_cta_label": "",
+        "press_cta_blog": "",
+        "press_cta_url": "",
+        "press_mirrored": false,
+        "press_top_mobile": 20,
+        "press_bottom_mobile": 40,
+        "press_top_desktop": 20,
+        "press_bottom_desktop": 64
+      }
+    },
+    "press_grid_TBtU7d": {
+      "type": "press-grid",
+      "blocks": {
+        "press_lead_card_Jm83XR": {
+          "type": "press-lead-card",
+          "settings": {
+            "card_image": "shopify://shop_images/press-wellness-flatlay.png",
+            "card_title": "How Amrutanjan is Reimagining Ayurvedic Wisdom for Gen Z Wellness",
+            "card_publisher": "Economic Times",
+            "card_date": "Oct 12, 2025",
+            "card_url": "https://www.incrementors.com/tools/dummy-content-generator/"
+          }
+        },
+        "press_card_xEc76P": {
+          "type": "press-card",
+          "settings": {
+            "card_image": "shopify://shop_images/press-sunlit-interior.png",
+            "card_title": "The Science of Better Sleep: A New Standard",
+            "card_publisher": "Health Shots",
+            "card_date": "Sep 28",
+            "card_url": "https://www.incrementors.com/tools/dummy-content-generator/"
+          }
+        },
+        "press_card_K7T7MR": {
+          "type": "press-card",
+          "settings": {
+            "card_image": "shopify://shop_images/press-boardroom.png",
+            "card_title": "Building a 130-Year-Old Modern Startup",
+            "card_publisher": "Economic Times",
+            "card_date": "Sep 15",
+            "card_url": "https://www.incrementors.com/tools/dummy-content-generator/"
+          }
+        },
+        "press_card_kmVnRR": {
+          "type": "press-card",
+          "settings": {
+            "card_image": "shopify://shop_images/press-sunlit-interior.png",
+            "card_title": "Sustainable Packaging: The New Frontier",
+            "card_publisher": "Times of India",
+            "card_date": "Aug 30",
+            "card_url": "https://www.incrementors.com/tools/dummy-content-generator/"
+          }
+        },
+        "press_card_AWUnbT": {
+          "type": "press-card",
+          "settings": {
+            "card_image": "shopify://shop_images/press-boardroom.png",
+            "card_title": "Amrutanjan: A Case Study in Brand Loyalty",
+            "card_publisher": "Business Insider",
+            "card_date": "Aug 22",
+            "card_url": "https://www.incrementors.com/tools/dummy-content-generator/"
+          }
+        },
+        "press_card_tNG3hc": {
+          "type": "press-card",
+          "settings": {
+            "card_image": "shopify://shop_images/press-boardroom.png",
+            "card_title": "Top 5 Rituals for Everyday Energy",
+            "card_publisher": "Femina",
+            "card_date": "Aug 05",
+            "card_url": "https://www.incrementors.com/tools/dummy-content-generator/"
+          }
+        }
+      },
+      "block_order": [
+        "press_lead_card_Jm83XR",
+        "press_card_xEc76P",
+        "press_card_K7T7MR",
+        "press_card_kmVnRR",
+        "press_card_AWUnbT",
+        "press_card_tNG3hc"
+      ],
+      "settings": {
+        "press_cta_label": "",
+        "press_cta_blog": "",
+        "press_cta_url": "",
+        "press_mirrored": true,
+        "press_top_mobile": 20,
+        "press_bottom_mobile": 40,
+        "press_top_desktop": 20,
+        "press_bottom_desktop": 64
+      }
+    }
+  },
+  "order": [
+    "announcement_bar",
+    "main",
+    "press_grid",
+    "press_grid_TBtU7d"
+  ]
+}

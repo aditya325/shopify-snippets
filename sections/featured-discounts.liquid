@@ -1,0 +1,187 @@
+{%- if section.blocks.size > 0 -%}
+  <div
+    class="featured-discounts mt-[var(--discount-top-mobile)] mb-[var(--discount-bottom-mobile)] lg:mt-[var(--discount-top-desktop)] lg:mb-[var(--discount-bottom-desktop)]"
+    style="
+      --discount-top-mobile: {{ section.settings.discount_top_mobile }}px;
+      --discount-bottom-mobile: {{ section.settings.discount_bottom_mobile }}px;
+      --discount-top-desktop: {{ section.settings.discount_top_desktop }}px;
+      --discount-bottom-desktop: {{ section.settings.discount_bottom_desktop }}px;
+    "
+  >
+    <div class="page-width px-2 lg:px-5 2xl:px-15">
+      <div
+        class="featured-discounts__carousel overflow-hidden"
+        data-carousel-label="{{ 'general.featured_discounts' | t }}"
+      >
+        <div class="featured-discounts__container flex gap-2 lg:gap-5">
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+              {%- when 'discount-banner' -%}
+                {%- render 'discount-banner', block: block -%}
+            {%- endcase -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ 'featured-discounts.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Featured Discounts",
+  "class": "discounts-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "discount_top_mobile",
+      "label": "Space above (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "discount_bottom_mobile",
+      "label": "Space below (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "discount_top_desktop",
+      "label": "Space above (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "discount_bottom_desktop",
+      "label": "Space below (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "discount-banner",
+      "name": "Discount Banner",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Content"
+        },
+        {
+          "type": "image_picker",
+          "id": "discount_background",
+          "label": "Background image",
+          "info": "Takes priority over the background colour."
+        },
+        {
+          "type": "image_picker",
+          "id": "discount_leaf_image",
+          "label": "Leaf image",
+          "info": "Decorative artwork, clipped at the top-right corner."
+        },
+        {
+          "type": "text",
+          "id": "discount_category",
+          "label": "Category"
+        },
+        {
+          "type": "richtext",
+          "id": "discount_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "discount_tagline",
+          "label": "Tagline"
+        },
+        {
+          "type": "text",
+          "id": "discount_button_text",
+          "label": "Button text"
+        },
+        {
+          "type": "url",
+          "id": "discount_button_link",
+          "label": "Button link",
+          "info": "Makes the whole banner clickable."
+        },
+        {
+          "type": "header",
+          "content": "Style"
+        },
+        {
+          "type": "color_background",
+          "id": "discount_fill",
+          "label": "Background color"
+        },
+        {
+          "type": "color",
+          "id": "discount_button_color",
+          "label": "Button color",
+          "info": "Button label and chevron."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Discounts",
+      "blocks": [
+        {
+          "type": "discount-banner",
+          "settings": {
+            "discount_category": "congestion",
+            "discount_title": "<p>50% OFF</p>",
+            "discount_tagline": "Nourish your body, refresh your day.",
+            "discount_button_text": "Shop Now",
+            "discount_fill": "linear-gradient(#28BCC6 0%, #00949E 100%)",
+            "discount_button_color": "#00949E"
+          }
+        },
+        {
+          "type": "discount-banner",
+          "settings": {
+            "discount_category": "Wellness & Beverages",
+            "discount_title": "<p>15% OFF</p>",
+            "discount_tagline": "Nourish your body, refresh your day.",
+            "discount_button_text": "Shop Now",
+            "discount_fill": "linear-gradient(#FF972D 0%, #E6790F 100%)",
+            "discount_button_color": "#E6790F"
+          }
+        },
+        {
+          "type": "discount-banner",
+          "settings": {
+            "discount_category": "women's hygiene",
+            "discount_title": "<p>45% OFF</p>",
+            "discount_tagline": "Shop our curated care collection",
+            "discount_button_text": "Shop Now",
+            "discount_fill": "linear-gradient(#28BCF9 0%, #0094D1 100%)",
+            "discount_button_color": "#0094D1"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

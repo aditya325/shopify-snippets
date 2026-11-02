@@ -1,0 +1,64 @@
+{% doc %}
+  Contact Method Card
+
+  One contact route in the help band. The card interior is fixed by design — the section's
+  colour settings paint the band and its heading, never the card.
+
+  method_layout follows the section's contact_layout. In flat the snippet renders its own
+  card; in paired the section owns the card and this renders a bare row inside it, at the
+  larger type the paired design uses.
+
+  @param {object} block - contact-method block, supplying settings and shopify_attributes
+  @param {string} [method_layout] - flat or paired (default: flat)
+{% enddoc %}
+
+{%- liquid
+  assign method_heading = block.settings.contact_method_heading
+  assign method_value = block.settings.contact_method_value
+  assign method_icon = block.settings.contact_method_icon
+
+  assign method_heading_plain = method_heading | strip_html | strip
+  assign method_value_plain = method_value | strip_html | strip
+
+  assign method_layout = method_layout | default: 'flat'
+
+  if method_layout == 'paired'
+    assign method_wrap_class = 'contact-details__method flex min-w-0 gap-3 lg:gap-5'
+    assign method_icon_class = 'contact-details__icon-box flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/10 lg:h-12 lg:w-12 lg:rounded-[10px]'
+    assign method_icon_size_class = 'h-5 w-5 lg:h-6 lg:w-6'
+    assign method_text_class = 'contact-details__text flex min-w-0 flex-col gap-1 lg:gap-2'
+    assign method_label_class = 'contact-details__label break-words font-primary text-[14px]/[21px] font-medium uppercase tracking-[1px] text-primary lg:text-[20px]/[26px]'
+    assign method_value_class = 'contact-details__value break-words font-secondary text-[18px]/[25px] font-semibold tracking-normal text-foreground lg:text-[22px]/[32px]'
+  else
+    assign method_wrap_class = 'contact-details__card flex min-w-0 flex-1 flex-col gap-3 rounded-xl ring-1 ring-inset ring-brand-yellow/40 bg-white p-3 lg:flex-row lg:items-start lg:gap-4 lg:rounded-[20px] lg:p-[14px]'
+    assign method_icon_class = 'contact-details__icon-box flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/10 lg:h-[42px] lg:w-[42px] lg:rounded-lg'
+    assign method_icon_size_class = 'h-5 w-5'
+    assign method_text_class = 'contact-details__text flex flex-col gap-1 lg:gap-2'
+    assign method_label_class = 'contact-details__label break-words font-primary text-[10px]/[21px] font-medium uppercase tracking-[1px] text-primary lg:text-[20px]/[30px]'
+    assign method_value_class = 'contact-details__value break-words font-secondary text-[14px]/[1.4] font-medium lg:font-semibold tracking-normal text-foreground lg:text-[22px]/[33px]'
+  endif
+-%}
+
+{%- if method_heading_plain != blank or method_value_plain != blank or method_icon != blank -%}
+  <div class="{{ method_wrap_class }}" {{ block.shopify_attributes }}>
+    {%- if method_icon != blank -%}
+      <span class="{{ method_icon_class }}">
+        {%- render 'image', image: method_icon, alt: '', class_name: method_icon_size_class, decoding: 'async' -%}
+      </span>
+    {%- endif -%}
+
+    <div class="{{ method_text_class }}">
+      {%- if method_heading_plain != blank -%}
+        <div class="{{ method_label_class }}">
+          {{ method_heading }}
+        </div>
+      {%- endif -%}
+
+      {%- if method_value_plain != blank -%}
+        <div class="{{ method_value_class }}">
+          {{ method_value }}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}

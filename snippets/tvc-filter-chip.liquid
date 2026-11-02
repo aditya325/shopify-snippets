@@ -1,0 +1,44 @@
+{% doc %}
+  Tvc Filter Chip
+
+  One category chip above the TVC reel. Selected state is expressed entirely through aria-pressed and
+  Tailwind's aria-pressed: variant, so the filter script only ever flips an attribute — never a class.
+
+  Chip Filter and Tvc Category are selects over the same option list, so the two can never drift apart.
+  The "all" option is emitted as an empty attribute, which is what the filter logic reads as "no filter"
+  without special-casing the value.
+
+  The selected underline is an inset box-shadow, not a border, following the pattern base.css already
+  uses on .product-form__submit. A CSS border sits outside the box where Figma's stroke overlaps it, so
+  a bordered chip stands 39 against the design's 37 and pushes the whole gallery section 2px over.
+
+  @param {object} block - Tvc Filter Chip block (required)
+  @param {boolean} [chip_active] - Render the chip in its selected state (default: false)
+{% enddoc %}
+
+{%- liquid
+  assign block = block | default: blank
+
+  unless block != blank
+    break
+  endunless
+
+  assign chip_label = block.settings.chip_label
+  assign chip_filter = block.settings.chip_filter
+
+  if chip_filter == 'all'
+    assign chip_filter = ''
+  endif
+-%}
+
+{%- if chip_label != blank -%}
+  <button
+    type="button"
+    class="tvc-filter-chip shrink-0 rounded-md px-2.5 py-[5px] font-primary text-[14px]/[20px] font-medium text-primary aria-pressed:bg-primary/10 aria-pressed:shadow-[inset_0_-1px_0_0_rgb(var(--color-primary))] lg:px-3.5 lg:text-[18px]/[27px]"
+    data-tvc-filter="{{ chip_filter }}"
+    aria-pressed="{% if chip_active %}true{% else %}false{% endif %}"
+    {{ block.shopify_attributes }}
+  >
+    {{- chip_label | escape -}}
+  </button>
+{%- endif -%}

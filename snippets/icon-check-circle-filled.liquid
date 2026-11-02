@@ -1,0 +1,32 @@
+{% doc %}
+  Check Circle Filled Icon
+
+  Solid disc with a knocked-out check. Distinct from icon-check-circle, which is the outlined ring.
+
+  @param {string} [class] - Additional CSS classes (optional)
+  @param {number} [size] - Icon size in pixels (default: 16)
+  @param {string} [check_color] - Knockout colour for the check, for use on a dark ground
+    (default: rgb(var(--color-primary-foreground)))
+{% enddoc %}
+
+{%- liquid
+  assign icon_size = size | default: 16
+  assign icon_check_color = check_color | default: 'rgb(var(--color-primary-foreground))'
+-%}
+<svg
+  class="{{ class }}"
+  width="{{ icon_size }}"
+  height="{{ icon_size }}"
+  viewBox="0 0 16 16"
+  fill="none"
+  aria-hidden="true"
+>
+  <circle cx="8" cy="8" r="7" fill="currentColor"/>
+  <path
+    d="M4.6 8.2 6.9 10.5 11.4 6"
+    stroke="{{ icon_check_color }}"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

@@ -1,0 +1,161 @@
+{% doc %}
+  Product Form
+
+  PDP add-to-cart form: quantity stepper, Add to Cart and an optional Buy Now. AJAX add via the
+  product-form.js Web Component; falls back to a standard form POST without JS.
+
+  Buy Now is a cart permalink anchor, not a submit button, so it reaches checkout without JS.
+  product.js keeps its href in step with the variant and quantity.
+
+  The hidden selling_plan input stays empty — purchase_options is inert per D1.
+
+  Two layouts share this one markup tree so the buy box and the sticky bar cannot diverge; only the
+  geometry classes, the element ids and the observer hook branch on form_layout. The sticky layout
+  hides the stepper below lg rather than dropping it, because a display:none input still submits.
+
+  @param {object} product - Product object (required)
+  @param {boolean} [show_buy_now] - Renders the Buy Now anchor (default: false)
+  @param {string} [id_suffix] - Appended to the form and quantity ids so a second instance stays unique (default: '')
+  @param {string} [form_layout] - Geometry set to use: 'buy-box' or 'sticky' (default: 'buy-box')
+
+  @example
+  {% render 'product-form', product: product, show_buy_now: true %}
+  {% render 'product-form', product: product, form_layout: 'sticky', id_suffix: '-sticky' %}
+{% enddoc %}
+
+{%- liquid
+  assign product = product | default: blank
+
+  unless product != blank
+    break
+  endunless
+
+  assign selected_variant = product.selected_or_first_available_variant
+  assign current_variant_id = selected_variant.id
+  assign show_buy_now = show_buy_now | default: false
+  assign id_suffix = id_suffix | default: ''
+  assign form_layout = form_layout | default: 'buy-box'
+
+  assign stepper_cell_class = 'grid w-10 place-items-center transition-opacity disabled:opacity-30'
+
+  if form_layout == 'sticky'
+    assign host_class = 'product-form block shrink-0'
+    assign form_outer_class = ''
+    assign form_row_class = 'flex items-center gap-3'
+    assign stepper_class = 'hidden shrink-0 items-center justify-between border border-primary lg:flex lg:h-[50px] lg:w-40 lg:rounded-xl'
+    assign cta_class = 'flex h-[39px] items-center justify-center gap-1.5 rounded-md px-4 font-secondary text-[13px]/[17px] font-medium tracking-normal lg:h-[50px] lg:min-w-[319px] lg:gap-2.5 lg:rounded-xl lg:px-0 lg:text-[18px]/[28px] lg:font-semibold'
+    assign cta_submit_class = 'product-form__submit relative bg-primary text-white disabled:cursor-not-allowed disabled:opacity-50'
+    assign cta_icon_class = 'size-[14px] [stroke-width:1.3] [.is-loading_&]:invisible lg:size-5 lg:[stroke-width:1.67]'
+    assign error_class = 'absolute inset-x-4 bottom-full mb-2 text-sm text-error'
+  else
+    assign host_class = 'product-form block'
+    assign form_outer_class = 'flex flex-col gap-3'
+    assign form_row_class = 'flex items-start gap-3'
+    assign stepper_class = 'flex h-10 w-[120px] shrink-0 items-center justify-between rounded-[10px] border border-primary lg:h-[50px] lg:w-40 lg:rounded-xl'
+    assign cta_class = 'flex h-10 items-center justify-center gap-2.5 rounded-[10px] font-secondary text-[14px]/[21px] font-semibold tracking-[-0.16px] lg:h-[50px] lg:rounded-xl lg:text-[18px]/[28px] lg:tracking-normal'
+    assign cta_submit_class = 'product-form__submit relative grow bg-primary text-white disabled:cursor-not-allowed disabled:opacity-50'
+    assign cta_icon_class = 'size-4 [stroke-width:1.3] [.is-loading_&]:invisible lg:size-5 lg:[stroke-width:1.67]'
+    assign error_class = 'mt-2 text-sm text-error'
+  endif
+-%}
+
+<product-form
+  class="{{ host_class }}"
+  data-product-id="{{ product.id }}"
+  data-product-title="{{ product.title | escape }}"
+  data-product-url="{{ product.url }}"
+  data-product-featured-image="{% if product.featured_image %}{{ product.featured_image | image_url: width: 500 }}{% endif %}"
+  data-product-price="{{ selected_variant.price | money_without_trailing_zeros | replace: ' ', '' | strip_html | escape }}"
+  data-product-price-cents="{{ selected_variant.price }}"
+  {%- if selected_variant.compare_at_price > selected_variant.price %}
+    data-product-compare-price="{{ selected_variant.compare_at_price | money_without_trailing_zeros | replace: ' ', '' | strip_html | escape }}"
+    data-product-compare-price-cents="{{ selected_variant.compare_at_price }}"
+  {%- endif %}
+  data-product-badge="{{ product.metafields.custom.product_badge.value | escape }}"
+  data-product-category="{{ product.metafields.custom.category_label.value | escape }}"
+  data-product-category-color="{{ product.metafields.custom.highlight_color.value | escape }}"
+>
+  <form
+    id="product-form-{{ product.id }}{{ id_suffix }}"
+    action="{{ routes.cart_add_url }}"
+    method="post"
+    data-product-form
+  >
+    <input type="hidden" name="id" value="{{ current_variant_id }}">
+    <input type="hidden" name="selling_plan" value="" data-selling-plan-input>
+
+    <div class="{{ form_outer_class }}">
+      <div class="{{ form_row_class }}">
+        <div class="{{ stepper_class }}">
+          <button
+            type="button"
+            class="{{ stepper_cell_class }} h-full text-neutral-400"
+            data-quantity-minus
+            aria-label="{{ 'cart.decrease' | t: product: product.title }}"
+          >
+            {%- render 'icon-minus', class: 'size-[18px] [stroke-width:1.3]' -%}
+          </button>
+
+          <input
+            type="number"
+            id="quantity-{{ product.id }}{{ id_suffix }}"
+            name="quantity"
+            value="1"
+            min="1"
+            max="99"
+            readonly
+            class="h-full w-10 cursor-default bg-transparent text-center font-secondary text-[14px]/[21px] font-medium text-[#282828] [appearance:textfield] lg:text-[20px]/[21px] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            aria-label="{{ 'cart.quantity_input_label' | t: product: product.title }}"
+          >
+
+          <button
+            type="button"
+            class="{{ stepper_cell_class }} h-full text-black"
+            data-quantity-plus
+            aria-label="{{ 'cart.increase' | t: product: product.title }}"
+          >
+            {%- render 'icon-plus', class: 'size-[18px] [stroke-width:1.3]' -%}
+          </button>
+        </div>
+
+        <button
+          type="submit"
+          class="{{ cta_class }} {{ cta_submit_class }}"
+          {%- if form_layout != 'sticky' %}
+            data-primary-atc
+          {% endif -%}
+          {%- unless selected_variant.available %}
+            disabled
+          {% endunless -%}
+        >
+          {%- render 'icon-plus', class: cta_icon_class -%}
+
+          <span data-button-text>
+            {%- if selected_variant.available == false -%}
+              {{ 'products.sold_out' | t }}
+            {%- else -%}
+              {{ 'products.add_to_cart' | t }}
+            {%- endif -%}
+          </span>
+
+          <div class="absolute inset-0 hidden items-center justify-center" data-button-loader>
+            <div class="loader text-white"></div>
+          </div>
+        </button>
+      </div>
+
+      {%- if show_buy_now and selected_variant.available -%}
+        {%- comment -%} Cart permalink defaults to checkout; ?storefront=true would divert to the cart {%- endcomment -%}
+        <a
+          href="{{ routes.root_url }}cart/{{ current_variant_id }}:1"
+          class="{{ cta_class }} product-form__buy-now border border-primary text-primary"
+          data-buy-now
+        >
+          Buy Now
+        </a>
+      {%- endif -%}
+    </div>
+
+    <div data-form-error class="{{ error_class }}" hidden></div>
+  </form>
+</product-form>

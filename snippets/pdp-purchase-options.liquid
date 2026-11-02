@@ -1,0 +1,88 @@
+{% doc %}
+  PDP Purchase Options
+
+  One-time vs Subscribe & save. Selectable but inert per D1 — neither option writes a selling plan, a
+  cart attribute or a line-item property, so nothing here reaches the form. The subscribe tile
+  deliberately shows no percentage and no monthly price: the store cannot honour either.
+
+  The radio input is the dot, so checked: and has-[:checked]: style everything with no descendant
+  selectors and no JS.
+
+  @param {product} product - Product whose selected variant price is shown (required)
+{% enddoc %}
+
+{%- liquid
+  assign purchase_product = product | default: blank
+
+  unless purchase_product != blank
+    break
+  endunless
+
+  assign purchase_variant = purchase_product.selected_or_first_available_variant
+  assign purchase_tile_class = 'pdp-purchase__tile flex grow basis-0 cursor-pointer items-start gap-3 rounded-xl bg-white p-2.5 text-foreground ring-[0.5px] ring-inset ring-[#e0dbd2] transition-colors has-[:checked]:bg-gradient-to-br has-[:checked]:from-[#84cc16] has-[:checked]:to-[#365314] has-[:checked]:text-white has-[:checked]:shadow-[0_0_33px_rgba(0,0,0,0.15)] has-[:checked]:ring-black/10 lg:px-3'
+  assign purchase_dot_class = 'pdp-purchase__dot size-4 shrink-0 appearance-none rounded-full border border-[#e0dbd2] bg-white checked:border-0 checked:bg-[#365314] checked:ring-4 checked:ring-inset checked:ring-white'
+-%}
+
+<div class="pdp-purchase flex flex-col gap-1.5 lg:gap-2">
+  <span class="font-secondary text-[14px]/[18px] font-medium text-foreground lg:text-[18px]/[28px]"
+    >Purchase option</span
+  >
+
+  <div class="flex flex-col gap-2.5 lg:flex-row lg:items-stretch lg:gap-5" role="radiogroup" aria-label="Purchase option">
+    <label class="{{ purchase_tile_class }}">
+      <input
+        type="radio"
+        name="pdp_purchase_option"
+        value="one_time"
+        class="{{ purchase_dot_class }}"
+        checked
+        data-purchase-option
+      >
+
+      <span class="flex flex-col gap-1">
+        <span class="font-secondary text-[14px]/[21px] font-semibold tracking-[-0.16px]">One-time purchase</span>
+        <span class="font-secondary text-[14px]/[21px] tracking-[-0.16px] lg:text-[14px]/[18px] lg:tracking-normal">
+          {{- purchase_variant.price | money_without_trailing_zeros | replace: ' ', '' -}}
+        </span>
+      </span>
+    </label>
+
+    <label class="{{ purchase_tile_class }}">
+      <input
+        type="radio"
+        name="pdp_purchase_option"
+        value="subscribe"
+        class="{{ purchase_dot_class }}"
+        data-purchase-option
+        data-purchase-inert
+      >
+
+      {%- comment -%} The badge rides the title row so the line below it spans the full card and stays one line {%- endcomment -%}
+      <span class="flex grow flex-col gap-1">
+        <span class="flex items-center justify-between gap-2">
+          <span class="font-secondary text-[14px]/[21px] font-semibold tracking-[-0.16px]">Subscribe &amp; save</span>
+
+          <span
+            class="shrink-0 rounded-[20px] bg-primary px-[7px] py-0.5 font-secondary text-[9px]/[12px] font-medium text-white"
+          >
+            Best value
+          </span>
+        </span>
+
+        <span class="font-secondary text-[14px]/[21px] tracking-[-0.16px] opacity-70"
+          >Subscriptions launching soon</span
+        >
+      </span>
+    </label>
+  </div>
+
+  <p
+    class="font-secondary text-[12px]/[16px] text-[#757575]"
+    role="status"
+    aria-live="polite"
+    hidden
+    data-purchase-notice
+  >
+    Subscriptions launching soon — this order will be one-time.
+  </p>
+</div>

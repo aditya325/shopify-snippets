@@ -1,0 +1,45 @@
+{% doc %}
+  Gallery Tile
+
+  One image tile in the Manufacturing Gallery. The scrim is a separate layer between the image and
+  the caption — starting transparent at 40% of the tile height and deepening to 80% black — so the
+  caption stays legible over a light photograph without dimming the whole image.
+
+  @param {object} block - Gallery Tile block, supplying settings and shopify_attributes
+{% enddoc %}
+
+{%- liquid
+  assign tile_image = block.settings.tile_image
+  assign tile_caption = block.settings.tile_caption
+-%}
+
+{%- if tile_image != blank or tile_caption != blank -%}
+  <div
+    class="manufacturing-gallery__tile relative isolate flex h-[119px] items-end overflow-hidden rounded-[15px] p-2.5 lg:h-[300px] lg:rounded-[20px] lg:p-3"
+    {{ block.shopify_attributes }}
+  >
+    <div class="manufacturing-gallery__media absolute inset-0 -z-10">
+      {%- if tile_image != blank -%}
+        {%- render 'image',
+          image: tile_image,
+          alt: '',
+          class_name: 'h-full w-full object-cover',
+          decoding: 'async',
+          responsive_widths: '390:380,1024:900'
+        -%}
+      {%- else -%}
+        {{ 'image' | placeholder_svg_tag: 'h-full w-full object-cover' }}
+      {%- endif -%}
+    </div>
+
+    <div
+      class="manufacturing-gallery__scrim absolute inset-0 -z-10 bg-gradient-to-b from-transparent from-40% to-black/80"
+    ></div>
+
+    {%- if tile_caption != blank -%}
+      <p class="manufacturing-gallery__caption min-w-0 font-secondary text-[12px] font-medium leading-normal tracking-normal text-primary-foreground lg:text-[16px]/[24px]">
+        {{- tile_caption | escape -}}
+      </p>
+    {%- endif -%}
+  </div>
+{%- endif -%}

@@ -1,0 +1,217 @@
+{%- liquid
+  # A cleared color setting returns blank, and background-color: ; is invalid
+  assign announce_background = section.settings.announce_background
+  if announce_background == blank
+    assign announce_background = '#466E2E'
+  endif
+
+  assign announce_text_color = section.settings.announce_text_color
+  if announce_text_color == blank
+    assign announce_text_color = '#FFFFFF'
+  endif
+
+  assign announce_delay = section.settings.announce_speed | times: 1000
+
+  assign announce_layout = section.settings.announce_layout | default: 'carousel'
+  assign announce_size = section.settings.announce_size | default: 'default'
+
+  assign announce_slide_count = 0
+  for block in section.blocks
+    assign announce_block_text = block.settings.announce_text | strip_html | strip
+    if announce_block_text != blank
+      assign announce_slide_count = announce_slide_count | plus: 1
+    endif
+  endfor
+
+  assign announce_viewport_class = 'announcement-bar__viewport h-full overflow-hidden'
+  if announce_slide_count > 1
+    assign announce_viewport_class = announce_viewport_class | append: ' announcement-bar__carousel'
+  endif
+
+  assign announce_height_class = 'h-[30px] lg:h-[50px]'
+  if announce_size == 'compact'
+    assign announce_height_class = 'h-[20px] lg:h-[28px]'
+  endif
+-%}
+
+{%- if announce_slide_count > 0 -%}
+  <div
+    class="announcement-bar {{ announce_height_class }} px-2.5 mt-[var(--announce-top-mobile)] mb-[var(--announce-bottom-mobile)] lg:px-18 lg:mt-[var(--announce-top-desktop)] lg:mb-[var(--announce-bottom-desktop)]"
+    style="
+      --announce-top-mobile: {{ section.settings.announce_top_mobile }}px;
+      --announce-bottom-mobile: {{ section.settings.announce_bottom_mobile }}px;
+      --announce-top-desktop: {{ section.settings.announce_top_desktop }}px;
+      --announce-bottom-desktop: {{ section.settings.announce_bottom_desktop }}px;
+      background-color: {{ announce_background | escape }};
+      color: {{ announce_text_color | escape }};
+    "
+  >
+    {%- if announce_layout == 'static' -%}
+      <div class="announcement-bar__static flex h-full items-center justify-center gap-2.5">
+        {%- assign announce_shown_count = 0 -%}
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'announcement' -%}
+              {%- assign announce_block_text = block.settings.announce_text | strip_html | strip -%}
+              {%- if announce_block_text != blank -%}
+                {%- if announce_shown_count > 0 -%}
+                  <span class="announcement-bar__dot size-[3px] shrink-0 rounded-full bg-current" aria-hidden="true"></span>
+                {%- endif -%}
+                {%- render 'announcement', block: block, size: announce_size, static_layout: true -%}
+                {%- assign announce_shown_count = announce_shown_count | plus: 1 -%}
+              {%- endif -%}
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <div class="{{ announce_viewport_class }}" data-autoplay-delay="{{ announce_delay }}">
+        <div class="announcement-bar__container flex h-full">
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+              {%- when 'announcement' -%}
+                {%- render 'announcement', block: block, size: announce_size -%}
+            {%- endcase -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- if announce_layout == 'carousel' -%}
+    <script src="{{ 'announcement-bar.js' | asset_url }}" defer></script>
+  {%- endif -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Announcement Bar",
+  "class": "announcement-bar-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "announce_layout",
+      "label": "Layout",
+      "options": [
+        { "value": "carousel", "label": "Carousel" },
+        { "value": "static", "label": "Static" }
+      ],
+      "default": "carousel"
+    },
+    {
+      "type": "select",
+      "id": "announce_size",
+      "label": "Size",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "compact", "label": "Compact" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "color",
+      "id": "announce_background",
+      "label": "Background color",
+      "default": "#466E2E"
+    },
+    {
+      "type": "color",
+      "id": "announce_text_color",
+      "label": "Text color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "announce_speed",
+      "label": "Seconds per slide",
+      "info": "Pause between slides.",
+      "min": 2,
+      "max": 15,
+      "step": 1,
+      "unit": "s",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "announce_top_mobile",
+      "label": "Space above (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "announce_bottom_mobile",
+      "label": "Space below (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "announce_top_desktop",
+      "label": "Space above (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "announce_bottom_desktop",
+      "label": "Space below (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "Announcement",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "announce_text",
+          "label": "Text"
+        },
+        {
+          "type": "url",
+          "id": "announce_link",
+          "label": "Link",
+          "info": "Takes precedence over any link added inside the text."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement Bar",
+      "blocks": [
+        {
+          "type": "announcement",
+          "settings": {
+            "announce_text": "<p>Get extra ₹250 off on your first order</p>"
+          }
+        },
+        {
+          "type": "announcement",
+          "settings": {
+            "announce_text": "<p>Free delivery on orders above ₹499</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

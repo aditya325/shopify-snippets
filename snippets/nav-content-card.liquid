@@ -1,0 +1,54 @@
+{% doc %}
+  One content card inside the About pane — image, title and a description clamped to four lines.
+
+  @param {object} [card_image] - Image for the card media. Omitted when blank
+  @param {string} [card_title] - Card title, also used as the image alt text
+  @param {object} [card_desc] - rich_text_field field, rendered with metafield_tag
+  @param {string} [card_link] - Makes the title a link to this URL
+{% enddoc %}
+
+{%- liquid
+  assign card_has_content = false
+  if card_image != blank or card_title != blank or card_desc != blank
+    assign card_has_content = true
+  endif
+
+  assign card_title_class = 'nav-content-card__title text-[14px]/[21px] font-semibold tracking-[-0.16px] text-primary lg:text-label-lg'
+-%}
+
+{%- if card_has_content -%}
+  <div class="nav-content-card relative flex w-full flex-col overflow-hidden rounded-[15px] bg-[#faf9f6] before:pointer-events-none before:absolute before:inset-0 before:z-10 before:rounded-[15px] before:border before:border-[#1e5631] lg:before:rounded-[20px] lg:rounded-[20px]">
+    {%- if card_image != blank -%}
+      <div class="nav-content-card__media relative aspect-[320/140] w-full shrink-0 overflow-hidden lg:aspect-[332/198]">
+        {% render 'image',
+          image: card_image,
+          alt: card_title,
+          class_name: 'absolute inset-0 block h-full w-full object-cover',
+          lazy: true,
+          decoding: 'async',
+          base_width: 700,
+          mobile_width: 640,
+          breakpoint: 1024
+        %}
+      </div>
+    {%- endif -%}
+
+    <div class="nav-content-card__body flex flex-col gap-1 p-3.5 lg:gap-2 lg:p-4">
+      {%- if card_title != blank -%}
+        {%- if card_link != blank -%}
+          <a class="{{ card_title_class }} after:absolute after:inset-0" href="{{ card_link }}">
+            {{- card_title | escape -}}
+          </a>
+        {%- else -%}
+          <p class="{{ card_title_class }}">{{ card_title | escape }}</p>
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- if card_desc != blank -%}
+        <div class="nav-content-card__desc line-clamp-4 text-label-sm text-[#666] [&>div]:contents [&_p]:contents lg:text-[14px]/[21px] lg:tracking-[-0.16px]">
+          {{ card_desc | metafield_tag }}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}

@@ -1,0 +1,162 @@
+{
+  "sections": {
+    "announcement_bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement_1": {
+          "type": "announcement",
+          "settings": {
+            "announce_text": "<p>4.5 ★ Avg Ratings</p>",
+            "announce_link": ""
+          }
+        },
+        "announcement_2": {
+          "type": "announcement",
+          "settings": {
+            "announce_text": "<p>Free Delivery Over ₹499</p>",
+            "announce_link": ""
+          }
+        }
+      },
+      "block_order": ["announcement_1", "announcement_2"],
+      "settings": {
+        "announce_layout": "static",
+        "announce_size": "compact",
+        "announce_background": "#466e2e",
+        "announce_text_color": "#ffffff",
+        "announce_speed": 4,
+        "announce_top_mobile": 0,
+        "announce_bottom_mobile": 0,
+        "announce_top_desktop": 0,
+        "announce_bottom_desktop": 0
+      }
+    },
+    "main": {
+      "type": "collection",
+      "settings": {
+        "products_per_page": 16,
+        "columns_desktop": 3,
+        "columns_mobile": 2,
+        "show_concern_bar": true
+      }
+    },
+    "shop_by_category": {
+      "type": "shop-by-category",
+      "blocks": {
+        "category_pain_relief": {
+          "type": "category-card",
+          "settings": {
+            "card_image": "shopify://shop_images/shop-by-category-pain-relief.png",
+            "card_title": "pain relief",
+            "card_background": "#e0a900",
+            "card_text_color": "#ffffff",
+            "card_link": "/collections/all"
+          }
+        },
+        "category_hygiene": {
+          "type": "category-card",
+          "settings": {
+            "card_image": "shopify://shop_images/shop-by-category-womens-hygiene.png",
+            "card_title": "women's hygine",
+            "card_background": "#0094d1",
+            "card_text_color": "#ffffff",
+            "card_link": "/collections/all"
+          }
+        },
+        "category_congestion": {
+          "type": "category-card",
+          "settings": {
+            "card_image": "shopify://shop_images/shop-by-category-congestion.png",
+            "card_title": "congestion",
+            "card_background": "#00949e",
+            "card_text_color": "#ffffff",
+            "card_link": "/collections/all"
+          }
+        },
+        "category_rehydration": {
+          "type": "category-card",
+          "settings": {
+            "card_image": "shopify://shop_images/shop-by-category-rehydration.png",
+            "card_title": "rehydration",
+            "card_background": "#e6790f",
+            "card_text_color": "#ffffff",
+            "card_link": "/collections/all"
+          }
+        },
+        "category_grooming": {
+          "type": "category-card",
+          "settings": {
+            "card_image": "shopify://shop_images/shop-by-category-grooming.png",
+            "card_title": "grooming",
+            "card_background": "#538a05",
+            "card_text_color": "#ffffff",
+            "card_link": "/collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "category_pain_relief",
+        "category_hygiene",
+        "category_congestion",
+        "category_rehydration",
+        "category_grooming"
+      ],
+      "settings": {
+        "category_heading": "<p>Shop Other Categories</p>",
+        "category_top_mobile": 24,
+        "category_bottom_mobile": 24,
+        "category_top_desktop": 32,
+        "category_bottom_desktop": 32
+      }
+    },
+    "subscribe_letter": {
+      "type": "subscribe-letter",
+      "blocks": {
+        "usp_delivery": {
+          "type": "usp-item",
+          "settings": {
+            "usp_icon": "shopify://shop_images/free-delivery.svg",
+            "usp_title": "<p>Free Delivery</p>",
+            "usp_description": "On every order"
+          }
+        },
+        "usp_save": {
+          "type": "usp-item",
+          "settings": {
+            "usp_icon": "shopify://shop_images/coupon-save.svg",
+            "usp_title": "<p>Save Extra 15%</p>",
+            "usp_description": "Lorem Ipsum dummy"
+          }
+        },
+        "usp_returns": {
+          "type": "usp-item",
+          "settings": {
+            "usp_icon": "shopify://shop_images/7-day-return.svg",
+            "usp_title": "<p>7-Day Returns</p>",
+            "usp_description": "Easy & hassle-free"
+          }
+        },
+        "usp_cancel": {
+          "type": "usp-item",
+          "settings": {
+            "usp_icon": "shopify://shop_images/cancel.svg",
+            "usp_title": "<p>Cancel Anytime</p>",
+            "usp_description": "Easy & hassle-free"
+          }
+        }
+      },
+      "block_order": ["usp_delivery", "usp_save", "usp_returns", "usp_cancel"],
+      "settings": {
+        "subscribe_title": "<p>Subscribe & Save 15%</p>",
+        "subscribe_logo": "shopify://shop_images/amrutanjan-subscribe-save-logo.png",
+        "subscribe_subline": "On your monthly essentials",
+        "subscribe_gradient": "radial-gradient(137% 630% at -25% 40%, #F4C430 0%, #72832F 42%, #466E2E 77%)",
+        "subscribe_top_mobile": 0,
+        "subscribe_bottom_mobile": 24,
+        "subscribe_top_desktop": 0,
+        "subscribe_bottom_desktop": 32
+      }
+    }
+  },
+  "order": ["announcement_bar", "main", "shop_by_category", "subscribe_letter"]
+}

@@ -1,0 +1,161 @@
+{%- liquid
+  assign media_count = 0
+  for block in section.blocks
+    case block.type
+      when 'media-banner'
+        assign media_count = media_count | plus: 1
+    endcase
+  endfor
+
+  assign media_desk_static = true
+  assign media_width_class = 'lg:flex-1'
+  if media_count > 3
+    assign media_desk_static = false
+    assign media_width_class = 'lg:basis-[calc(100%/3.2)]'
+  endif
+-%}
+
+{%- if media_count > 0 -%}
+  <div
+    class="media-carousel mt-[var(--carousel-top-mobile)] mb-[var(--carousel-bottom-mobile)] lg:mt-[var(--carousel-top-desktop)] lg:mb-[var(--carousel-bottom-desktop)]"
+    style="
+      --carousel-top-mobile: {{ section.settings.carousel_top_mobile }}px;
+      --carousel-bottom-mobile: {{ section.settings.carousel_bottom_mobile }}px;
+      --carousel-top-desktop: {{ section.settings.carousel_top_desktop }}px;
+      --carousel-bottom-desktop: {{ section.settings.carousel_bottom_desktop }}px;
+    "
+  >
+    <div class="page-width px-2.5 lg:px-15">
+      <div
+        class="media-carousel__viewport media-carousel__carousel relative overflow-hidden"
+        data-desktop-static="{{ media_desk_static }}"
+      >
+        <div class="media-carousel__container flex gap-2.5 lg:gap-5">
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+              {%- when 'media-banner' -%}
+                {%- render 'media-banner', block: block, width_class: media_width_class -%}
+            {%- endcase -%}
+          {%- endfor -%}
+        </div>
+
+        {%- if media_count > 1 -%}
+          <div class="media-carousel__dots absolute bottom-[10.5px] left-1/2 z-10 flex -translate-x-1/2 items-center gap-1 lg:hidden">
+            {%- for block in section.blocks -%}
+              {%- case block.type -%}
+                {%- when 'media-banner' -%}
+                  <button
+                    type="button"
+                    class="media-carousel__dot h-1.5 w-1.5 rounded-full bg-black/30 transition-all aria-[current=true]:w-5 aria-[current=true]:border-[0.5px] aria-[current=true]:border-black aria-[current=true]:bg-white"
+                    data-media-dot
+                    aria-label="{{ 'general.slide' | t: number: forloop.index, total: media_count }}"
+                  ></button>
+              {%- endcase -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ 'media-carousel.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Media Carousel",
+  "class": "media-carousel-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "carousel_top_mobile",
+      "label": "Space above (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "carousel_bottom_mobile",
+      "label": "Space below (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "carousel_top_desktop",
+      "label": "Space above (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "carousel_bottom_desktop",
+      "label": "Space below (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "media-banner",
+      "name": "Media Banner",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "banner_desktop_image",
+          "label": "Desktop image"
+        },
+        {
+          "type": "image_picker",
+          "id": "banner_mobile_image",
+          "label": "Mobile image"
+        },
+        {
+          "type": "video",
+          "id": "banner_video",
+          "label": "Video",
+          "info": "Takes priority over the images."
+        },
+        {
+          "type": "url",
+          "id": "banner_link",
+          "label": "Link",
+          "info": "Makes the whole banner clickable."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Media Carousel",
+      "blocks": [
+        {
+          "type": "media-banner"
+        },
+        {
+          "type": "media-banner"
+        },
+        {
+          "type": "media-banner"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

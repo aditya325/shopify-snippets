@@ -1,0 +1,33 @@
+{% doc %}
+  Milestone Reached Icon
+
+  Double concentric ring with a tick, shown on a milestone badge that has been reached. Exported from
+  Figma `598:29616`; this is the D2 asset the TDD recorded as missing.
+
+  The viewBox is 27.2 because the 1.2 stroke overhangs the 26 frame by 0.6 each side. Rendering at
+  `size` with that viewBox keeps the outer ring flush to the box, scaling the stroke by ~2%.
+
+  @param {string} [class] - Additional CSS classes (optional)
+  @param {number} [size] - Icon size in pixels (default: 26)
+
+  @example
+  {% render 'icon-milestone-reached', size: 26, class: 'text-white' %}
+{% enddoc %}
+
+{%- assign icon_size = size | default: 26 -%}
+<svg
+  class="{{ class }}"
+  width="{{ icon_size }}"
+  height="{{ icon_size }}"
+  viewBox="0 0 27.2 27.2"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+>
+  <path d="M13.6 23.6C19.1228 23.6 23.6 19.1228 23.6 13.6C23.6 8.07715 19.1228 3.6 13.6 3.6C8.07715 3.6 3.6 8.07715 3.6 13.6C3.6 19.1228 8.07715 23.6 13.6 23.6Z"/>
+  <path d="M13.6 26.6C20.7797 26.6 26.6 20.7797 26.6 13.6C26.6 6.4203 20.7797 0.6 13.6 0.6C6.4203 0.6 0.6 6.4203 0.6 13.6C0.6 20.7797 6.4203 26.6 13.6 26.6Z"/>
+  <path d="M10.6 13.6L12.6 15.6L16.6 11.6"/>
+</svg>

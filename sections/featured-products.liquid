@@ -1,0 +1,179 @@
+{%- liquid
+  assign bundles_heading = section.settings.bundles_heading
+  assign bundles_heading_plain = bundles_heading | strip_html | strip
+  assign bundles_label = bundles_heading_plain | default: 'Wellness bundles'
+
+  assign bundles_products = section.settings.bundles_collection.products
+  assign bundles_count = bundles_products.size
+
+  assign bundles_desktop_static = true
+  assign bundles_desk_cols = 'lg:auto-cols-[calc((100%-60px)/4)]'
+  assign bundles_dots_class = 'lg:hidden'
+  if bundles_count > 4
+    assign bundles_desktop_static = false
+    assign bundles_desk_cols = 'lg:auto-cols-[calc((100%-80px)/4.2)]'
+    assign bundles_dots_class = ''
+  endif
+
+  assign bundles_hide_price = true
+  if section.settings.bundles_show_price
+    assign bundles_hide_price = false
+  endif
+
+  assign bundles_bg = section.settings.bundles_background
+  if bundles_bg == blank
+    assign bundles_bg = '#466E2E33'
+  endif
+-%}
+
+{%- if bundles_count > 0 -%}
+  <div
+    class="featured-products mt-[var(--bundles-top-mobile)] mb-[var(--bundles-bottom-mobile)] lg:mt-[var(--bundles-top-desktop)] lg:mb-[var(--bundles-bottom-desktop)]"
+    style="
+      --bundles-top-mobile: {{ section.settings.bundles_top_mobile }}px;
+      --bundles-bottom-mobile: {{ section.settings.bundles_bottom_mobile }}px;
+      --bundles-top-desktop: {{ section.settings.bundles_top_desktop }}px;
+      --bundles-bottom-desktop: {{ section.settings.bundles_bottom_desktop }}px;
+    "
+  >
+    <div class="featured-products__band py-6 lg:py-8" style="background: {{ bundles_bg | escape }};">
+      <div class="page-width flex flex-col gap-5 lg:gap-6">
+        {%- if bundles_heading_plain != blank -%}
+          {%- render 'section-header',
+            heading: bundles_heading,
+            class_name: 'text-left text-section-heading lg:text-center lg:text-section-heading-d'
+          -%}
+        {%- endif -%}
+
+        <div class="flex flex-col gap-2.5" data-bundles-slider>
+          <div
+            class="featured-products__viewport overflow-hidden"
+            data-bundles-viewport
+            data-desktop-static="{{ bundles_desktop_static }}"
+            data-carousel-label="{{ bundles_label | escape }}"
+          >
+            <div
+              class="grid grid-flow-col auto-cols-[calc((100%-10px)/2)] gap-x-2.5 lg:gap-x-5 {{ bundles_desk_cols }}"
+            >
+              {%- for bundles_product in bundles_products -%}
+                {%- render 'product-card',
+                  card_product: bundles_product,
+                  hide_price: bundles_hide_price,
+                  show_featured_image: section.settings.bundles_featured_image
+                -%}
+              {%- endfor -%}
+            </div>
+          </div>
+
+          <div class="flex justify-center gap-1 {{ bundles_dots_class }}" data-bundles-dots>
+            {%- for bundles_product in bundles_products -%}
+              <button
+                class="h-1.5 w-1.5 rounded-full bg-black/30 transition-all aria-[current=true]:w-5 aria-[current=true]:border-[0.5px] aria-[current=true]:border-black aria-[current=true]:bg-white"
+                type="button"
+                aria-label="{{ 'general.slide' | t: number: forloop.index, total: bundles_count }}"
+                data-bundles-dot
+              ></button>
+            {%- endfor -%}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ 'featured-products.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Wellness Bundles",
+  "class": "wellness-bundles-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "bundles_heading",
+      "label": "Heading",
+      "info": "Italicise a word to draw the smile underline.",
+      "default": "<p>Curated wellness <em>bundles</em></p>"
+    },
+    {
+      "type": "collection",
+      "id": "bundles_collection",
+      "label": "Collection",
+      "info": "Every product in the collection renders. The section is hidden while this is empty."
+    },
+    {
+      "type": "checkbox",
+      "id": "bundles_show_price",
+      "label": "Show price",
+      "info": "Off by default: this placement hides price by design.",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "bundles_featured_image",
+      "label": "Use featured image",
+      "info": "Off uses the product's Card image metafield and its Radiator image artwork instead.",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color_background",
+      "id": "bundles_background",
+      "label": "Background",
+      "default": "#466E2E33"
+    },
+    {
+      "type": "range",
+      "id": "bundles_top_mobile",
+      "label": "Space above (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "bundles_bottom_mobile",
+      "label": "Space below (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "bundles_top_desktop",
+      "label": "Space above (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "bundles_bottom_desktop",
+      "label": "Space below (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "Wellness Bundles"
+    }
+  ]
+}
+{% endschema %}

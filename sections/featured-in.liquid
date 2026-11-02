@@ -1,0 +1,127 @@
+{%- liquid
+  assign feat_in_label = section.settings.feat_in_label
+-%}
+
+{%- if section.blocks.size > 0 -%}
+  <div
+    class="featured-in mb-[var(--feat-in-bottom-mobile)] mt-[var(--feat-in-top-mobile)] lg:mb-[var(--feat-in-bottom-desktop)] lg:mt-[var(--feat-in-top-desktop)]"
+    style="
+      --feat-in-top-mobile: {{ section.settings.feat_in_top_mobile }}px;
+      --feat-in-bottom-mobile: {{ section.settings.feat_in_bottom_mobile }}px;
+      --feat-in-top-desktop: {{ section.settings.feat_in_top_desktop }}px;
+      --feat-in-bottom-desktop: {{ section.settings.feat_in_bottom_desktop }}px;
+    "
+  >
+    <div class="page-width">
+      {%- if feat_in_label != blank -%}
+        <p class="featured-in__label mb-5 font-primary text-[14px]/[21px] font-medium uppercase tracking-[1px] text-muted">
+          {{- feat_in_label | escape -}}
+        </p>
+      {%- endif -%}
+
+      <div class="featured-in__row scrollbar-hide flex items-center gap-[30px] overflow-x-auto lg:justify-between lg:gap-6">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'featured-logo' -%}
+              {%- render 'featured-logo', block: block -%}
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Featured In",
+  "class": "featured-in-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "feat_in_label",
+      "label": "Feat In Label",
+      "default": "Featured In"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "feat_in_top_mobile",
+      "label": "Space Above (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "feat_in_bottom_mobile",
+      "label": "Space Below (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "feat_in_top_desktop",
+      "label": "Space Above (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "feat_in_bottom_desktop",
+      "label": "Space Below (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "featured-logo",
+      "name": "Featured Logo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "logo_image",
+          "label": "Logo Image"
+        },
+        {
+          "type": "text",
+          "id": "logo_name",
+          "label": "Logo Name"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Featured In",
+      "blocks": [
+        { "type": "featured-logo", "settings": { "logo_name": "VOGUE INDIA" } },
+        { "type": "featured-logo", "settings": { "logo_name": "ECONOMIC TIMES" } },
+        { "type": "featured-logo", "settings": { "logo_name": "NDTV HEALTH" } },
+        { "type": "featured-logo", "settings": { "logo_name": "FEMINA" } },
+        { "type": "featured-logo", "settings": { "logo_name": "ELLE" } },
+        { "type": "featured-logo", "settings": { "logo_name": "FORBES INDIA" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

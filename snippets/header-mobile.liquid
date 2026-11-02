@@ -1,0 +1,187 @@
+{% doc %}
+  Mobile Header
+
+  Renders the mobile header with hamburger menu, logo, and action icons.
+  Visible on mobile only (lg:hidden).
+
+  @param {object} section - The header section object (for settings.header_menu and blocks)
+  @param {string} panelled_handles - Comma-wrapped handles that have a rendered mega-menu panel
+{% enddoc %}
+
+<div class="menu-mobile lg:hidden" id="mobile-header">
+  {%- comment -%} Top bar {%- endcomment -%}
+  <div class="menu-mobile__bar relative flex min-h-[66px] items-center justify-between px-5">
+    <button
+      type="button"
+      class="menu-hamburger"
+      id="mobile-menu-trigger"
+      aria-label="{{ 'accessibility.menu' | t }}"
+      aria-expanded="false"
+    >
+      <div class="flex items-center justify-center" data-mobile-hamburger>
+        {% render 'icon-hamburger', size: 24, class: 'menu-hamburger__bars' %}
+        {% render 'icon-close', size: 24, class: 'menu-hamburger__close' %}
+      </div>
+    </button>
+
+    <div class="absolute left-1/2 -translate-x-1/2 z-10">
+      <a
+        href="{{ routes.root_url }}"
+        aria-label="{{ shop.name | escape }} - Home"
+      >
+        {%- if settings.logo != blank -%}
+          <img
+            class="h-[58px] w-[58px] rounded-full object-cover shadow-[0_1px_2px_rgba(0,0,0,0.08)]"
+            src="{{ settings.logo | image_url: width: 200 }}"
+            alt="{{ shop.name | escape }}"
+            width="58"
+            height="58"
+            loading="eager"
+          >
+        {%- else -%}
+          <span class="font-primary text-lg font-bold tracking-tight">{{ shop.name | escape }}</span>
+        {%- endif -%}
+      </a>
+    </div>
+    <div class="flex items-center gap-5">
+      <button
+        type="button"
+        class="search-trigger"
+        aria-label="{{ 'accessibility.search' | t }}"
+      >
+        {% render 'icon-search', size: 24 %}
+      </button>
+
+      <a
+        href="{{ routes.account_url }}"
+        class="flex items-center justify-center"
+        aria-label="{{ 'accessibility.account' | t }}"
+      >
+        {% render 'icon-account', size: 24 %}
+      </a>
+
+      <button
+        type="button"
+        class="relative"
+        aria-label="{{ 'accessibility.cart' | t }}"
+        data-cart-trigger
+      >
+        {% render 'icon-cart', size: 24 %}
+        {%- comment -%} Geometry pixel-matched to Figma node 581:30880, scaled 0.8x from the 30px desktop icon reference for this 24px icon {%- endcomment -%}
+        <span
+          class="cart-item-count absolute -right-[3px] -top-[13px] flex h-[11px] w-[11px] items-center justify-center rounded-full bg-accent text-[9px] font-extrabold text-foreground shadow-[0_0_0_2px_rgb(var(--color-accent)/0.35)]"
+          data-cart-count="{{ cart.item_count }}"
+          aria-live="polite"
+          aria-atomic="true"
+          {% if cart.item_count == 0 %}
+            hidden
+          {% endif %}
+        >
+          {{ cart.item_count }}
+        </span>
+      </button>
+      <noscript>
+        <a href="{{ routes.cart_url }}" aria-label="{{ 'accessibility.cart' | t }}">
+          {% render 'icon-cart', size: 24 %}
+        </a>
+      </noscript>
+    </div>
+  </div>
+
+  {%- comment -%} Mobile menu drawer {%- endcomment -%}
+  <div
+    class="drawer fixed inset-0 z-[60] tracking-normal"
+    id="mobile-menu-drawer"
+    data-drawer
+    aria-hidden="true"
+    hidden
+  >
+    <div
+      class="drawer__backdrop absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 ease-out motion-reduce:transition-none [.drawer--open_&]:opacity-100"
+      data-drawer-close
+    ></div>
+
+    <div
+      class="drawer__panel absolute inset-y-0 left-0 flex w-[calc(100%-30px)] max-w-[360px] -translate-x-full flex-col overflow-hidden bg-background transition-transform duration-300 ease-out motion-reduce:transition-none [.drawer--open_&]:translate-x-0"
+      data-drawer-panel
+    >
+      {%- comment -%} Drawer header {%- endcomment -%}
+      <div class="flex h-16 shrink-0 items-center justify-between border-b border-[#e5e5e5] px-5">
+        <a href="{{ routes.root_url }}" class="relative before:absolute before:left-1/2 before:top-1/2 before:h-11 before:w-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']" aria-label="{{ shop.name | escape }} - Home">
+          {%- if settings.logo != blank -%}
+            <img
+              class="h-10 w-10 rounded-full object-cover shadow-[0_1px_2px_rgba(0,0,0,0.08)]"
+              src="{{ settings.logo | image_url: width: 120 }}"
+              alt="{{ shop.name | escape }}"
+              width="40"
+              height="40"
+              loading="lazy"
+            >
+          {%- else -%}
+            <span class="font-primary text-base font-bold tracking-tight">{{ shop.name | escape }}</span>
+          {%- endif -%}
+        </a>
+
+        <button
+          class="flex items-center justify-center relative before:absolute before:left-1/2 before:top-1/2 before:h-11 before:w-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']"
+          type="button"
+          data-drawer-close
+          aria-label="{{ 'accessibility.close' | t }}"
+        >
+          {% render 'icon-x-circle', size: 24, class: 'text-[#a3a3a3]' %}
+        </button>
+      </div>
+
+      <div class="drawer__levels relative flex-1 overflow-clip">
+        {%- comment -%} Level 1 — root {%- endcomment -%}
+        <div
+          class="drawer__level drawer__level--root absolute inset-0 flex translate-x-0 flex-col transition-transform duration-300 ease-out motion-reduce:transition-none [.drawer--pushed_&]:-translate-x-full"
+          data-drawer-level="root"
+        >
+          <div class="drawer__body flex-1 overflow-y-auto overscroll-contain">
+            {%- for link in linklists[section.settings.header_menu].links -%}
+              {%- assign handle_key = ',' | append: link.handle | append: ',' -%}
+
+              {%- if panelled_handles contains handle_key -%}
+                <button
+                  class="flex w-full items-center justify-between px-5 py-[14px] text-left font-secondary text-[16px]/[24px] font-medium text-foreground shadow-[inset_0_-1px_0_0_#e5e5e5]"
+                  type="button"
+                  data-drawer-push="{{ link.handle }}"
+                >
+                  {{ link.title | escape }}
+                  {% render 'icon-chevron-down', size: 18, class: '-rotate-90 shrink-0' %}
+                </button>
+              {%- else -%}
+                <a
+                  class="flex w-full items-center px-5 py-[14px] font-secondary text-[16px]/[24px] font-medium text-foreground shadow-[inset_0_-1px_0_0_#e5e5e5]"
+                  href="{{ link.url }}"
+                >
+                  {{ link.title | escape }}
+                </a>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+
+          {%- render 'nav-utility-strip', section: section, orientation: 'vertical' -%}
+        </div>
+
+        {%- comment -%} Level 2 — one page per panelled root {%- endcomment -%}
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign drawer_link = null
+            for link in linklists[section.settings.header_menu].links
+              if link.handle == block.settings.mega_parent_handle
+                assign drawer_link = link
+                break
+              endif
+            endfor
+          -%}
+
+          {%- if drawer_link != blank -%}
+            {%- render 'drawer-panel', section: section, block: block, link: drawer_link -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</div>

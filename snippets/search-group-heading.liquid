@@ -1,0 +1,34 @@
+{% doc %}
+  Search Group Heading
+
+  Icon + title row shared by every content group in the search modal.
+
+  @param {string} heading_icon - Icon key: 'clock', 'grid' or 'box'
+  @param {string} heading_title - Group title text
+  @param {string} [heading_level] - h2, h3 or h4 (default: h3). An unrecognised value falls back to h3.
+
+  @example
+  {% render 'search-group-heading', heading_icon: 'clock', heading_title: settings.search_recent_heading %}
+{% enddoc %}
+
+{%- liquid
+  unless heading_level == 'h2' or heading_level == 'h4'
+    assign heading_level = 'h3'
+  endunless
+-%}
+
+{%- if heading_title != blank -%}
+  <div class="flex items-center gap-3">
+    {%- case heading_icon -%}
+      {%- when 'clock' -%}
+        {%- render 'icon-clock', size: 20, class: 'h-5 w-5 shrink-0 text-foreground' -%}
+      {%- when 'grid' -%}
+        {%- render 'icon-grid', size: 20, class: 'h-5 w-5 shrink-0 text-foreground' -%}
+      {%- when 'box' -%}
+        {%- render 'icon-box', size: 20, class: 'h-5 w-5 shrink-0 text-foreground' -%}
+    {%- endcase -%}
+    <{{ heading_level }} class="font-primary text-[20px] font-medium leading-6 tracking-normal text-foreground">
+      {{ heading_title | escape }}
+    </{{ heading_level }}>
+  </div>
+{%- endif -%}

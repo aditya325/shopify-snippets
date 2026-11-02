@@ -1,0 +1,97 @@
+{%- liquid
+  assign sticky_product = product | default: blank
+-%}
+
+{%- if sticky_product != blank -%}
+  {%- liquid
+    assign current_variant = sticky_product.selected_or_first_available_variant
+
+    assign has_compare_price = false
+    if current_variant.compare_at_price > current_variant.price
+      assign has_compare_price = true
+    endif
+
+    assign sticky_design_mode = 'false'
+    assign sticky_visible = 'false'
+    assign sticky_aria_hidden = 'true'
+    if request.design_mode
+      assign sticky_design_mode = 'true'
+      assign sticky_visible = 'true'
+      assign sticky_aria_hidden = 'false'
+    endif
+  -%}
+
+  <div
+    class="sticky-atc"
+    data-sticky-atc
+    data-product-id="{{ sticky_product.id }}"
+    data-design-mode="{{ sticky_design_mode }}"
+    data-sticky-visible="{{ sticky_visible }}"
+    aria-hidden="{{ sticky_aria_hidden }}"
+  >
+    <div class="page-width flex items-center justify-between gap-3 px-4 lg:px-15">
+      <div class="flex min-w-0 items-center gap-2.5">
+        {%- if sticky_product.featured_image != blank -%}
+          <img
+            src="{{ sticky_product.featured_image | image_url: width: 96 }}"
+            alt="{{ sticky_product.title | escape }}"
+            width="48"
+            height="48"
+            loading="lazy"
+            class="sticky-atc__thumb size-[38px] shrink-0 rounded-sm object-cover lg:size-12"
+          >
+        {%- endif -%}
+
+        <div class="flex min-w-0 flex-col">
+          <p
+            class="truncate font-secondary text-[12px]/[16px] font-medium tracking-normal text-foreground lg:text-[20px]/[30px]"
+          >
+            {{ sticky_product.title }}
+          </p>
+
+          <div class="flex items-center gap-[5px]">
+            <span
+              class="font-primary text-[13px]/[17px] font-medium tracking-normal text-foreground lg:font-secondary lg:text-[14px]/[21px] lg:tracking-[0.16px]"
+              data-sticky-price
+            >
+              {{- current_variant.price | money_without_trailing_zeros | replace: ' ', '' -}}
+            </span>
+
+            <s
+              class="font-secondary text-[9px]/[12px] font-normal tracking-normal text-[#969696] lg:text-[12px]/[16px]"
+              data-sticky-compare
+              {%- unless has_compare_price %}
+                hidden
+              {% endunless -%}
+            >
+              {%- if has_compare_price -%}
+                {{- current_variant.compare_at_price | money_without_trailing_zeros | replace: ' ', '' -}}
+              {%- endif -%}
+            </s>
+          </div>
+        </div>
+      </div>
+
+      {%- render 'product-form', product: sticky_product, form_layout: 'sticky', id_suffix: '-sticky' -%}
+    </div>
+  </div>
+
+  <script src="{{ 'sticky-atc.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Sticky Add To Cart",
+  "class": "sticky-atc-section",
+  "limit": 1,
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [],
+  "presets": [
+    {
+      "name": "Sticky Add To Cart"
+    }
+  ]
+}
+{% endschema %}

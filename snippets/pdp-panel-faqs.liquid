@@ -1,0 +1,61 @@
+{% doc %}
+  FAQs tab body — data-single-open drives exclusivity via the existing accordion.js (544:31561 / 544:34560).
+
+  @param {object[]} faqs - faq metaobject entries (required)
+  @param {string} section_id - Section id, used to keep accordion element ids unique (required)
+{% enddoc %}
+
+{%- liquid
+  assign faq_row_total = 0
+  for faq in faqs
+    if faq.question != blank
+      assign faq_row_total = faq_row_total | plus: 1
+    endif
+  endfor
+  assign faq_row_index = 0
+-%}
+
+<div class="pdp-faqs flex flex-col" data-single-open>
+  {%- for faq in faqs -%}
+    {%- if faq.question != blank -%}
+      {%- liquid
+        assign faq_row_index = faq_row_index | plus: 1
+
+        assign faq_row_class = 'border-b border-[#dcdad6] py-3.5'
+        if faq_row_index == 1
+          assign faq_row_class = 'border-b border-[#dcdad6] pb-3.5'
+        endif
+        if faq_row_index == faq_row_total
+          assign faq_row_class = 'py-3.5'
+          if faq_row_index == 1
+            assign faq_row_class = 'pb-3.5'
+          endif
+        endif
+
+        capture faq_answer
+          echo faq.answer | metafield_tag
+        endcapture
+
+        assign faq_unique_id = section_id | append: '-' | append: faq_row_index
+
+        assign faq_is_open = false
+        if faq_row_index == 1
+          assign faq_is_open = true
+        endif
+      -%}
+
+      {%- render 'accordion',
+        title: faq.question,
+        content: faq_answer,
+        unique_id: faq_unique_id,
+        class_name: faq_row_class,
+        title_class: 'gap-3 text-label-lg font-semibold text-foreground lg:text-[18px]/[27px] lg:tracking-normal',
+        content_class: 'pt-2 text-label-sm text-[#525252] lg:text-[16px]/[24px] lg:tracking-[-0.18px]',
+        icon_type: 'chevron',
+        icon_name: 'caret-down',
+        icon_box_class: 'h-5 w-5',
+        default_open: faq_is_open
+      -%}
+    {%- endif -%}
+  {%- endfor -%}
+</div>

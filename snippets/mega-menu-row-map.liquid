@@ -1,0 +1,20 @@
+{% doc %}
+  Maps a mega-menu block type to the block settings its rows come from and the row_type names
+  mega-menu-pane dispatches on. Emits `settings|types`, each a comma-separated list in matching order.
+  About and Media carry two settings each, rendered first list then second.
+
+  @param {string} block_type - The header block type
+{% enddoc %}
+
+{%- case block_type -%}
+  {%- when 'mega-menu-need' -%}
+    mega_rows_need|need
+  {%- when 'mega-menu-category' -%}
+    mega_rows_category|category
+  {%- when 'mega-menu-combo' -%}
+    mega_rows_combo|combo
+  {%- when 'mega-menu-about' -%}
+    mega_rows_story,mega_rows_history|about-story,about-history
+  {%- when 'mega-menu-media' -%}
+    mega_rows_blogs,mega_rows_press|media-blogs,media-press
+{%- endcase -%}

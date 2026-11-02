@@ -1,0 +1,599 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "hero": {
+      "type": "hero-banner",
+      "blocks": {
+        "hero_slide_1": {
+          "type": "hero-slide",
+          "settings": {
+            "hero_desktop_image": "shopify://shop_images/amr-home-a2-hero-banner-dv-banner-01.jpg",
+            "hero_mobile_image": "shopify://shop_images/amr-home-a2-hero-banner-mv-banner-01.jpg",
+            "hero_badge_text": "128+ Years of Ayurvedic Trust",
+            "hero_heading": "<p>Trusted Relief for<br/>Every Indian Home</p>",
+            "hero_description": "<p>From pain management to congestion relief, Amrutanjan combines trusted formulations with modern wellness care.</p>",
+            "hero_primary_label": "Explore Wellness",
+            "hero_primary_link": "/collections/all",
+            "hero_secondary_label": "Shop By Need",
+            "hero_secondary_link": "/collections/all",
+            "hero_badge_background": "#f4c430",
+            "hero_badge_text_color": "#525252",
+            "hero_primary_background": "#466e2e",
+            "hero_primary_color": "#ffffff",
+            "hero_secondary_color": "#466e2e"
+          }
+        },
+        "hero_slide_2": {
+          "type": "hero-slide",
+          "settings": {
+            "hero_desktop_image": "shopify://shop_images/amr-home-a2-hero-banner-dv-banner-02.jpg",
+            "hero_mobile_image": "shopify://shop_images/amr-home-a2-hero-banner-mv-banner-02.jpg",
+            "hero_badge_text": "128+ Years of Ayurvedic Trust",
+            "hero_heading": "<p>Trusted Relief for<br/>Every Indian Home</p>",
+            "hero_description": "<p>From pain management to congestion relief, Amrutanjan combines trusted formulations with modern wellness care.</p>",
+            "hero_primary_label": "Explore Wellness",
+            "hero_primary_link": "/collections/all",
+            "hero_secondary_label": "Shop By Need",
+            "hero_secondary_link": "/collections/all",
+            "hero_badge_background": "#f4c430",
+            "hero_badge_text_color": "#525252",
+            "hero_primary_background": "#466e2e",
+            "hero_primary_color": "#ffffff",
+            "hero_secondary_color": "#466e2e"
+          }
+        }
+      },
+      "block_order": [
+        "hero_slide_1",
+        "hero_slide_2"
+      ],
+      "settings": {
+        "hero_top_mobile": 8,
+        "hero_bottom_mobile": 0,
+        "hero_top_desktop": 8,
+        "hero_bottom_desktop": 0
+      }
+    },
+    "featured_discounts": {
+      "type": "featured-discounts",
+      "blocks": {
+        "discount_congestion": {
+          "type": "discount-banner",
+          "settings": {
+            "discount_background": "shopify://shop_images/amr-home-a3-featured-discounts-artboard-17.jpg",
+            "discount_category": "congestion",
+            "discount_title": "<p>50% OFF</p>",
+            "discount_tagline": "Nourish your body, refresh your day.",
+            "discount_button_text": "Shop Now",
+            "discount_button_link": "/collections/all",
+            "discount_fill": "linear-gradient(135deg, #28BCC6 23.95%, #00949E 73.95%)",
+            "discount_button_color": "#00949e"
+          }
+        },
+        "discount_wellness": {
+          "type": "discount-banner",
+          "settings": {
+            "discount_background": "shopify://shop_images/amr-home-a3-featured-discounts-artboard-18.jpg",
+            "discount_category": "Wellness & Beverages",
+            "discount_title": "<p>15% OFF</p>",
+            "discount_tagline": "Nourish your body, refresh your day.",
+            "discount_button_text": "Shop Now",
+            "discount_button_link": "/collections/all",
+            "discount_fill": "linear-gradient(180deg, #FF972D 0%, #E6790F 100%)",
+            "discount_button_color": "#e6790f"
+          }
+        },
+        "discount_hygiene": {
+          "type": "discount-banner",
+          "settings": {
+            "discount_background": "shopify://shop_images/amr-home-a3-featured-discounts-artboard-19.jpg",
+            "discount_category": "women's hygiene",
+            "discount_title": "<p>45% OFF</p>",
+            "discount_tagline": "Shop our curated care collection",
+            "discount_button_text": "Shop Now",
+            "discount_button_link": "/collections/all",
+            "discount_fill": "linear-gradient(135deg, #28BCF9 24.04%, #0094D1 70.65%)",
+            "discount_button_color": "#0094d1"
+          }
+        }
+      },
+      "block_order": [
+        "discount_congestion",
+        "discount_wellness",
+        "discount_hygiene"
+      ],
+      "settings": {
+        "discount_top_mobile": 8,
+        "discount_bottom_mobile": 8,
+        "discount_top_desktop": 20,
+        "discount_bottom_desktop": 32
+      }
+    },
+    "hero_text": {
+      "type": "hero-text",
+      "settings": {
+        "hero_text_heading": "<p>We’re building <a href=\"/collections/all\" title=\"Shop all\">130+</a> healthier India,</p><p>one habit at a time.</p>",
+        "hero_text_mobile_heading": "<p>We’re building <a href=\"/collections/all\" title=\"Shop all\">130+</a> healthier</p><p>India, one habit at a time.</p>",
+        "hero_text_top": 32,
+        "hero_text_bottom": 32
+      }
+    },
+    "bestsellers": {
+      "type": "tabbed-product-collection",
+      "settings": {
+        "tabs_collections": [
+          "just-dropped",
+          "best-sellers"
+        ],
+        "tabs_use_featured_image": false,
+        "tabs_view_all_label": "View All",
+        "tabs_space_above_mobile": 24,
+        "tabs_space_below_mobile": 24,
+        "tabs_space_above_desktop": 32,
+        "tabs_space_below_desktop": 32
+      }
+    },
+    "shop_by_category": {
+      "type": "shop-by-category",
+      "blocks": {
+        "category_pain_relief": {
+          "type": "category-card",
+          "settings": {
+            "card_image": "shopify://shop_images/amr-home-a6-shop-by-category-pain-relief.jpg",
+            "card_title": "pain relief",
+            "card_background": "#e0a900",
+            "card_text_color": "#ffffff",
+            "card_link": "/collections/all"
+          }
+        },
+        "category_hygiene": {
+          "type": "category-card",
+          "settings": {
+            "card_image": "shopify://shop_images/amr-home-a6-shop-by-category-women-s-hygine.jpg",
+            "card_title": "women's hygine",
+            "card_background": "#0094d1",
+            "card_text_color": "#ffffff",
+            "card_link": "/collections/all"
+          }
+        },
+        "category_congestion": {
+          "type": "category-card",
+          "settings": {
+            "card_image": "shopify://shop_images/amr-home-a6-shop-by-category-congestion.jpg",
+            "card_title": "congestion",
+            "card_background": "#00949e",
+            "card_text_color": "#ffffff",
+            "card_link": "/collections/all"
+          }
+        },
+        "category_rehydration": {
+          "type": "category-card",
+          "settings": {
+            "card_image": "shopify://shop_images/amr-home-a6-shop-by-category-rehydration.jpg",
+            "card_title": "rehydration",
+            "card_background": "#e6790f",
+            "card_text_color": "#ffffff",
+            "card_link": "/collections/all"
+          }
+        },
+        "category_grooming": {
+          "type": "category-card",
+          "settings": {
+            "card_image": "shopify://shop_images/amr-home-a6-shop-by-category-grooming.jpg",
+            "card_title": "grooming",
+            "card_background": "#538a05",
+            "card_text_color": "#ffffff",
+            "card_link": "/collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "category_pain_relief",
+        "category_hygiene",
+        "category_congestion",
+        "category_rehydration",
+        "category_grooming"
+      ],
+      "settings": {
+        "category_heading": "<p>Recovery<br>Starts Here</p>",
+        "category_top_mobile": 24,
+        "category_bottom_mobile": 24,
+        "category_top_desktop": 32,
+        "category_bottom_desktop": 32
+      }
+    },
+    "subscribe_letter": {
+      "type": "subscribe-letter",
+      "blocks": {
+        "usp_delivery": {
+          "type": "usp-item",
+          "settings": {
+            "usp_icon": "shopify://shop_images/free-delivery.svg",
+            "usp_title": "<p>Free Delivery</p>",
+            "usp_description": "On every order"
+          }
+        },
+        "usp_save": {
+          "type": "usp-item",
+          "settings": {
+            "usp_icon": "shopify://shop_images/coupon-save.svg",
+            "usp_title": "<p>Save Extra 15%</p>",
+            "usp_description": "Lorem Ipsum dummy"
+          }
+        },
+        "usp_returns": {
+          "type": "usp-item",
+          "settings": {
+            "usp_icon": "shopify://shop_images/7-day-return.svg",
+            "usp_title": "<p>7-Day Returns</p>",
+            "usp_description": "Easy & hassle-free"
+          }
+        },
+        "usp_cancel": {
+          "type": "usp-item",
+          "settings": {
+            "usp_icon": "shopify://shop_images/cancel.svg",
+            "usp_title": "<p>Cancel Anytime</p>",
+            "usp_description": "Easy & hassle-free"
+          }
+        }
+      },
+      "block_order": [
+        "usp_delivery",
+        "usp_save",
+        "usp_returns",
+        "usp_cancel"
+      ],
+      "settings": {
+        "subscribe_title": "<p>Subscribe & Save 15%</p>",
+        "subscribe_logo": "shopify://shop_images/amrutanjan-subscribe-save-logo.png",
+        "subscribe_subline": "On your monthly essentials",
+        "subscribe_gradient": "radial-gradient(137% 630% at -25% 40%, #F4C430 0%, #72832F 42%, #466E2E 77%)",
+        "subscribe_top_mobile": 0,
+        "subscribe_bottom_mobile": 24,
+        "subscribe_top_desktop": 0,
+        "subscribe_bottom_desktop": 32
+      }
+    },
+    "shop_by_lifestyle": {
+      "type": "shop-by-lifestyle",
+      "blocks": {
+        "lifestyle_desk_worker": {
+          "type": "lifestyle-card",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/amr-home-pain-desktop.jpg",
+            "lifestyle_title": "<p>Desk Worker</p>",
+            "lifestyle_subline": "<p>Back Pain • Neck Relief • Hydration</p>",
+            "lifestyle_link": "/collections/all"
+          }
+        },
+        "lifestyle_active": {
+          "type": "lifestyle-card",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/amr-home-pain-active-lifestyle.jpg",
+            "lifestyle_title": "<p>Active Lifestyle</p>",
+            "lifestyle_subline": "<p>Recovery • Muscle Care • Hydration</p>",
+            "lifestyle_link": "/collections/all"
+          }
+        },
+        "lifestyle_travel": {
+          "type": "lifestyle-card",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/amr-home-pain-travel.jpg",
+            "lifestyle_title": "<p>Travel</p>",
+            "lifestyle_subline": "<p>Period Care • Relief • Energy</p>",
+            "lifestyle_link": "/collections/all"
+          }
+        },
+        "lifestyle_college": {
+          "type": "lifestyle-card",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/amr-home-pain-college-life.jpg",
+            "lifestyle_title": "<p>College Life</p>",
+            "lifestyle_subline": "<p>Energy • Comfort • Everyday Care</p>",
+            "lifestyle_link": "/collections/all"
+          }
+        },
+        "lifestyle_family": {
+          "type": "lifestyle-card",
+          "settings": {
+            "lifestyle_image": "shopify://shop_images/amr-home-pain-family-care.jpg",
+            "lifestyle_title": "<p>Family Care</p>",
+            "lifestyle_subline": "<p>Trusted • Everyday Health</p>",
+            "lifestyle_link": "/collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "lifestyle_desk_worker",
+        "lifestyle_active",
+        "lifestyle_travel",
+        "lifestyle_college",
+        "lifestyle_family"
+      ],
+      "settings": {
+        "lifestyle_heading": "<p>Shop by Need</p>",
+        "lifestyle_background": "linear-gradient(#FFFFFF 0%, #DAE2D5 100%)",
+        "lifestyle_top_mobile": 24,
+        "lifestyle_bottom_mobile": 0,
+        "lifestyle_top_desktop": 32,
+        "lifestyle_bottom_desktop": 0
+      }
+    },
+    "featured_products": {
+      "type": "featured-products",
+      "settings": {
+        "bundles_heading": "<p>Curated Wellness Bundles</p>",
+        "bundles_collection": "best-sellers",
+        "bundles_show_price": false,
+        "bundles_featured_image": false,
+        "bundles_background": "#466E2E33",
+        "bundles_top_mobile": 0,
+        "bundles_bottom_mobile": 0,
+        "bundles_top_desktop": 0,
+        "bundles_bottom_desktop": 0
+      }
+    },
+    "media_carousel": {
+      "type": "media-carousel",
+      "blocks": {
+        "banner_pain_relief": {
+          "type": "media-banner",
+          "settings": {
+            "banner_desktop_image": "shopify://shop_images/amr-home-a8-media-carousel-artboard-7.jpg",
+            "banner_link": "/collections/all"
+          }
+        },
+        "banner_womens_care": {
+          "type": "media-banner",
+          "settings": {
+            "banner_desktop_image": "shopify://shop_images/amr-home-a8-media-carousel-artboard-8.jpg",
+            "banner_link": "/collections/all"
+          }
+        },
+        "banner_hydration": {
+          "type": "media-banner",
+          "settings": {
+            "banner_desktop_image": "shopify://shop_images/amr-home-a8-media-carousel-artboard-9.jpg",
+            "banner_link": "/collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "banner_pain_relief",
+        "banner_womens_care",
+        "banner_hydration"
+      ],
+      "settings": {
+        "carousel_top_mobile": 24,
+        "carousel_bottom_mobile": 24,
+        "carousel_top_desktop": 32,
+        "carousel_bottom_desktop": 32
+      }
+    },
+    "timeline": {
+      "type": "timeline",
+      "blocks": {
+        "milestone_1893": {
+          "type": "milestone",
+          "settings": {
+            "milestone_image": "shopify://shop_images/amr-home-timeline-artboard-33.png",
+            "milestone_year": "1893",
+            "milestone_label": "1 Product"
+          }
+        },
+        "milestone_1993": {
+          "type": "milestone",
+          "settings": {
+            "milestone_image": "shopify://shop_images/amr-home-timeline-artboard-35.png",
+            "milestone_year": "1993",
+            "milestone_label": "2 Product"
+          }
+        },
+        "milestone_2003": {
+          "type": "milestone",
+          "settings": {
+            "milestone_image": "shopify://shop_images/amr-home-timeline-artboard-36.png",
+            "milestone_year": "2003",
+            "milestone_label": "5 Product"
+          }
+        },
+        "milestone_2026": {
+          "type": "milestone",
+          "settings": {
+            "milestone_image": "shopify://shop_images/amr-home-timeline-artboard-36-copy.png",
+            "milestone_year": "2026",
+            "milestone_label": "14+ Product"
+          }
+        }
+      },
+      "block_order": [
+        "milestone_1893",
+        "milestone_1993",
+        "milestone_2003",
+        "milestone_2026"
+      ],
+      "settings": {
+        "timeline_heading": "<p>Our process of making everyday life health simpler Since 1893</p>",
+        "timeline_button_text": "Read Our Story",
+        "timeline_button_link": "shopify://pages/our-story",
+        "timeline_desktop_image": "shopify://shop_images/amr-home-timeline-dv-banner.jpg",
+        "timeline_mobile_image": "shopify://shop_images/amr-home-timeline-mv-banner.jpg",
+        "timeline_line_color": "#F4C430",
+        "timeline_step_duration": 2000,
+        "timeline_hold_duration": 1500,
+        "timeline_loop": true,
+        "timeline_top_mobile": 0,
+        "timeline_bottom_mobile": 24,
+        "timeline_top_desktop": 0,
+        "timeline_bottom_desktop": 32
+      }
+    },
+    "claims": {
+      "type": "claims",
+      "blocks": {
+        "claim_rating": {
+          "type": "claim-item",
+          "settings": {
+            "claim_value": "4.8",
+            "claim_title": "<p>Average<br />ratings</p>",
+            "claim_show_plus": false,
+            "claim_show_star": true
+          }
+        },
+        "claim_customers": {
+          "type": "claim-item",
+          "settings": {
+            "claim_value": "2M",
+            "claim_title": "<p>Happy<br />customers</p>",
+            "claim_show_plus": true,
+            "claim_show_star": false
+          }
+        },
+        "claim_years": {
+          "type": "claim-item",
+          "settings": {
+            "claim_value": "130",
+            "claim_title": "<p>Years<br />trusted</p>",
+            "claim_show_plus": true,
+            "claim_show_star": false
+          }
+        }
+      },
+      "block_order": [
+        "claim_rating",
+        "claim_customers",
+        "claim_years"
+      ],
+      "settings": {
+        "claims_heading": "<p>Trusted By Millions</p>",
+        "claims_top_mobile": 24,
+        "claims_bottom_mobile": 24,
+        "claims_top_desktop": 32,
+        "claims_bottom_desktop": 32
+      }
+    },
+    "see_it_in_action": {
+      "type": "see-it-in-action",
+      "settings": {}
+    },
+    "reviews": {
+      "type": "reviews",
+      "settings": {}
+    },
+    "corporate_banner": {
+      "type": "corporate-site-banner",
+      "settings": {
+        "corporate_heading": "<p>Explore Our Corporate Site</p>",
+        "corporate_body": "<p>\"Long hours at my desk always left me with neck and back pain. The Roll-On has become part of my evening routine—it starts working quickly, and I wake up feeling much better the next day. Definitely a must-have for anyone with a desk job.\"</p>",
+        "corporate_button_label": "Visit Us",
+        "corporate_button_link": "/collections/all",
+        "corporate_background": "#FDE047",
+        "corporate_top_mobile": 24,
+        "corporate_bottom_mobile": 24,
+        "corporate_top_desktop": 32,
+        "corporate_bottom_desktop": 32
+      }
+    },
+    "featured_blogs": {
+      "type": "featured-blogs",
+      "blocks": {
+        "blogs_back_pain": {
+          "type": "article-block",
+          "settings": {
+            "blogs_article": "news/test-beating-desk-job-back-pain-a-5-minute-daily-routine"
+          }
+        },
+        "blogs_recovery": {
+          "type": "article-block",
+          "settings": {
+            "blogs_article": "news/test-recovery-tips-for-an-active-lifestyle"
+          }
+        },
+        "blogs_period_care": {
+          "type": "article-block",
+          "settings": {
+            "blogs_article": "news/test-period-care-on-the-go-a-travel-guide"
+          }
+        },
+        "blogs_college": {
+          "type": "article-block",
+          "settings": {
+            "blogs_article": "news/test-surviving-cold-flu-season-in-a-college-dorm"
+          }
+        }
+      },
+      "block_order": [
+        "blogs_back_pain",
+        "blogs_college",
+        "blogs_period_care",
+        "blogs_recovery"
+      ],
+      "settings": {
+        "blogs_heading": "<p>Wellness, simplified.</p>",
+        "blogs_read_label": "Read",
+        "blogs_view_all_link": "/blogs/news",
+        "blogs_top_mobile": 24,
+        "blogs_bottom_mobile": 44,
+        "blogs_top_desktop": 32,
+        "blogs_bottom_desktop": 32
+      }
+    },
+    "announcement_bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement_1": {
+          "type": "announcement",
+          "settings": {
+            "announce_text": "<p>Get extra ₹250 off on your first order</p>"
+          }
+        },
+        "announcement_2": {
+          "type": "announcement",
+          "settings": {
+            "announce_text": "<p>Free delivery on orders above ₹499</p>"
+          }
+        }
+      },
+      "block_order": [
+        "announcement_1",
+        "announcement_2"
+      ],
+      "settings": {
+        "announce_background": "#466E2E",
+        "announce_text_color": "#FFFFFF",
+        "announce_speed": 4,
+        "announce_top_mobile": 0,
+        "announce_bottom_mobile": 0,
+        "announce_top_desktop": 0,
+        "announce_bottom_desktop": 0
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "featured_discounts",
+    "hero_text",
+    "bestsellers",
+    "shop_by_category",
+    "subscribe_letter",
+    "media_carousel",
+    "shop_by_lifestyle",
+    "featured_products",
+    "announcement_bar",
+    "timeline",
+    "claims",
+    "see_it_in_action",
+    "reviews",
+    "corporate_banner",
+    "featured_blogs"
+  ]
+}

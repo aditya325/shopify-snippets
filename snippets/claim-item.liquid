@@ -1,0 +1,66 @@
+{% doc %}
+  @param {object} block - Claim Item block, supplying settings and shopify_attributes
+  @param {string} [claim_style] - badge or stat (default: badge). badge is the green uppercase
+    treatment; stat is the gold value over a muted sentence-case label
+{% enddoc %}
+
+{%- liquid
+  assign claim_value = block.settings.claim_value
+  assign claim_title = block.settings.claim_title
+  assign claim_show_plus = block.settings.claim_show_plus
+  assign claim_show_star = block.settings.claim_show_star
+
+  assign claim_has_value_row = false
+  if claim_value != blank or claim_show_plus or claim_show_star
+    assign claim_has_value_row = true
+  endif
+
+  assign claim_title_html = claim_title | strip_newlines
+  assign claim_title_html = claim_title_html | replace: '</p> <p>', '</p><p>'
+  assign claim_title_html = claim_title_html | replace: '</p><p>', '<br />'
+  assign claim_title_html = claim_title_html | replace: '<p>', '' | replace: '</p>', ''
+  assign claim_title_html = claim_title_html | replace: '<br>', '<br />' | replace: '<br/>', '<br />'
+
+  assign claim_title_break = '<span class="hidden lg:inline"> </span><br class="lg:hidden" />'
+  assign claim_title_html = claim_title_html | replace: '<br />', claim_title_break
+
+  assign claim_style = claim_style | default: 'badge'
+
+  if claim_style == 'stat'
+    assign claim_wrap_class = 'flex min-w-0 flex-col items-start gap-0'
+    assign claim_row_class = 'flex items-center gap-1'
+    assign claim_value_class = 'font-secondary text-[18px]/[28px] font-semibold tracking-normal text-[#E1AB07] lg:text-[32px]/[38px]'
+    assign claim_plus_class = 'font-secondary text-[18px]/[28px] font-semibold tracking-normal text-[#E1AB07] lg:text-[32px]/[38px]'
+    assign claim_star_class = 'h-[18px] w-[18px] shrink-0 text-[#E1AB07] lg:h-[26px] lg:w-[25px]'
+    assign claim_title_class = 'text-left font-secondary text-[12px]/[16px] font-normal normal-case tracking-normal text-muted lg:text-[16px]/[24px]'
+  else
+    assign claim_wrap_class = 'flex flex-1 flex-col items-center gap-[7px]'
+    assign claim_row_class = 'flex items-center justify-center gap-1'
+    assign claim_value_class = 'font-secondary text-[22px] font-bold leading-[22px] tracking-[-0.18px] text-primary lg:text-[40px] lg:leading-[50px]'
+    assign claim_plus_class = 'font-secondary text-[26px] font-medium leading-[20px] tracking-[-0.18px] text-accent lg:text-[36px] lg:leading-[30px]'
+    assign claim_star_class = 'h-[18px] w-[18px] shrink-0 text-accent lg:h-[26px] lg:w-[25px]'
+    assign claim_title_class = 'text-center font-secondary text-[10px] font-medium uppercase leading-[15px] tracking-[1.8px] text-primary lg:text-[14px] lg:leading-[20px]'
+  endif
+-%}
+
+<div class="{{ claim_wrap_class }}" {{ block.shopify_attributes }}>
+  {%- if claim_has_value_row -%}
+    <div class="{{ claim_row_class }}">
+      {%- if claim_value != blank -%}
+        <span class="{{ claim_value_class }}">{{ claim_value | escape }}</span>
+      {%- endif -%}
+
+      {%- if claim_show_plus -%}
+        <span class="{{ claim_plus_class }}">+</span>
+      {%- endif -%}
+
+      {%- if claim_show_star -%}
+        {%- render 'icon-claim-star', class: claim_star_class -%}
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- if claim_title_html != blank -%}
+    <p class="{{ claim_title_class }}">{{ claim_title_html }}</p>
+  {%- endif -%}
+</div>

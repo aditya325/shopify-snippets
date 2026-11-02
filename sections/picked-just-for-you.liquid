@@ -1,0 +1,245 @@
+{%- liquid
+  assign picked_products = section.settings.picked_products
+
+  assign picked_count = 0
+  for picked_item in picked_products
+    unless picked_item.id == product.id
+      assign picked_count = picked_count | plus: 1
+    endunless
+  endfor
+
+  assign picked_pages = picked_count | plus: 1 | divided_by: 2
+  assign picked_pages_desk = picked_count | plus: 3 | divided_by: 4
+
+  assign picked_carousel_label = section.settings.picked_heading | strip_html | strip
+
+  assign picked_desk_static = true
+  assign picked_card_class = 'basis-[calc(50%-5px)] shrink-0 lg:min-w-0 lg:flex-1'
+  if picked_count > 4
+    assign picked_desk_static = false
+    assign picked_card_class = 'basis-[calc(50%-5px)] shrink-0 lg:min-w-0 lg:basis-[calc(100%/4.2)]'
+  endif
+
+  assign picked_dot_class = 'h-1.5 w-1.5 shrink-0 rounded-full bg-black/30 transition-all aria-[current=true]:w-5 aria-[current=true]:border-[0.5px] aria-[current=true]:border-black aria-[current=true]:bg-white'
+
+  # A cleared color setting returns blank, and background: ; is invalid
+  assign picked_background = section.settings.picked_background
+  if picked_background == blank
+    assign picked_background = 'linear-gradient(rgba(244, 196, 48, 0.08) 0%, rgba(244, 196, 48, 0.32) 100%)'
+  endif
+
+  assign picked_rule_color = section.settings.picked_rule_color
+  if picked_rule_color == blank
+    assign picked_rule_color = '#F4C430'
+  endif
+-%}
+
+{%- if picked_count > 0 -%}
+  <div
+    class="picked-just-for-you mb-[var(--picked-bottom-mobile)] mt-[var(--picked-top-mobile)] lg:mb-[var(--picked-bottom-desktop)] lg:mt-[var(--picked-top-desktop)]"
+    style="
+      --picked-top-mobile: {{ section.settings.picked_top_mobile }}px;
+      --picked-bottom-mobile: {{ section.settings.picked_bottom_mobile }}px;
+      --picked-top-desktop: {{ section.settings.picked_top_desktop }}px;
+      --picked-bottom-desktop: {{ section.settings.picked_bottom_desktop }}px;
+    "
+  >
+    <div class="page-width px-2.5 lg:px-15">
+      <div
+        class="picked-just-for-you__panel rounded-xl px-2 py-6 lg:px-5 lg:py-5"
+        style="background: {{ picked_background | escape }};"
+      >
+        {%- if picked_carousel_label != blank -%}
+          <div class="picked-just-for-you__heading mb-2 flex items-center gap-2 lg:mb-4">
+            {%- if section.settings.picked_icon != blank -%}
+              <img
+                class="size-6 shrink-0 object-contain lg:size-7"
+                src="{{ section.settings.picked_icon | image_url: width: 56 }}"
+                alt=""
+                width="28"
+                height="28"
+                loading="lazy"
+                aria-hidden="true"
+              >
+            {%- else -%}
+              {% render 'icon-hand-heart', class: 'size-6 shrink-0 text-accent lg:size-7' %}
+            {%- endif -%}
+
+            <h2
+              class="font-primary text-[16px]/[24px] font-medium tracking-normal text-foreground lg:text-[18px]/[27px]"
+            >
+              {{ section.settings.picked_heading }}
+            </h2>
+          </div>
+
+          <div
+            class="picked-just-for-you__rule -mx-2 mb-4 border-t-[0.4px] lg:-mx-5 lg:border-t"
+            style="border-color: {{ picked_rule_color | escape }};"
+          ></div>
+        {%- endif -%}
+
+        <div class="flex flex-col gap-2.5">
+          <div
+            class="picked-just-for-you__viewport relative overflow-x-auto scrollbar-hide data-[embla=ready]:overflow-hidden"
+            data-picked-carousel
+            data-desktop-static="{{ picked_desk_static }}"
+            data-carousel-label="{{ picked_carousel_label | escape }}"
+          >
+            <div class="picked-just-for-you__container flex gap-2.5 lg:gap-5">
+              {%- for picked_item in picked_products -%}
+                {%- unless picked_item.id == product.id -%}
+                  {%- render 'product-card',
+                    card_product: picked_item,
+                    show_featured_image: false,
+                    card_class: picked_card_class
+                  -%}
+                {%- endunless -%}
+              {%- endfor -%}
+            </div>
+          </div>
+
+          {%- if picked_pages > 1 -%}
+            <div
+              class="picked-just-for-you__dots flex justify-center gap-1 lg:hidden"
+              data-picked-dots="mobile"
+            >
+              {%- for picked_page in (1..picked_pages) -%}
+                <button
+                  class="{{ picked_dot_class }}"
+                  type="button"
+                  disabled
+                  data-picked-dot
+                  {% if forloop.first %}
+                    aria-current="true"
+                  {% endif %}
+                  aria-label="{{ 'general.slide' | t: number: forloop.index, total: picked_pages }}"
+                ></button>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+
+          {%- unless picked_desk_static -%}
+            {%- if picked_pages_desk > 1 -%}
+              <div
+                class="picked-just-for-you__dots hidden justify-center gap-1 lg:flex"
+                data-picked-dots="desktop"
+              >
+                {%- for picked_page in (1..picked_pages_desk) -%}
+                  <button
+                    class="{{ picked_dot_class }}"
+                    type="button"
+                    disabled
+                    data-picked-dot
+                    {% if forloop.first %}
+                      aria-current="true"
+                    {% endif %}
+                    aria-label="{{ 'general.slide' | t: number: forloop.index, total: picked_pages_desk }}"
+                  ></button>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          {%- endunless -%}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ 'picked-just-for-you.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Picked Just For You",
+  "class": "picked-for-you-section",
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "image_picker",
+      "id": "picked_icon",
+      "label": "Heading icon",
+      "info": "Small mark left of the heading. Leave empty to use the built in hand and heart glyph."
+    },
+    {
+      "type": "richtext",
+      "id": "picked_heading",
+      "label": "Heading",
+      "default": "<p>Picked Just for You</p>",
+      "info": "Shows above the cards. Example: Picked Just for You. Leave empty to show the cards alone."
+    },
+    {
+      "type": "product_list",
+      "id": "picked_products",
+      "label": "Products",
+      "info": "Products to recommend on this product's page. Connect this to the Picked just for you product metafield so each product shows its own list. Four fit the row; more than four turn it into a swipeable carousel. The product being viewed is skipped automatically. Leave empty to hide the whole section."
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color_background",
+      "id": "picked_background",
+      "label": "Background",
+      "default": "linear-gradient(rgba(244, 196, 48, 0.08) 0%, rgba(244, 196, 48, 0.32) 100%)"
+    },
+    {
+      "type": "color",
+      "id": "picked_rule_color",
+      "label": "Divider color",
+      "default": "#F4C430",
+      "info": "Line under the heading."
+    },
+    {
+      "type": "range",
+      "id": "picked_top_mobile",
+      "label": "Space above (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "picked_bottom_mobile",
+      "label": "Space below (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "picked_top_desktop",
+      "label": "Space above (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "picked_bottom_desktop",
+      "label": "Space below (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Picked Just For You"
+    }
+  ]
+}
+{% endschema %}

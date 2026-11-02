@@ -1,0 +1,217 @@
+{%- liquid
+  assign contact_heading = section.settings.contact_heading
+  assign contact_heading_plain = contact_heading | strip_html | strip
+
+  assign contact_bg = section.settings.contact_background
+  if contact_bg == blank
+    assign contact_bg = '#466E2E'
+  endif
+
+  assign contact_text = section.settings.contact_text_color
+  if contact_text == blank
+    assign contact_text = '#FFFFFF'
+  endif
+
+  assign contact_method_count = 0
+  for block in section.blocks
+    if block.type == 'contact-method'
+      assign contact_method_count = contact_method_count | plus: 1
+    endif
+  endfor
+
+  assign contact_layout = section.settings.contact_layout | default: 'flat'
+
+  # ceil(n / 2) — paired groups two methods per card, so an odd count leaves one row in the last card
+  assign contact_pair_count = contact_method_count | divided_by: 2
+  assign contact_pair_odd = contact_method_count | modulo: 2
+  if contact_pair_odd > 0
+    assign contact_pair_count = contact_pair_count | plus: 1
+  endif
+
+  assign contact_pair_card_class = 'contact-details__card flex min-w-0 flex-col gap-4 rounded-[15px] bg-white p-4 lg:gap-5 lg:rounded-[20px] lg:p-5'
+-%}
+
+{%- if contact_heading_plain != blank or contact_method_count > 0 -%}
+  <div
+    class="contact-details mb-[var(--contact-bottom-mobile)] mt-[var(--contact-top-mobile)] py-5 lg:mb-[var(--contact-bottom-desktop)] lg:mt-[var(--contact-top-desktop)] lg:py-8"
+    style="
+      --contact-top-mobile: {{ section.settings.contact_top_mobile }}px;
+      --contact-bottom-mobile: {{ section.settings.contact_bottom_mobile }}px;
+      --contact-top-desktop: {{ section.settings.contact_top_desktop }}px;
+      --contact-bottom-desktop: {{ section.settings.contact_bottom_desktop }}px;
+      --contact-text: {{ contact_text }};
+      background-color: {{ contact_bg }};
+    "
+  >
+    <div class="contact-details__inner page-width flex flex-col gap-4 lg:gap-5">
+      {%- if contact_heading_plain != blank -%}
+        <h2
+          class="contact-details__heading font-primary text-[24px]/[32px] font-bold capitalize tracking-normal text-[color:var(--contact-text)]"
+        >
+          {{ contact_heading }}
+        </h2>
+      {%- endif -%}
+
+      {%- if contact_method_count > 0 -%}
+        {%- if contact_layout == 'paired' -%}
+          <div class="contact-details__methods flex flex-col gap-3 lg:grid lg:grid-cols-2 lg:gap-5">
+            {%- for contact_card in (1..contact_pair_count) -%}
+              {%- assign contact_slice_start = forloop.index0 | times: 2 -%}
+              {%- assign contact_pair_blocks = section.blocks | slice: contact_slice_start, 2 -%}
+              <div class="{{ contact_pair_card_class }}">
+                {%- for block in contact_pair_blocks -%}
+                  {%- case block.type -%}
+                    {%- when 'contact-method' -%}
+                      {%- render 'contact-method-card', block: block, method_layout: 'paired' -%}
+                  {%- endcase -%}
+                {%- endfor -%}
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- else -%}
+          <div class="contact-details__methods flex gap-3 lg:gap-5">
+            {%- for block in section.blocks -%}
+              {%- case block.type -%}
+                {%- when 'contact-method' -%}
+                  {%- render 'contact-method-card', block: block -%}
+              {%- endcase -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Contact Details",
+  "class": "contact-details-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "contact_heading",
+      "label": "Contact Heading",
+      "default": "<p>Still Need Help</p>"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "contact_layout",
+      "label": "Contact Layout",
+      "info": "Paired groups two methods per card.",
+      "options": [
+        { "value": "flat", "label": "One row of cards" },
+        { "value": "paired", "label": "Paired cards" }
+      ],
+      "default": "flat"
+    },
+    {
+      "type": "color",
+      "id": "contact_background",
+      "label": "Contact Background",
+      "default": "#466E2E"
+    },
+    {
+      "type": "color",
+      "id": "contact_text_color",
+      "label": "Contact Text Color",
+      "default": "#FFFFFF",
+      "info": "Paints the heading only."
+    },
+    {
+      "type": "range",
+      "id": "contact_top_mobile",
+      "label": "Space Above (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "contact_bottom_mobile",
+      "label": "Space Below (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "contact_top_desktop",
+      "label": "Space Above (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "contact_bottom_desktop",
+      "label": "Space Below (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "contact-method",
+      "name": "Contact Method",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "contact_method_heading",
+          "label": "Method Heading"
+        },
+        {
+          "type": "image_picker",
+          "id": "contact_method_icon",
+          "label": "Method Icon"
+        },
+        {
+          "type": "richtext",
+          "id": "contact_method_value",
+          "label": "Method Value"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact Details",
+      "blocks": [
+        {
+          "type": "contact-method",
+          "settings": {
+            "contact_method_heading": "<p>Toll Free Number</p>",
+            "contact_method_value": "<p>+91 1-800-425-4545</p>",
+            "contact_method_icon": "shopify://shop_images/contact-icon-phone.svg"
+          }
+        },
+        {
+          "type": "contact-method",
+          "settings": {
+            "contact_method_heading": "<p>Email</p>",
+            "contact_method_value": "<p>support@amrutanjan.com</p>",
+            "contact_method_icon": "shopify://shop_images/contact-icon-email.svg"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

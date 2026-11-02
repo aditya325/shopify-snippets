@@ -1,0 +1,129 @@
+{% doc %}
+  Add to Cart Button
+
+  Lightweight add-to-cart form that wraps in the existing <product-form> Web Component.
+  Works standalone or alongside a variant-selector — communicates via variant:change PubSub event.
+
+  @param {product} product - Product object (required)
+  @param {number} [variant_id] - Override variant ID (default: first available variant)
+  @param {string} [button_class] - Additional CSS classes for the button
+  @param {string} [button_text] - Custom button text (default: "Add to cart" from locale)
+  @param {boolean} [show_price] - Show price inside button, with the compare-at price struck through (default: false)
+  @param {boolean} [hide_icon] - Drop the leading plus icon (default: false)
+
+  @example
+  {% render 'add-to-cart-button', product: product %}
+{% enddoc %}
+
+{%- liquid
+  assign product = product | default: blank
+
+  unless product != blank
+    break
+  endunless
+
+  assign selected_variant = product.selected_or_first_available_variant
+  assign atc_variant_id = variant_id | default: selected_variant.id
+  assign atc_button_class = button_class | default: ''
+  assign atc_button_text = button_text | default: null
+  assign show_price = show_price | default: false
+
+  assign atc_variant = selected_variant
+  if variant_id != blank
+    for variant in product.variants
+      if variant.id == variant_id
+        assign atc_variant = variant
+        break
+      endif
+    endfor
+  endif
+
+  assign hide_icon = hide_icon | default: false
+
+  assign atc_disabled = false
+  assign atc_icon = 'plus'
+  if hide_icon
+    assign atc_icon = blank
+  endif
+  unless atc_variant.available
+    assign atc_disabled = true
+    assign atc_icon = blank
+  endunless
+
+  assign atc_full_button_class = 'w-full max-374:text-xs ' | append: atc_button_class | strip
+
+  assign atc_price_formatted = atc_variant.price | money_without_trailing_zeros | replace: ' ', ''
+
+  # The button prints bare amounts; the design carries its own glyph in the locale string, not a currency symbol
+  assign atc_price_bare = atc_variant.price | money_without_currency | replace: '.00', ''
+  assign atc_compare_bare = atc_variant.compare_at_price | money_without_currency | replace: '.00', ''
+
+  assign atc_show_compare = false
+  if show_price and atc_variant.available and atc_button_text == null
+    if atc_variant.compare_at_price > atc_variant.price
+      assign atc_show_compare = true
+    endif
+  endif
+-%}
+
+{%- capture atc_label -%}
+  {%- if atc_variant.available == false -%}
+    {{ 'products.sold_out' | t }}
+  {%- elsif atc_button_text != null -%}
+    {{ atc_button_text }}
+  {%- elsif show_price -%}
+    {{ 'products.add_to_cart_at' | t: price: atc_price_bare }}
+  {%- else -%}
+    {{ 'products.add_to_cart' | t }}
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- capture atc_content -%}
+  {%- if atc_show_compare -%}
+    {{ 'products.add_to_cart_at' | t: price: atc_price_bare }} <s>{{ atc_compare_bare }}</s>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- assign atc_label = atc_label | strip -%}
+{%- assign atc_content = atc_content | strip -%}
+
+<product-form
+  class="block"
+  data-product-id="{{ product.id }}"
+  data-product-title="{{ product.title | escape }}"
+  data-product-url="{{ product.url }}"
+  data-product-featured-image="{% if product.featured_image %}{{ product.featured_image | image_url: width: 500 }}{% endif %}"
+  data-product-price="{{ atc_price_formatted | strip_html | escape }}"
+  data-product-price-cents="{{ atc_variant.price }}"
+  {%- if atc_variant.compare_at_price > atc_variant.price %}
+    data-product-compare-price="{{ atc_variant.compare_at_price | money_without_trailing_zeros | replace: ' ', '' | strip_html | escape }}"
+    data-product-compare-price-cents="{{ atc_variant.compare_at_price }}"
+  {%- endif %}
+  data-product-badge="{{ product.metafields.custom.product_badge.value | escape }}"
+  data-product-category="{{ product.metafields.custom.category_label.value | escape }}"
+  data-product-category-color="{{ product.metafields.custom.highlight_color.value | escape }}"
+>
+  <form
+    action="{{ routes.cart_add_url }}"
+    method="post"
+    data-product-form
+  >
+    <input type="hidden" name="id" value="{{ atc_variant_id }}">
+    <input type="hidden" name="quantity" value="1">
+
+    {% render 'button',
+      type: 'submit',
+      variant: 'primary',
+      size: 'md',
+      label: atc_label,
+      content: atc_content,
+      disabled: atc_disabled,
+      icon: atc_icon,
+      icon_position: 'leading',
+      icon_class: 'h-4 w-4 lg:h-[18px] lg:w-[18px] lg:[stroke-width:2px]',
+      with_loader: true,
+      class_name: atc_full_button_class
+    %}
+    <div data-form-error class="mt-2 text-sm text-error" hidden></div>
+  </form>
+</product-form>

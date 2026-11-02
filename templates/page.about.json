@@ -1,0 +1,444 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "announcement_bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement_1": {
+          "type": "announcement",
+          "settings": {
+            "announce_text": "<p>4.5 ★ Avg Ratings</p>",
+            "announce_link": ""
+          }
+        },
+        "announcement_2": {
+          "type": "announcement",
+          "settings": {
+            "announce_text": "<p>Free Delivery Over ₹499</p>",
+            "announce_link": ""
+          }
+        }
+      },
+      "block_order": [
+        "announcement_1",
+        "announcement_2"
+      ],
+      "settings": {
+        "announce_layout": "static",
+        "announce_size": "compact",
+        "announce_background": "#466e2e",
+        "announce_text_color": "#ffffff",
+        "announce_speed": 4,
+        "announce_top_mobile": 0,
+        "announce_bottom_mobile": 0,
+        "announce_top_desktop": 0,
+        "announce_bottom_desktop": 0
+      }
+    },
+    "main": {
+      "type": "page",
+      "settings": {
+        "page_crumb_label": "",
+        "page_crumb_parent": "About",
+        "page_crumb_parent_page": "our-story",
+        "page_show_title": false,
+        "page_show_content": false,
+        "page_top_mobile": 0,
+        "page_bottom_mobile": 0,
+        "page_top_desktop": 0,
+        "page_bottom_desktop": 0
+      }
+    },
+    "about_container": {
+      "type": "about-container",
+      "settings": {
+        "container_title": "<p>Our Process of Making Everyday Life Health Simpler Since 1893</p>",
+        "container_body": "",
+        "container_desk_image": "shopify://shop_images/0485ab0eba469cd51237e59babf25784b265678b.png",
+        "container_mob_image": "shopify://shop_images/0485ab0eba469cd51237e59babf25784b265678b.png",
+        "container_title_color": "foreground",
+        "container_title_align": "left",
+        "container_title_size_mob": "section",
+        "container_media_h_mob": 415,
+        "container_media_h_desk": 415,
+        "container_top_mobile": 20,
+        "container_bottom_mobile": 20,
+        "container_top_desktop": 20,
+        "container_bottom_desktop": 64
+      }
+    },
+    "about_chapter": {
+      "type": "about-chapter",
+      "blocks": {
+        "stat_1893": {
+          "type": "chapter-stat",
+          "settings": {
+            "stat_value": "1893",
+            "stat_body": "<p>A man named P.C. Vencata Rao decided that Indian families deserved better medicine. He was not wrong.</p>",
+            "stat_tint": "light"
+          }
+        },
+        "stat_130": {
+          "type": "chapter-stat",
+          "settings": {
+            "stat_value": "130+",
+            "stat_body": "<p>A man named P.C. Vencata Rao decided that Indian families deserved better medicine. He was not wrong.</p>",
+            "stat_tint": "strong"
+          }
+        }
+      },
+      "block_order": [
+        "stat_1893",
+        "stat_130"
+      ],
+      "settings": {
+        "chapter_top_mobile": 0,
+        "chapter_bottom_mobile": 48,
+        "chapter_top_desktop": 0,
+        "chapter_bottom_desktop": 64
+      }
+    },
+    "founder_carousel": {
+      "type": "founder-carousel",
+      "blocks": {
+        "founder_main": {
+          "type": "founder-slide",
+          "settings": {
+            "founder_profile_img": "shopify://shop_images/avatar.png",
+            "founder_heading": "<p>Words from our Founder</p>",
+            "founder_desc": "<p>True harmony begins with a deep respect for the soil. For over a century, we have cultivated medicinal herbs in complete balance with local ecosystems. By avoiding synthetic pesticides and respecting natural growth cycles, we ensure that every extract remains as pure and potent as nature intended. Our process is slow, deliberate, and guided by generation-spanning wisdom.</p>",
+            "founder_name": "Kasinathuni Nageswara Rao Pantulu Garu",
+            "founder_designation": "Founder"
+          }
+        },
+        "founder_co": {
+          "type": "founder-slide",
+          "settings": {
+            "founder_profile_img": "shopify://shop_images/avatar.png",
+            "founder_heading": "<p>Words from our co-founder</p>",
+            "founder_desc": "<p>True harmony begins with a deep respect for the soil. For over a century, we have cultivated medicinal herbs in complete balance with local ecosystems. By avoiding synthetic pesticides and respecting natural growth cycles, we ensure that every extract remains as pure and potent as nature intended. Our process is slow, deliberate, and guided by generation-spanning wisdom.</p>",
+            "founder_name": "Kasinathuni Nageswara Rao Pantulu Garu",
+            "founder_designation": "co-founder"
+          }
+        }
+      },
+      "block_order": [
+        "founder_main",
+        "founder_co"
+      ],
+      "settings": {
+        "founder_top_mobile": 0,
+        "founder_bottom_mobile": 48,
+        "founder_top_desktop": 0,
+        "founder_bottom_desktop": 64
+      }
+    },
+    "mission_vision": {
+      "type": "mission-vision",
+      "blocks": {
+        "pillar_mission": {
+          "type": "mission-pillar",
+          "settings": {
+            "pillar_tag": "Our Mission",
+            "pillar_desc": "<p>To make trusted, effective, and accessible wellness products that support Indian families across every stage of life — from everyday aches to long-term wellbeing. We are here not just when you are sick, but every single day.</p>"
+          }
+        },
+        "pillar_vision": {
+          "type": "mission-pillar",
+          "settings": {
+            "pillar_tag": "Our Vision",
+            "pillar_desc": "<p>To be present in every Indian home — a brand families reach for instinctively, pass down across generations, and trust completely. We envision a healthier India where wellness is simple, honest, and within reach for everyone.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "pillar_mission",
+        "pillar_vision"
+      ],
+      "settings": {
+        "mission_top_mobile": 0,
+        "mission_bottom_mobile": 48,
+        "mission_top_desktop": 0,
+        "mission_bottom_desktop": 64
+      }
+    },
+    "core_values": {
+      "type": "core-values",
+      "blocks": {
+        "value_trust": {
+          "type": "core-value-card",
+          "settings": {
+            "value_icon": "shopify://shop_images/icon-trust.svg",
+            "value_title": "Trust",
+            "value_desc": "<p>130+ years of earning it daily</p>"
+          }
+        },
+        "value_simplicity": {
+          "type": "core-value-card",
+          "settings": {
+            "value_icon": "shopify://shop_images/icon-simplicity.svg",
+            "value_title": "Simplicity",
+            "value_desc": "<p>Wellness that is easy to use, every day.</p>"
+          }
+        },
+        "value_care": {
+          "type": "core-value-card",
+          "settings": {
+            "value_icon": "shopify://shop_images/icon-care.svg",
+            "value_title": "Care",
+            "value_desc": "<p>For families, communities, and the planet.</p>"
+          }
+        },
+        "value_innovation": {
+          "type": "core-value-card",
+          "settings": {
+            "value_icon": "shopify://shop_images/icon-innovation.svg",
+            "value_title": "Innovation",
+            "value_desc": "<p>Modern science rooted in 128 years of practice.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "value_trust",
+        "value_simplicity",
+        "value_care",
+        "value_innovation"
+      ],
+      "settings": {
+        "values_heading": "<p>Our Core Values</p>",
+        "values_top_mobile": 0,
+        "values_bottom_mobile": 48,
+        "values_top_desktop": 0,
+        "values_bottom_desktop": 64
+      }
+    },
+    "history_teaser": {
+      "type": "history-teaser",
+      "settings": {
+        "teaser_image": "shopify://shop_images/product-details-image-3.png",
+        "teaser_heading": "<p>Lorem Ipsum Dummy Text</p>",
+        "teaser_desc": "<p>True harmony begins with a deep respect for the soil. For over a century, we have cultivated medicinal herbs in complete balance with local ecosystems. By avoiding synthetic pesticides and respecting natural growth cycles.</p>",
+        "teaser_cta_label": "Our History",
+        "teaser_cta_link": "/pages/history",
+        "teaser_top_mobile": 0,
+        "teaser_bottom_mobile": 24,
+        "teaser_top_desktop": 0,
+        "teaser_bottom_desktop": 64
+      }
+    },
+    "legacy_details": {
+      "type": "legacy-details",
+      "blocks": {
+        "legacy_iso": {
+          "type": "legacy-item",
+          "settings": {
+            "legacy_icon": "shopify://shop_images/Icon-ISO-certified.svg",
+            "legacy_title": "ISO",
+            "legacy_subtitle": "Certified"
+          }
+        },
+        "legacy_ayush": {
+          "type": "legacy-item",
+          "settings": {
+            "legacy_icon": "shopify://shop_images/Icon-Ayush-Approved.svg",
+            "legacy_title": "AYUSH Approved",
+            "legacy_subtitle": "Fast Relief Formulations"
+          }
+        },
+        "legacy_users": {
+          "type": "legacy-item",
+          "settings": {
+            "legacy_icon": "shopify://shop_images/Icon-Users.svg",
+            "legacy_title": "1.2M",
+            "legacy_subtitle": "Users"
+          }
+        },
+        "legacy_years": {
+          "type": "legacy-item",
+          "settings": {
+            "legacy_icon": "shopify://shop_images/Icon-years-of-legacy.svg",
+            "legacy_title": "128+",
+            "legacy_subtitle": "Years of Legacy"
+          }
+        }
+      },
+      "block_order": [
+        "legacy_iso",
+        "legacy_ayush",
+        "legacy_users",
+        "legacy_years"
+      ],
+      "settings": {
+        "legacy_top_mobile": 0,
+        "legacy_bottom_mobile": 24,
+        "legacy_top_desktop": 0,
+        "legacy_bottom_desktop": 64
+      }
+    },
+    "manufacturing_gallery": {
+      "type": "manufacturing-gallery",
+      "blocks": {
+        "tile_retreat": {
+          "type": "gallery-tile",
+          "settings": {
+            "tile_image": "shopify://shop_images/about-manufacturing-1.png",
+            "tile_caption": "Annual Community Retreat 2025"
+          }
+        },
+        "tile_lab_1": {
+          "type": "gallery-tile",
+          "settings": {
+            "tile_image": "shopify://shop_images/about-manufacturing-2.png",
+            "tile_caption": "R&D Lab Sessions"
+          }
+        },
+        "tile_lab_2": {
+          "type": "gallery-tile",
+          "settings": {
+            "tile_image": "shopify://shop_images/about-manufacturing-2.png",
+            "tile_caption": "R&D Lab Sessions"
+          }
+        },
+        "tile_autumn": {
+          "type": "gallery-tile",
+          "settings": {
+            "tile_image": "shopify://shop_images/about-manufacturing-3.png",
+            "tile_caption": "Autumn Campaign Shoot"
+          }
+        },
+        "tile_expo": {
+          "type": "gallery-tile",
+          "settings": {
+            "tile_image": "shopify://shop_images/about-manufacturing-4.png",
+            "tile_caption": "Global Health Expo Mumbai"
+          }
+        },
+        "tile_wellness": {
+          "type": "gallery-tile",
+          "settings": {
+            "tile_image": "shopify://shop_images/about-manufacturing-5.png",
+            "tile_caption": "Wellness Wednesdays"
+          }
+        }
+      },
+      "block_order": [
+        "tile_retreat",
+        "tile_lab_1",
+        "tile_lab_2",
+        "tile_autumn",
+        "tile_expo",
+        "tile_wellness"
+      ],
+      "settings": {
+        "gallery_heading": "<p>Manufacturing</p>",
+        "gallery_top_mobile": 0,
+        "gallery_bottom_mobile": 48,
+        "gallery_top_desktop": 0,
+        "gallery_bottom_desktop": 64
+      }
+    },
+    "shop_by_category": {
+      "type": "shop-by-category",
+      "blocks": {
+        "category_pain_relief": {
+          "type": "category-card",
+          "settings": {
+            "card_image": "shopify://shop_images/shop-by-category-pain-relief.png",
+            "card_title": "pain relief",
+            "card_background": "#e0a900",
+            "card_text_color": "#ffffff",
+            "card_link": "/collections/all"
+          }
+        },
+        "category_hygiene": {
+          "type": "category-card",
+          "settings": {
+            "card_image": "shopify://shop_images/shop-by-category-womens-hygiene.png",
+            "card_title": "women's hygine",
+            "card_background": "#0094d1",
+            "card_text_color": "#ffffff",
+            "card_link": "/collections/all"
+          }
+        },
+        "category_congestion": {
+          "type": "category-card",
+          "settings": {
+            "card_image": "shopify://shop_images/shop-by-category-congestion.png",
+            "card_title": "congestion",
+            "card_background": "#00949e",
+            "card_text_color": "#ffffff",
+            "card_link": "/collections/all"
+          }
+        },
+        "category_wellness": {
+          "type": "category-card",
+          "settings": {
+            "card_image": "shopify://shop_images/shop-by-category-rehydration.png",
+            "card_title": "wellness",
+            "card_background": "#e6790f",
+            "card_text_color": "#ffffff",
+            "card_link": "/collections/all"
+          }
+        },
+        "category_grooming": {
+          "type": "category-card",
+          "settings": {
+            "card_image": "shopify://shop_images/shop-by-category-grooming.png",
+            "card_title": "grooming",
+            "card_background": "#538a05",
+            "card_text_color": "#ffffff",
+            "card_link": "/collections/all"
+          }
+        },
+        "category_recovery": {
+          "type": "category-card",
+          "settings": {
+            "card_title": "recovery",
+            "card_background": "#e34771",
+            "card_text_color": "#ffffff",
+            "card_link": "/collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "category_pain_relief",
+        "category_hygiene",
+        "category_congestion",
+        "category_wellness",
+        "category_grooming",
+        "category_recovery"
+      ],
+      "settings": {
+        "category_heading": "<p>Shop by Category</p>",
+        "category_align": "left",
+        "category_mob_carousel": true,
+        "category_carousel": true,
+        "category_top_mobile": 0,
+        "category_bottom_mobile": 48,
+        "category_top_desktop": 0,
+        "category_bottom_desktop": 64
+      }
+    }
+  },
+  "order": [
+    "announcement_bar",
+    "main",
+    "about_container",
+    "about_chapter",
+    "founder_carousel",
+    "mission_vision",
+    "core_values",
+    "history_teaser",
+    "legacy_details",
+    "manufacturing_gallery",
+    "shop_by_category"
+  ]
+}

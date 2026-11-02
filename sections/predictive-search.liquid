@@ -1,0 +1,79 @@
+{%- comment -%} Rendered only via the Predictive Search API with section_id — never in a template, hence no preset {%- endcomment -%}
+
+{%- liquid
+  assign products = predictive_search.resources.products
+  assign has_results = false
+  if products.size > 0
+    assign has_results = true
+  endif
+-%}
+
+<div id="predictive-search-section-results" data-has-results="{{ has_results }}">
+  {%- if predictive_search.performed -%}
+
+    {%- if has_results == false -%}
+      {%- liquid
+        assign show_no_results_cta = false
+        if settings.no_results_cta_link != blank
+          if settings.no_results_cta_label != blank
+            assign show_no_results_cta = true
+          endif
+        endif
+      -%}
+
+      {%- if settings.no_results_text != blank or show_no_results_cta -%}
+        <div class="flex flex-col items-center gap-5 py-6 text-center lg:gap-6">
+          {%- if settings.no_results_text != blank -%}
+            <div class="space-y-2 font-secondary text-[16px] leading-6 tracking-normal text-foreground">
+              {{ settings.no_results_text }}
+            </div>
+          {%- endif -%}
+
+          {%- if show_no_results_cta -%}
+            {%- render 'button',
+              link: settings.no_results_cta_link,
+              label: settings.no_results_cta_label,
+              variant: 'primary',
+              size: 'md'
+            -%}
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    {%- else -%}
+      {%- comment -%} Product results {%- endcomment -%}
+      {%- if products.size > 0 -%}
+        <div class="mb-2.5">
+          <h3 class="sr-only">{{ 'search.products' | t }}</h3>
+          <div class="grid grid-cols-2 gap-2.5 lg:grid-cols-4 lg:gap-5">
+            {%- for result_product in products -%}
+              {%- render 'product-card', card_product: result_product, show_featured_image: false -%}
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} View All CTA {%- endcomment -%}
+      {%- liquid
+        assign view_all_query = predictive_search.terms | url_encode
+        assign view_all_url = routes.search_url | append: '?q=' | append: view_all_query
+        assign view_all_label = 'search.view_all_results' | t
+      -%}
+      {%- render 'button',
+        link: view_all_url,
+        label: view_all_label,
+        variant: 'primary',
+        size: 'xl',
+        with_arrow: true,
+        icon_class: 'h-[18px] w-[18px] max-lg:hidden',
+        class_name: 'w-full capitalize rounded-lg tracking-[-0.16px] lg:h-12 lg:gap-2.5 lg:rounded-xl lg:text-[20px] lg:font-bold lg:leading-[30px] lg:tracking-[-0.4px]'
+      -%}
+    {%- endif -%}
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Predictive search",
+  "settings": []
+}
+{% endschema %}

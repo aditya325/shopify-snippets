@@ -1,0 +1,66 @@
+{% doc %}
+  Mega Menu Products
+
+  One product grid for a mega-menu pane or a drawer level. Shared by both so the desktop and mobile
+  panels cannot drift. Renders nothing when the collection is unset or empty, leaving no container.
+
+  Both tracks derive their card width from the container, so nothing is declared. Desktop divides the
+  pane into six slots — (100% - 5 gaps) / 6 = 168px at 1068 — and mobile into two, 155px at 320.
+  A merchant raising the count past six overflows the track, which then scrolls; below six the cards
+  keep their slot width rather than stretching, which is why shrink-0 is load-bearing.
+
+  product-card's lg: utilities key off the viewport, not the container, so inside a 170px cell at a
+  desktop viewport they all fire. card_compact below overrides them through the card's BEM hooks —
+  an arbitrary variant is [&_.hook]:x, specificity (0,2,0), which outranks a bare lg: at (0,1,0).
+  The BEM __ must be written \_\_ inside the variant — a bare _ compiles to a space (D-54).
+
+  @param {collection} collection - Collection to pull products from
+  @param {number} [count] - Maximum cards to render (default: 6)
+  @param {string} [layout] - 'track' for the desktop fixed-width row (default) or 'grid' for the mobile 2-up
+{% enddoc %}
+
+{%- liquid
+  assign card_compact = 'h-full rounded-xl'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_media]:aspect-[170/156]'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_media-img]:h-[78.2%] [&_.product-card\_\_media-img]:w-[70.6%]'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_overlay]:p-2.5'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_badge]:h-[21px] [&_.product-card\_\_badge]:rounded-md [&_.product-card\_\_badge]:px-[7px] [&_.product-card\_\_badge]:text-[10px] [&_.product-card\_\_badge]:leading-[12px]'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_wishlist]:h-[26px] [&_.product-card\_\_wishlist]:w-[26px] [&_.product-card\_\_wishlist]:rounded-[5px] [&_.product-card\_\_wishlist]:bg-accent/10'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_wishlist-icon]:h-3.5 [&_.product-card\_\_wishlist-icon]:w-3.5'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_body]:gap-2.5 [&_.product-card\_\_body]:p-2.5'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_eyebrow]:text-[10px] [&_.product-card\_\_eyebrow]:leading-[12px]'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_title]:min-h-[42px] [&_.product-card\_\_title]:text-[14px] [&_.product-card\_\_title]:leading-[21px]'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_stack]:gap-1 [&_.product-card\_\_text]:gap-1'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_rating]:gap-0.5 [&_.product-card\_\_rating>span]:gap-[3px]'
+  # Figma truncates the review count rather than wrapping the rating onto a second line
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_rating]:flex-nowrap'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_reviews-short]:block [&_.product-card\_\_reviews-short]:min-w-0 [&_.product-card\_\_reviews-short]:overflow-hidden [&_.product-card\_\_reviews-short]:text-ellipsis'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_reviews-long]:hidden'
+
+  assign products_limit = count | default: 6
+  assign products_layout = layout | default: 'track'
+
+  if products_layout == 'grid'
+    assign products_class = 'scrollbar-hide flex gap-2.5 overflow-x-auto'
+    assign products_card_class = 'w-[calc((100%-10px)/2)] shrink-0'
+  else
+    assign products_class = 'scrollbar-hide flex gap-3 overflow-x-auto'
+    assign products_card_class = 'w-[calc((100%-60px)/6)] shrink-0'
+  endif
+-%}
+
+{%- if collection != blank and collection.products.size > 0 -%}
+  <div class="mega-menu__products {{ products_class }}">
+    {%- for product in collection.products limit: products_limit -%}
+      <div class="{{ products_card_class }}">
+        {% render 'product-card',
+          card_product: product,
+          hide_add_to_cart: true,
+          hide_price: true,
+          lazy_load: true,
+          card_class: card_compact
+        %}
+      </div>
+    {%- endfor -%}
+  </div>
+{%- endif -%}

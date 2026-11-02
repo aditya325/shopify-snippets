@@ -1,0 +1,58 @@
+{% doc %}
+  Breadcrumbs
+
+  Trail with "/" separators, plus an optional right-aligned count. Carries no
+  padding — the calling section supplies it.
+
+  @param {string} [breadcrumb_current] - Trailing label
+  @param {string} [breadcrumb_parent] - Optional middle crumb label
+  @param {string} [breadcrumb_parent_url] - Destination for the middle crumb
+  @param {string} [breadcrumb_count] - Right-aligned count text, e.g. "36 Products".
+  @param {string} [class_name] - Type utilities, replacing the default size (default: 'text-[12px] leading-4')
+
+  @example
+  {% render 'breadcrumbs', breadcrumb_current: collection.title, breadcrumb_count: count_label %}
+{% enddoc %}
+
+{%- assign breadcrumb_type_class = class_name | default: 'text-[12px] leading-4' -%}
+
+<nav
+  class="flex items-center justify-between gap-4 font-secondary tracking-normal {{ breadcrumb_type_class }}"
+  aria-label="{{ 'accessibility.breadcrumbs' | t }}"
+>
+  <ol class="flex min-w-0 flex-wrap items-center gap-1.5">
+    <li>
+      <a
+        href="{{ routes.root_url }}"
+        class="text-muted transition-colors hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      >
+        {{ 'general.home' | t }}
+      </a>
+    </li>
+
+    {%- if breadcrumb_current != blank -%}
+      {%- if breadcrumb_parent != blank -%}
+        <li aria-hidden="true" class="text-muted">/</li>
+        <li>
+          <a
+            href="{{ breadcrumb_parent_url | default: routes.root_url }}"
+            class="text-muted transition-colors hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            {{ breadcrumb_parent | escape }}
+          </a>
+        </li>
+      {%- endif -%}
+      <li aria-hidden="true" class="text-muted">/</li>
+      <li class="min-w-0 truncate font-medium text-foreground" aria-current="page">
+        {{ breadcrumb_current | escape }}
+      </li>
+    {%- else -%}
+      <li aria-hidden="true" class="text-muted">/</li>
+      <li class="font-medium text-foreground" aria-current="page">{{ 'search.title' | t }}</li>
+    {%- endif -%}
+  </ol>
+
+  {%- if breadcrumb_count != blank -%}
+    <span class="shrink-0 text-muted">{{ breadcrumb_count }}</span>
+  {%- endif -%}
+</nav>

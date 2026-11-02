@@ -1,0 +1,67 @@
+{% doc %}
+  Cart Price Summary
+
+  Four-row breakdown of the cart total. Reads `cart` globals directly — no params.
+  Total MRP comes from compare-at prices, so it exceeds the subtotal only where a product
+  is marked down.
+
+  @param {number} total_mrp - MRP total in cents. Computed once by the caller so the checkout
+    button's struck figure and this block cannot diverge (required)
+
+  @example
+  {% render 'cart-price-summary', total_mrp: cart_total_mrp %}
+{% enddoc %}
+
+{%- liquid
+  if cart.item_count == 0
+    break
+  endif
+
+  assign total_mrp = total_mrp | default: 0
+
+  assign mrp_discount = total_mrp | minus: cart.original_total_price
+
+  # spans line-level and cart-level alike; summing cart_level_discount_applications misses product-scoped ones
+  assign coupon_discount = cart.original_total_price | minus: cart.total_price
+
+  assign show_mrp = false
+  if total_mrp != cart.total_price
+    assign show_mrp = true
+  endif
+-%}
+
+<div class="cart-price-summary mt-[18px] flex flex-col px-[17px] pb-5">
+  <h3 class="font-primary text-sm text-foreground">
+    {{- 'cart.price_details' | t: count: cart.item_count -}}
+  </h3>
+
+  {%- if show_mrp or mrp_discount > 0 or coupon_discount > 0 -%}
+    <dl class="mt-2.5 flex flex-col gap-2 border-t border-[#F2F2F2] pt-2.5 font-secondary text-xs text-muted">
+      {%- if show_mrp -%}
+        <div class="flex items-center justify-between">
+          <dt>{{ 'cart.total_mrp' | t }}</dt>
+          <dd data-cart-total-mrp data-mrp-cents="{{ total_mrp }}">
+            {{- total_mrp | money_without_trailing_zeros | replace: ' ', '' -}}
+          </dd>
+        </div>
+      {%- endif -%}
+      {%- if mrp_discount > 0 -%}
+        <div class="flex items-center justify-between">
+          <dt>{{ 'cart.discount_on_mrp' | t }}</dt>
+          <dd data-cart-mrp-discount>{{ mrp_discount | money_without_trailing_zeros | replace: ' ', '' }}</dd>
+        </div>
+      {%- endif -%}
+      {%- if coupon_discount > 0 -%}
+        <div class="flex items-center justify-between">
+          <dt>{{ 'cart.coupon_discount' | t }}</dt>
+          <dd data-cart-coupon-discount>{{ coupon_discount | money_without_trailing_zeros | replace: ' ', '' }}</dd>
+        </div>
+      {%- endif -%}
+    </dl>
+  {%- endif -%}
+
+  <div class="mt-2.5 flex items-center justify-between border-t border-[#F2F2F2] pt-2.5 font-secondary text-sm font-semibold text-foreground">
+    <span>{{ 'cart.total_amount' | t }}</span>
+    <span data-cart-total>{{ cart.total_price | money_without_trailing_zeros | replace: ' ', '' }}</span>
+  </div>
+</div>

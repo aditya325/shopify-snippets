@@ -1,0 +1,327 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "announcement_bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement_1": {
+          "type": "announcement",
+          "settings": {
+            "announce_text": "<p>4.5 ★ Avg Ratings</p>",
+            "announce_link": ""
+          }
+        },
+        "announcement_2": {
+          "type": "announcement",
+          "settings": {
+            "announce_text": "<p>Free Delivery Over ₹499</p>",
+            "announce_link": ""
+          }
+        }
+      },
+      "block_order": ["announcement_1", "announcement_2"],
+      "settings": {
+        "announce_layout": "static",
+        "announce_size": "compact",
+        "announce_background": "#466e2e",
+        "announce_text_color": "#ffffff",
+        "announce_speed": 4,
+        "announce_top_mobile": 0,
+        "announce_bottom_mobile": 0,
+        "announce_top_desktop": 0,
+        "announce_bottom_desktop": 0
+      }
+    },
+    "main": {
+      "type": "product",
+      "blocks": {
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "rating": {
+          "type": "rating",
+          "settings": {}
+        },
+        "price": {
+          "type": "price",
+          "settings": {}
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {}
+        },
+        "purchase_options": {
+          "type": "purchase_options",
+          "settings": {}
+        },
+        "helps_with": {
+          "type": "helps_with",
+          "settings": {
+            "helps_heading": "Helps With"
+          }
+        },
+        "offers": {
+          "type": "offers",
+          "settings": {
+            "offers_heading": "Available Offers"
+          }
+        },
+        "delivery": {
+          "type": "delivery",
+          "settings": {
+            "delivery_heading": "Delivery Details",
+            "delivery_subtext": "Check delivery availability and estimated delivery date",
+            "product_delivery_min": 3,
+            "product_delivery_max": 5
+          }
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "buy_show_buy_now": true
+          }
+        },
+        "free_gift": {
+          "type": "free_gift",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "title",
+        "rating",
+        "price",
+        "variant_picker",
+        "purchase_options",
+        "helps_with",
+        "offers",
+        "delivery",
+        "buy_buttons",
+        "free_gift"
+      ],
+      "settings": {
+        "product_enable_share": true,
+        "product_enable_wishlist": true
+      }
+    },
+    "sticky_atc": {
+      "type": "sticky-atc",
+      "settings": {}
+    },
+    "product_details": {
+      "type": "product-details",
+      "blocks": {
+        "tab_description": {
+          "type": "details-tab",
+          "settings": {
+            "tab_label": "Product Description",
+            "tab_source": "description",
+            "tab_body": ""
+          }
+        },
+        "tab_how_to_use": {
+          "type": "details-tab",
+          "settings": {
+            "tab_label": "How to Use",
+            "tab_source": "how_to_use_steps",
+            "tab_body": ""
+          }
+        },
+        "tab_ingredients": {
+          "type": "details-tab",
+          "settings": {
+            "tab_label": "Ingredients",
+            "tab_source": "ingredients",
+            "tab_body": ""
+          }
+        },
+        "tab_faqs": {
+          "type": "details-tab",
+          "settings": {
+            "tab_label": "FAQs",
+            "tab_source": "faqs",
+            "tab_body": ""
+          }
+        },
+        "pdf_trust_report": {
+          "type": "pdf-button",
+          "settings": {
+            "pdf_label": "Product Trust Report",
+            "pdf_doc": "{{ product.metafields.custom.lab_report.value }}",
+            "pdf_tab": "description"
+          }
+        },
+        "pdf_ingredients_list": {
+          "type": "pdf-button",
+          "settings": {
+            "pdf_label": "Detailed Ingredients List",
+            "pdf_doc": "{{ product.metafields.custom.ingredients_pdf.value }}",
+            "pdf_tab": "description"
+          }
+        }
+      },
+      "block_order": [
+        "tab_description",
+        "tab_how_to_use",
+        "tab_ingredients",
+        "tab_faqs",
+        "pdf_trust_report",
+        "pdf_ingredients_list"
+      ],
+      "settings": {
+        "details_top_mobile": 24,
+        "details_bottom_mobile": 0,
+        "details_top_desktop": 32,
+        "details_bottom_desktop": 0
+      }
+    },
+    "frequently_bought_together": {
+      "type": "frequently-bought-together",
+      "settings": {
+        "bought_heading": "<p>Complete Your Pain-Relief Kit</p>",
+        "bought_products": "{{ product.metafields.custom.bought_together.value }}",
+        "bought_background": "#466E2E33",
+        "bought_top_mobile": 0,
+        "bought_bottom_mobile": 24,
+        "bought_top_desktop": 0,
+        "bought_bottom_desktop": 32
+      }
+    },
+    "trust_strip": {
+      "type": "trust-strip",
+      "blocks": {
+        "item_iso": {
+          "type": "trust-item",
+          "settings": {
+            "item_icon": "shopify://shop_images/trust-iso-certified.png",
+            "item_title": "<p>ISO<br/>Certified</p>"
+          }
+        },
+        "item_ayush": {
+          "type": "trust-item",
+          "settings": {
+            "item_icon": "shopify://shop_images/trust-ayush-approved.png",
+            "item_title": "<p>Ayush<br/>Approved</p>"
+          }
+        },
+        "item_fast": {
+          "type": "trust-item",
+          "settings": {
+            "item_icon": "shopify://shop_images/trust-fast-acting.png",
+            "item_title": "<p>Fast<br/>Acting</p>"
+          }
+        },
+        "item_years": {
+          "type": "trust-item",
+          "settings": {
+            "item_icon": "shopify://shop_images/trust-legacy-years.png",
+            "item_title": "<p>130+<br/>Years</p>"
+          }
+        }
+      },
+      "block_order": ["item_iso", "item_ayush", "item_fast", "item_years"],
+      "settings": {
+        "trust_top_mobile": 24,
+        "trust_bottom_mobile": 24,
+        "trust_top_desktop": 32,
+        "trust_bottom_desktop": 32
+      }
+    },
+    "see_it_in_action": {
+      "type": "see-it-in-action",
+      "settings": {}
+    },
+    "reviews": {
+      "type": "reviews",
+      "settings": {}
+    },
+    "picked_just_for_you": {
+      "type": "picked-just-for-you",
+      "settings": {
+        "picked_icon": "shopify://shop_images/Frame.svg",
+        "picked_heading": "<p>Picked Just for You</p>",
+        "picked_products": "{{ product.metafields.custom.picked_for_you.value }}",
+        "picked_background": "linear-gradient(180deg, rgba(244, 196, 48, 0.08), rgba(244, 196, 48, 0.32) 100%)",
+        "picked_rule_color": "#f4c430",
+        "picked_top_mobile": 24,
+        "picked_bottom_mobile": 0,
+        "picked_top_desktop": 0,
+        "picked_bottom_desktop": 0
+      }
+    },
+    "certified": {
+      "type": "certified",
+      "blocks": {
+        "logo_fssai": {
+          "type": "certified-logo",
+          "settings": {
+            "logo_image": "shopify://shop_images/certified-fssai.png",
+            "logo_alt": "FSSAI"
+          }
+        },
+        "logo_ayush": {
+          "type": "certified-logo",
+          "settings": {
+            "logo_image": "shopify://shop_images/certified-ayush.png",
+            "logo_alt": "Ministry of AYUSH"
+          }
+        },
+        "logo_gmp": {
+          "type": "certified-logo",
+          "settings": {
+            "logo_image": "shopify://shop_images/certified-gmp.png",
+            "logo_alt": "GMP Good Manufacturing Practice"
+          }
+        },
+        "logo_cruelty_free": {
+          "type": "certified-logo",
+          "settings": {
+            "logo_image": "shopify://shop_images/certified-cruelty-free.png",
+            "logo_alt": "Cruelty Free"
+          }
+        },
+        "logo_iso": {
+          "type": "certified-logo",
+          "settings": {
+            "logo_image": "shopify://shop_images/certified-iso-9001.png",
+            "logo_alt": "ISO 9001:2015"
+          }
+        }
+      },
+      "block_order": [
+        "logo_fssai",
+        "logo_ayush",
+        "logo_gmp",
+        "logo_cruelty_free",
+        "logo_iso"
+      ],
+      "settings": {
+        "certified_heading": "Certified, Tested & Trusted",
+        "certified_top_mobile": 24,
+        "certified_bottom_mobile": 32,
+        "certified_top_desktop": 32,
+        "certified_bottom_desktop": 44
+      }
+    }
+  },
+  "order": [
+    "announcement_bar",
+    "main",
+    "sticky_atc",
+    "product_details",
+    "frequently_bought_together",
+    "trust_strip",
+    "see_it_in_action",
+    "reviews",
+    "picked_just_for_you",
+    "certified"
+  ]
+}

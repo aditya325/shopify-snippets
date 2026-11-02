@@ -1,0 +1,24 @@
+{% doc %}
+  Facet Load More
+
+  Sentinel that assets/facets.js watches to append the next page. Carries the next
+  page URL so the JS never has to construct one, and holds the spinner shown while
+  fetching. Renders nothing on the last page.
+
+  @param {object} paginate - The paginate object from the enclosing {% paginate %} tag (required)
+
+  @example
+  {% render 'facet-load-more', paginate: paginate %}
+{% enddoc %}
+
+{%- if paginate.next -%}
+  <div
+    class="flex items-center justify-center py-4"
+    data-facet-load-more
+    data-next-url="{{ paginate.next.url }}"
+  >
+    <span class="hidden" data-facet-load-more-spinner>
+      {%- render 'icon-loader', size: 32, class: 'h-8 w-8' -%}
+    </span>
+  </div>
+{%- endif -%}

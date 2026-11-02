@@ -1,0 +1,44 @@
+{% doc %}
+  Featured Logo
+
+  One masthead in the Featured In row. The text branch is the designed default, not a fallback for a
+  broken state — the Figma sets all six as type — so a block with no image still renders correctly.
+
+  alt carries the publication name; with the name unset the image is decorative and takes an empty alt
+  rather than no alt at all.
+
+  @param {object} block - Featured Logo block (required)
+{% enddoc %}
+
+{%- liquid
+  assign block = block | default: blank
+
+  unless block != blank
+    break
+  endunless
+
+  assign logo_image = block.settings.logo_image
+  assign logo_name = block.settings.logo_name
+-%}
+
+{%- if logo_image != blank -%}
+  <div class="featured-logo shrink-0" {{ block.shopify_attributes }}>
+    {%- render 'image',
+      image: logo_image,
+      alt: logo_name,
+      class_name: 'block h-[26px] w-auto object-contain',
+      base_width: 320,
+      mobile_width: 320,
+      breakpoint: 1024,
+      lazy: true,
+      decoding: 'async'
+    -%}
+  </div>
+{%- elsif logo_name != blank -%}
+  <div
+    class="featured-logo shrink-0 whitespace-nowrap font-primary text-[20px]/[25.5px] font-medium text-muted"
+    {{ block.shopify_attributes }}
+  >
+    {{- logo_name | escape -}}
+  </div>
+{%- endif -%}

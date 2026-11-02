@@ -1,0 +1,146 @@
+{% doc %}
+  Subscribe & Save
+
+  Renders the Subscribe and Save promo in one of two layouts. `band` is the homepage
+  section's inner grid; `card` is the 352px mega-menu column, whose content comes from
+  the `subscribe_save` metaobject rather than from section settings or blocks.
+
+  The two branches share the newsletter-form call and the headline/benefits/form order,
+  not their markup — `band` benefits are section blocks rendered by usp-item, `card`
+  benefits are metaobject entries with their own row markup.
+
+  @param {string} layout - Which layout to render: 'band' or 'card'. Any other value renders nothing
+  @param {string} [section_id] - band: passed to newsletter-form as unique_id
+  @param {image} [logo] - band: brand logo, omitted when blank
+  @param {string} [title] - band: richtext heading passed to section-header
+  @param {string} [subline] - band: subtitle under the heading, omitted when blank
+  @param {object[]} [blocks] - band: section.blocks, filtered to usp-item
+  @param {object} [entry] - card: subscribe_save metaobject (default: metaobjects.subscribe_save.default)
+
+  @example
+  {% render 'subscribe-save', layout: 'band', section_id: section.id, logo: logo, title: title, subline: subline, blocks: section.blocks %}
+{% enddoc %}
+{%- liquid
+  assign layout = layout | default: ''
+
+  if layout == 'card'
+    if entry == null
+      assign entry = metaobjects.subscribe_save.default
+    endif
+  endif
+-%}
+{%- if layout == 'band' -%}
+  <div class="subscribe-letter__grid relative grid gap-y-6 lg:grid-cols-[480fr_580fr] lg:items-center lg:gap-x-[180px] lg:gap-y-[30px]">
+    <div class="subscribe-letter__intro flex items-center gap-4 lg:gap-5">
+      {%- if logo != blank -%}
+        <div class="h-auto w-16 shrink-0 overflow-hidden rounded-full lg:h-auto lg:w-24">
+          {%- render 'image',
+            image: logo,
+            alt: '',
+            class_name: 'h-full w-full object-contain',
+            decoding: 'async',
+            responsive_widths: '390:120'
+          -%}
+        </div>
+      {%- endif -%}
+
+      <div class="flex flex-col gap-0.5 lg:gap-[5px]">
+        {%- render 'section-header',
+          heading: title,
+          class_name: 'text-left uppercase text-white text-section-heading lg:capitalize lg:text-[32px]/[42px] lg:tracking-[-0.2px] max-374:text-xl'
+        -%}
+
+        {%- if subline != blank -%}
+          <div class="text-[12px]/[22px] font-medium tracking-[-0.2px] text-white lg:text-[16px]/[24px]">
+            {{ subline | escape }}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- if blocks.size > 0 -%}
+      <div class="subscribe-letter__usps grid grid-cols-2 gap-3.5 lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:gap-5">
+        {%- for block in blocks -%}
+          {%- case block.type -%}
+            {%- when 'usp-item' -%}
+              {%- render 'usp-item', block: block -%}
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <div class="subscribe-letter__form max-lg:mt-2 lg:col-start-1 lg:row-start-2">
+      {%- render 'newsletter-form',
+        unique_id: section_id,
+        tag: 'subscribe-save',
+        placeholder: 'Enter your email... ',
+        form_class: 'flex items-center gap-2.5',
+        input_class: 'h-10 flex-1 rounded-[6px] border border-[#FFFFFF5C] bg-transparent px-3 text-[14px]/[20px] font-medium tracking-normal text-white placeholder:text-white lg:h-11 outline-none',
+        button_variant: 'unstyled',
+        button_class: 'h-10 rounded-[6px] border border-white bg-white px-[22px] text-[14px]/[21px] font-semibold tracking-[-0.28px] text-[#466E2E] lg:h-11 lg:px-[26px] lg:text-subheading-d [@media(hover:hover)]:transition-colors [@media(hover:hover)]:hover:bg-transparent [@media(hover:hover)]:hover:text-white',
+        toast_class: 'fixed bottom-5 left-1/2 z-50 w-max max-w-[calc(100vw-40px)] -translate-x-1/2 items-center gap-2 rounded-lg px-4 py-3 text-[14px]/[20px] font-medium shadow-lg'
+      -%}
+    </div>
+  </div>
+{%- elsif layout == 'card' -%}
+  {%- if entry != blank -%}
+    <div
+      class="subscribe-save subscribe-save--card flex w-full flex-col justify-between gap-5 rounded-[15px] p-[18px] lg:gap-[40.5px] lg:rounded-[20px] lg:p-[23px]"
+      style="background: radial-gradient(135.51% 688.23% at -26.7% -28.57%, #F4C430 0%, #72842F 42.43%, #466E2E 77.41%);"
+    >
+      {%- if entry.heading != blank -%}
+        <div class="subscribe-save__heading font-primary text-[28px]/[43px] font-semibold capitalize tracking-[-0.2px] text-white lg:text-[30px]">
+          {{ entry.heading | escape }}
+        </div>
+      {%- endif -%}
+
+      {%- if entry.benefits.value.size > 0 -%}
+        <ul class="subscribe-save__benefits flex list-none flex-col gap-[18px]">
+          {%- for benefit in entry.benefits.value -%}
+            <li class="subscribe-save__benefit flex items-center gap-4">
+              {%- if benefit.icon.value != blank -%}
+                <span class="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-[6px] bg-[#FFFFFF0F]">
+                  {%- render 'image',
+                    image: benefit.icon.value,
+                    alt: '',
+                    class_name: 'h-6 w-6 object-contain',
+                    decoding: 'async',
+                    responsive_widths: '390:48'
+                  -%}
+                </span>
+              {%- endif -%}
+
+              <div class="flex flex-col gap-0.5">
+                {%- if benefit.title != blank -%}
+                  <div class="font-secondary text-[16px]/[24px] font-semibold text-white">
+                    {{ benefit.title | escape }}
+                  </div>
+                {%- endif -%}
+
+                {%- if benefit.subtitle != blank -%}
+                  <div class="font-secondary text-[14px]/[20px] font-normal text-[#FFFFFF99]">
+                    {{ benefit.subtitle | escape }}
+                  </div>
+                {%- endif -%}
+              </div>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+      <div class="subscribe-save__form">
+        {%- render 'newsletter-form',
+          unique_id: section_id,
+          tag: 'subscribe-save',
+          placeholder: entry.placeholder,
+          button_label: entry.button_label,
+          form_class: 'flex items-center gap-2.5',
+          input_class: 'h-10 min-w-0 flex-1 rounded-md border border-[#FFFFFF5C] bg-transparent px-[13px] py-4 text-[14px]/[20px] font-medium tracking-normal text-white placeholder:text-white/80 outline-none lg:rounded-lg',
+          button_variant: 'unstyled',
+          button_class: 'h-10 shrink-0 rounded-md bg-white px-[22px] py-[14px] font-secondary text-[14px]/[21px] font-semibold tracking-[-0.28px] text-[#466E2E] lg:rounded-lg',
+          toast_class: 'fixed bottom-5 left-1/2 z-50 w-max max-w-[calc(100vw-40px)] -translate-x-1/2 items-center gap-2 rounded-lg px-4 py-3 text-[14px]/[20px] font-medium shadow-lg'
+        -%}
+      </div>
+    </div>
+  {%- endif -%}
+{%- endif -%}

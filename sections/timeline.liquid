@@ -1,0 +1,368 @@
+{%- liquid
+  assign tl_heading_plain = section.settings.timeline_heading | strip_html | strip
+  assign tl_block_count = section.blocks.size
+  assign tl_steps = tl_block_count | minus: 1
+  assign tl_total = tl_steps | times: section.settings.timeline_step_duration
+
+  assign tl_line_color = section.settings.timeline_line_color
+  if tl_line_color == blank
+    assign tl_line_color = '#F4C430'
+  endif
+
+  assign tl_desk_video = section.settings.timeline_desktop_video
+  assign tl_mob_video = section.settings.timeline_mobile_video
+  assign tl_desk_image = section.settings.timeline_desktop_image | default: section.settings.timeline_mobile_image
+  assign tl_mob_image = section.settings.timeline_mobile_image | default: tl_desk_image
+
+  assign tl_has_video = false
+  if tl_desk_video != blank or tl_mob_video != blank
+    assign tl_has_video = true
+  endif
+
+  assign tl_has_media = false
+  if tl_has_video or tl_desk_image != blank
+    assign tl_has_media = true
+  endif
+
+  assign tl_line_m = tl_steps | times: 60
+  assign tl_line_d = tl_steps | times: 33.3333
+-%}
+
+{%- if tl_heading_plain != blank or tl_block_count > 0 -%}
+  <link
+    rel="stylesheet"
+    href="{{ 'timeline.css' | asset_url }}"
+    media="print"
+    onload="this.onload=null;this.media='all';"
+  >
+  <noscript><link rel="stylesheet" href="{{ 'timeline.css' | asset_url }}"></noscript>
+
+  <div
+    class="timeline mt-[var(--timeline-top-mobile)] mb-[var(--timeline-bottom-mobile)] lg:mt-[var(--timeline-top-desktop)] lg:mb-[var(--timeline-bottom-desktop)]"
+    style="
+      --timeline-top-mobile: {{ section.settings.timeline_top_mobile }}px;
+      --timeline-bottom-mobile: {{ section.settings.timeline_bottom_mobile }}px;
+      --timeline-top-desktop: {{ section.settings.timeline_top_desktop }}px;
+      --timeline-bottom-desktop: {{ section.settings.timeline_bottom_desktop }}px;
+    "
+    data-timeline-step="{{ section.settings.timeline_step_duration }}"
+    data-timeline-hold="{{ section.settings.timeline_hold_duration }}"
+    data-timeline-loop="{{ section.settings.timeline_loop }}"
+  >
+    <div class="timeline__band relative flex min-h-[640px] flex-col justify-between overflow-hidden pt-[30px] pb-[18px] lg:min-h-[570px] lg:py-10">
+      {%- if tl_has_media -%}
+        <div class="absolute inset-0">
+          {%- if tl_has_video -%}
+            {%- if tl_desk_video != blank -%}
+              {{
+                tl_desk_video
+                | video_tag:
+                  autoplay: true,
+                  loop: true,
+                  muted: true,
+                  controls: false,
+                  loading: 'lazy',
+                  image_size: '2000x',
+                  class: 'h-full w-full object-cover max-lg:hidden'
+              }}
+            {%- elsif tl_desk_image != blank -%}
+              {%- render 'image',
+                image: tl_desk_image,
+                alt: '',
+                class_name: 'h-full w-full object-cover max-lg:hidden',
+                decoding: 'async',
+                responsive_widths: '1024:2000'
+              -%}
+            {%- endif -%}
+
+            {%- if tl_mob_video != blank -%}
+              {{
+                tl_mob_video
+                | video_tag:
+                  autoplay: true,
+                  loop: true,
+                  muted: true,
+                  controls: false,
+                  loading: 'lazy',
+                  image_size: '750x',
+                  class: 'h-full w-full object-cover lg:hidden'
+              }}
+            {%- elsif tl_mob_image != blank -%}
+              {%- render 'image',
+                image: tl_mob_image,
+                alt: '',
+                class_name: 'h-full w-full object-cover lg:hidden',
+                decoding: 'async',
+                responsive_widths: '390:750'
+              -%}
+            {%- endif -%}
+          {%- else -%}
+            {%- render 'image',
+              image: tl_desk_image,
+              mobile_image: tl_mob_image,
+              alt: '',
+              class_name: 'h-full w-full object-cover',
+              decoding: 'async',
+              base_width: 2000,
+              mobile_width: 750
+            -%}
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- if tl_heading_plain != blank or section.settings.timeline_button_text != blank -%}
+        <div class="timeline__intro relative mx-auto flex w-full max-w-[1022px] flex-col items-center gap-8 px-5 lg:px-0">
+          {%- if tl_heading_plain != blank -%}
+            {%- render 'section-header',
+              heading: section.settings.timeline_heading,
+              class_name: 'text-center capitalize text-white'
+            -%}
+          {%- endif -%}
+
+          {%- render 'button',
+            label: section.settings.timeline_button_text,
+            link: section.settings.timeline_button_link,
+            variant: 'accent',
+            size: 'xs',
+            with_arrow: true
+          -%}
+        </div>
+      {%- endif -%}
+
+      {%- if tl_block_count > 0 -%}
+        <div class="timeline__scroller relative 2xl:w-[1440px] 2xl:mx-auto overflow-hidden" data-timeline-scroller>
+          <div
+            class="timeline__track relative flex w-full"
+            style="
+              --timeline-total: {{ tl_total }}ms;
+              --timeline-line: {{ tl_line_color }};
+              --timeline-line-m: {{ tl_line_m }}%;
+              --timeline-line-d: {{ tl_line_d }}%;
+            "
+          >
+            {%- if tl_block_count > 1 -%}
+              <div
+                class="timeline__line absolute top-[191px] left-[30%] h-px w-[var(--timeline-line-m)] bg-white lg:top-[275px] lg:left-[16.6667%] lg:w-[var(--timeline-line-d)]"
+              ></div>
+              <div
+                class="timeline__fill absolute top-[191px] left-[30%] z-[1] h-px w-[var(--timeline-line-m)] bg-[var(--timeline-line)] lg:top-[275px] lg:left-[16.6667%] lg:w-[var(--timeline-line-d)]"
+                data-timeline-fill
+              ></div>
+            {%- endif -%}
+
+            {%- for block in section.blocks -%}
+              {%- case block.type -%}
+                {%- when 'milestone' -%}
+                  {%- render 'milestone', block: block -%}
+              {%- endcase -%}
+            {%- endfor -%}
+
+            <div class="w-[20%] shrink-0 lg:w-[33.3334%]" aria-hidden="true"></div>
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <script src="{{ 'timeline.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Timeline",
+  "class": "timeline-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "timeline_heading",
+      "label": "Heading",
+      "info": "Italicise a word to draw the smile underline.",
+      "default": "<p>Our process of making everyday life health simpler <em>Since 1893</em></p>"
+    },
+    {
+      "type": "text",
+      "id": "timeline_button_text",
+      "label": "Button text",
+      "default": "Read Our Story"
+    },
+    {
+      "type": "url",
+      "id": "timeline_button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "video",
+      "id": "timeline_desktop_video",
+      "label": "Desktop background video",
+      "info": "Takes priority over the image."
+    },
+    {
+      "type": "video",
+      "id": "timeline_mobile_video",
+      "label": "Mobile background video"
+    },
+    {
+      "type": "image_picker",
+      "id": "timeline_desktop_image",
+      "label": "Desktop background image"
+    },
+    {
+      "type": "image_picker",
+      "id": "timeline_mobile_image",
+      "label": "Mobile background image",
+      "info": "Falls back to the desktop image."
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "color",
+      "id": "timeline_line_color",
+      "label": "Progress line color",
+      "default": "#F4C430"
+    },
+    {
+      "type": "range",
+      "id": "timeline_step_duration",
+      "label": "Time per milestone",
+      "info": "Time the progress takes to travel from one milestone to the next.",
+      "min": 500,
+      "max": 5000,
+      "step": 100,
+      "unit": "ms",
+      "default": 2000
+    },
+    {
+      "type": "range",
+      "id": "timeline_hold_duration",
+      "label": "Pause at the end",
+      "info": "How long the last milestone stays lit before the progress restarts.",
+      "min": 0,
+      "max": 5000,
+      "step": 100,
+      "unit": "ms",
+      "default": 1500
+    },
+    {
+      "type": "checkbox",
+      "id": "timeline_loop",
+      "label": "Loop the animation",
+      "info": "Restart the progress from the first milestone once it finishes.",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "timeline_top_mobile",
+      "label": "Space above (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "timeline_bottom_mobile",
+      "label": "Space below (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "timeline_top_desktop",
+      "label": "Space above (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "timeline_bottom_desktop",
+      "label": "Space below (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "milestone",
+      "name": "Milestone",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "milestone_image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "milestone_year",
+          "label": "Year",
+          "default": "1893"
+        },
+        {
+          "type": "text",
+          "id": "milestone_label",
+          "label": "Product count",
+          "default": "1 Product"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Timeline",
+      "blocks": [
+        {
+          "type": "milestone",
+          "settings": {
+            "milestone_year": "1893",
+            "milestone_label": "1 Product"
+          }
+        },
+        {
+          "type": "milestone",
+          "settings": {
+            "milestone_year": "1993",
+            "milestone_label": "2 Product"
+          }
+        },
+        {
+          "type": "milestone",
+          "settings": {
+            "milestone_year": "2003",
+            "milestone_label": "5 Product"
+          }
+        },
+        {
+          "type": "milestone",
+          "settings": {
+            "milestone_year": "2026",
+            "milestone_label": "14+ Product"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

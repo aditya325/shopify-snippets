@@ -1,0 +1,61 @@
+{% doc %}
+  Nav Utility Strip
+
+  The bottom strip of every mega-menu panel. Consumes the four utility settings declared by 2.1.
+  An item renders whenever its label is set; the URL is optional and makes it a link.
+
+  @param {object} section - The header section, for the four utility settings
+  @param {string} [orientation] - 'horizontal' for the desktop panel (default) or 'vertical' for the drawer
+{% enddoc %}
+
+{%- liquid
+  assign strip_layout = orientation | default: 'horizontal'
+  if strip_layout == 'vertical'
+    assign strip_class = 'flex-col gap-4 px-5 py-[18px]'
+    assign strip_inner = ''
+  else
+    assign strip_class = 'py-4'
+    assign strip_inner = 'mx-auto flex w-full max-w-[1440px] items-center gap-8 px-16'
+  endif
+
+  assign locator_label = section.settings.header_locator_label
+  assign locator_link = section.settings.header_locator_link
+  assign consult_label = section.settings.header_consult_label
+  assign consult_link = section.settings.header_consult_link
+-%}
+
+{%- capture locator_body -%}
+  <span class="flex h-[27px] w-[27px] shrink-0 items-center justify-center rounded-full bg-primary">
+    {%- render 'icon-location', size: 16, class: 'text-primary-foreground' -%}
+  </span>
+  <span class="font-secondary text-[14px]/[20px] font-medium text-primary">{{ locator_label | escape }}</span>
+{%- endcapture -%}
+
+{%- capture consult_body -%}
+  <span class="flex h-[27px] w-[27px] shrink-0 items-center justify-center rounded-full bg-primary">
+    {%- render 'icon-consult', size: 16, class: 'text-primary-foreground' -%}
+  </span>
+  <span class="font-secondary text-[14px]/[20px] font-medium text-primary">{{ consult_label | escape }}</span>
+{%- endcapture -%}
+
+{%- if locator_label != blank or consult_label != blank -%}
+  <div class="mega-menu__utility flex shadow-[inset_0_0.5px_0_0_#a3a3a3] {{ strip_class }}">
+    {%- if strip_inner != blank -%}<div class="{{ strip_inner }}">{%- endif -%}
+    {%- if locator_label != blank -%}
+      {%- if locator_link != blank -%}
+        <a class="flex items-center gap-2" href="{{ locator_link }}">{{ locator_body }}</a>
+      {%- else -%}
+        <span class="flex items-center gap-2">{{ locator_body }}</span>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- if consult_label != blank -%}
+      {%- if consult_link != blank -%}
+        <a class="flex items-center gap-2" href="{{ consult_link }}">{{ consult_body }}</a>
+      {%- else -%}
+        <span class="flex items-center gap-2">{{ consult_body }}</span>
+      {%- endif -%}
+    {%- endif -%}
+    {%- if strip_inner != blank -%}</div>{%- endif -%}
+  </div>
+{%- endif -%}

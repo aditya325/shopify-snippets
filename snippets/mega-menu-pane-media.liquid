@@ -1,0 +1,21 @@
+{% doc %}
+  The Media panel's Blogs content — article cards, 2-up scroll track on mobile. Shared by desktop
+  and drawer. Renders nothing when there are no articles.
+
+  @param {object[]} [articles] - Articles to render, in order
+  @param {string} [read_label] - Read affordance text for article-card, which has no default
+{% enddoc %}
+
+{%- capture media_blogs_cards -%}
+  {%- for media_article in articles -%}
+    <div class="w-[calc((100%-8px)/2)] shrink-0 lg:w-auto lg:shrink">
+      {%- render 'article-card', article: media_article, read_label: read_label -%}
+    </div>
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- if media_blogs_cards != blank -%}
+  <div class="mega-menu__blogs scrollbar-hide flex gap-2 overflow-x-auto lg:grid lg:grid-cols-3 lg:gap-4 lg:overflow-x-visible">
+    {{ media_blogs_cards }}
+  </div>
+{%- endif -%}

@@ -1,0 +1,328 @@
+{%- liquid
+  assign faq_heading = section.settings.faq_heading
+  assign faq_heading_plain = faq_heading | strip_html | strip
+
+  capture faq_heading_html
+    if faq_heading_plain != blank
+      echo faq_heading
+    else
+      echo page.title | escape
+    endif
+  endcapture
+
+  assign faq_category_heading = section.settings.faq_category_heading
+  assign faq_category_plain = faq_category_heading | strip_html | strip
+  assign faq_placeholder = section.settings.faq_search_placeholder | strip
+  assign faq_no_results = section.settings.faq_no_results | strip
+
+  assign faq_crumb = section.settings.faq_breadcrumb_label | strip
+  assign faq_crumb_class = 'text-[10px] leading-[13px] lg:text-[12px] lg:leading-4'
+  if faq_crumb == blank
+    assign faq_crumb = page.title
+  endif
+
+  assign faq_tab_count = 0
+  for block in section.blocks
+    assign faq_block_name = block.settings.faq_category_name | strip_html | strip
+    if faq_block_name != blank
+      assign faq_tab_count = faq_tab_count | plus: 1
+    endif
+  endfor
+-%}
+
+{%- if faq_tab_count > 0 -%}
+  <div
+    class="faq mb-[var(--faq-bottom-mobile)] mt-[var(--faq-top-mobile)] lg:mb-[var(--faq-bottom-desktop)] lg:mt-[var(--faq-top-desktop)]"
+    style="
+      --faq-top-mobile: {{ section.settings.faq_top_mobile }}px;
+      --faq-bottom-mobile: {{ section.settings.faq_bottom_mobile }}px;
+      --faq-top-desktop: {{ section.settings.faq_top_desktop }}px;
+      --faq-bottom-desktop: {{ section.settings.faq_bottom_desktop }}px;
+    "
+    data-faq-section
+  >
+    <div class="faq__inner flex flex-col">
+      {%- if section.settings.faq_show_breadcrumbs -%}
+        <div class="faq__breadcrumbs page-width w-full">
+          {%- render 'breadcrumbs', breadcrumb_current: faq_crumb, class_name: faq_crumb_class -%}
+        </div>
+      {%- endif -%}
+
+      {%- if faq_heading_html != blank -%}
+        <div class="faq__header page-width mt-[30px] w-full">
+          <h1
+            class="faq__heading text-section-heading font-primary font-bold text-foreground lg:text-section-heading-d"
+          >
+            {{ faq_heading_html }}
+          </h1>
+        </div>
+      {%- endif -%}
+
+      <div class="faq__controls page-width mt-10 flex w-full flex-col items-center gap-[18px]">
+        <div class="faq__controls-group flex w-full flex-col items-center gap-3 lg:gap-[18px]">
+          {%- if faq_category_plain != blank -%}
+            <p
+              class="faq__controls-label font-primary text-[14px]/[21px] font-medium uppercase tracking-normal text-[#1A1A1A] lg:text-[16px]/[24px]"
+            >
+              {{ faq_category_plain | escape_once }}
+            </p>
+          {%- endif -%}
+
+          <div class="faq__tabs w-full overflow-hidden" data-faq-tabs>
+            <div class="faq__tabs-container flex items-start gap-3 lg:justify-center">
+              {%- assign faq_tab_index = 0 -%}
+              {%- for block in section.blocks -%}
+                {%- case block.type -%}
+                  {%- when 'faq-category' -%}
+                    {%- assign faq_block_name = block.settings.faq_category_name | strip_html | strip -%}
+                    {%- if faq_block_name != blank -%}
+                      {%- render 'faq-category-tab',
+                        block: block,
+                        index: faq_tab_index,
+                        section_id: section.id
+                      -%}
+                      {%- assign faq_tab_index = faq_tab_index | plus: 1 -%}
+                    {%- endif -%}
+                {%- endcase -%}
+              {%- endfor -%}
+            </div>
+          </div>
+
+          {%- if faq_tab_count > 1 -%}
+            <div class="faq__dots flex hidden items-center gap-1 lg:hidden" data-faq-dots>
+              {%- for dot_position in (1..faq_tab_count) -%}
+                <button
+                  class="faq__dot h-1.5 w-1.5 rounded-full bg-primary/[0.36] transition-all aria-[current=true]:w-5 aria-[current=true]:border-[0.5px] aria-[current=true]:border-primary aria-[current=true]:bg-white"
+                  type="button"
+                  data-faq-dot
+                  aria-label="{{ 'general.slide' | t: number: dot_position, total: faq_tab_count }}"
+                ></button>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- if faq_placeholder != blank -%}
+          <div
+            class="faq__search flex h-[42px] w-full items-center gap-3 rounded-xl border border-[#D8E0C8] bg-white px-4 lg:h-[50px] lg:w-[750px] lg:max-w-full"
+          >
+            {%- render 'icon-search', size: 24, class: 'shrink-0 text-primary' -%}
+            <input
+              class="faq__search-input w-full bg-transparent font-secondary text-[14px] leading-normal tracking-normal text-foreground outline-none placeholder:text-muted"
+              type="search"
+              placeholder="{{ faq_placeholder | escape }}"
+              aria-label="{{ faq_placeholder | escape }}"
+              autocomplete="off"
+              data-faq-search
+            >
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="faq__body page-width mt-5 flex w-full flex-col gap-[18px] lg:mt-10 lg:gap-5">
+        {%- assign faq_group_index = 0 -%}
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'faq-category' -%}
+              {%- assign faq_block_name = block.settings.faq_category_name | strip_html | strip -%}
+              {%- if faq_block_name != blank -%}
+                {%- render 'faq-category-group',
+                  block: block,
+                  index: faq_group_index,
+                  section_id: section.id
+                -%}
+                {%- assign faq_group_index = faq_group_index | plus: 1 -%}
+              {%- endif -%}
+          {%- endcase -%}
+        {%- endfor -%}
+
+        {%- if faq_no_results != blank -%}
+          <p
+            class="faq__no-results hidden font-secondary text-[14px]/[21px] text-muted lg:text-[16px]/[24px]"
+            data-faq-no-results
+          >
+            {{ faq_no_results | escape }}
+          </p>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ 'accordion.js' | asset_url }}" defer></script>
+  <script src="{{ 'faq.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "FAQ",
+  "class": "faq-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "faq_heading",
+      "label": "Page Heading",
+      "info": "Falls back to the page title."
+    },
+    {
+      "type": "richtext",
+      "id": "faq_category_heading",
+      "label": "Category Label",
+      "default": "<p>Select a category</p>"
+    },
+    {
+      "type": "text",
+      "id": "faq_search_placeholder",
+      "label": "Search Placeholder",
+      "default": "Search FAQs…",
+      "info": "Leave blank to hide the search field."
+    },
+    {
+      "type": "text",
+      "id": "faq_no_results",
+      "label": "No Results Message",
+      "default": "No FAQs match your search."
+    },
+    {
+      "type": "checkbox",
+      "id": "faq_show_breadcrumbs",
+      "label": "Show Breadcrumbs",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "faq_breadcrumb_label",
+      "label": "Breadcrumb Label",
+      "default": "FAQs",
+      "info": "Falls back to the page title."
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "faq_top_mobile",
+      "label": "Space Above (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "faq_bottom_mobile",
+      "label": "Space Below (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "faq_top_desktop",
+      "label": "Space Above (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "faq_bottom_desktop",
+      "label": "Space Below (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq-category",
+      "name": "FAQ Category",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "faq_category_name",
+          "label": "Category Name",
+          "info": "A block with no name is skipped."
+        },
+        {
+          "type": "image_picker",
+          "id": "faq_category_icon",
+          "label": "Category Icon",
+          "info": "Green icon, shown when the tile is not selected."
+        },
+        {
+          "type": "image_picker",
+          "id": "faq_cat_icon_active",
+          "label": "Category Icon Active",
+          "info": "White icon, shown on the selected green tile."
+        },
+        {
+          "type": "metaobject_list",
+          "id": "faq_category_faqs",
+          "label": "Category FAQs",
+          "metaobject_type": "faq",
+          "limit": 50
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ",
+      "blocks": [
+        {
+          "type": "faq-category",
+          "settings": {
+            "faq_category_name": "<p>Orders &amp; Shipping</p>",
+            "faq_category_icon": "shopify://shop_images/faq-icon-orders-shipping.svg",
+            "faq_cat_icon_active": "shopify://shop_images/faq-icon-orders-shipping-active.svg"
+          }
+        },
+        {
+          "type": "faq-category",
+          "settings": {
+            "faq_category_name": "<p>Returns &amp; Refunds</p>",
+            "faq_category_icon": "shopify://shop_images/faq-icon-returns-refunds.svg",
+            "faq_cat_icon_active": "shopify://shop_images/faq-icon-returns-refunds-active.svg"
+          }
+        },
+        {
+          "type": "faq-category",
+          "settings": {
+            "faq_category_name": "<p>Products &amp; Usage</p>",
+            "faq_category_icon": "shopify://shop_images/faq-icon-products-usage.svg",
+            "faq_cat_icon_active": "shopify://shop_images/faq-icon-products-usage-active.svg"
+          }
+        },
+        {
+          "type": "faq-category",
+          "settings": {
+            "faq_category_name": "<p>Subscriptions</p>",
+            "faq_category_icon": "shopify://shop_images/faq-icon-subscriptions.svg",
+            "faq_cat_icon_active": "shopify://shop_images/faq-icon-subscriptions-active.svg"
+          }
+        },
+        {
+          "type": "faq-category",
+          "settings": {
+            "faq_category_name": "<p>Account &amp; Payment</p>",
+            "faq_category_icon": "shopify://shop_images/faq-icon-account-payment.svg",
+            "faq_cat_icon_active": "shopify://shop_images/faq-icon-account-payment-active.svg"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

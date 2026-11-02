@@ -1,0 +1,139 @@
+{{ 'page.css' | asset_url | stylesheet_tag: preload: true }}
+
+{%- liquid
+  assign page_crumb_class = 'text-[10px] leading-[13px] lg:text-[12px] lg:leading-4'
+
+  assign page_crumb_current = section.settings.page_crumb_label | default: page.title
+
+  assign page_crumb_parent = section.settings.page_crumb_parent
+  assign page_crumb_parent_page = section.settings.page_crumb_parent_page
+
+  # breadcrumbs.liquid defaults a blank url to the home route, so both must be set or neither
+  assign page_crumb_parent_url = ''
+  if page_crumb_parent != blank and page_crumb_parent_page != blank
+    assign page_crumb_parent_url = page_crumb_parent_page.url
+  else
+    assign page_crumb_parent = ''
+  endif
+-%}
+
+<div
+  class="page mb-[var(--page-bottom-mobile)] mt-[var(--page-top-mobile)] lg:mb-[var(--page-bottom-desktop)] lg:mt-[var(--page-top-desktop)]"
+  style="
+    --page-top-mobile: {{ section.settings.page_top_mobile }}px;
+    --page-bottom-mobile: {{ section.settings.page_bottom_mobile }}px;
+    --page-top-desktop: {{ section.settings.page_top_desktop }}px;
+    --page-bottom-desktop: {{ section.settings.page_bottom_desktop }}px;
+  "
+>
+  <div class="page__breadcrumbs page-width w-full py-2.5">
+    {%- render 'breadcrumbs',
+      breadcrumb_current: page_crumb_current,
+      breadcrumb_parent: page_crumb_parent,
+      breadcrumb_parent_url: page_crumb_parent_url,
+      class_name: page_crumb_class
+    -%}
+  </div>
+
+  {%- if section.settings.page_show_title -%}
+    <div class="page__header page-width w-full py-5">
+      {%- render 'section-header', heading: page.title, heading_level: 'h1' -%}
+    </div>
+  {%- endif -%}
+
+  {%- if section.settings.page_show_content and page.content != blank -%}
+    <div class="page__body page-width w-full pt-5 pb-8">
+      <div class="page__content mx-auto max-w-[960px]">
+        {{ page.content }}
+      </div>
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Page",
+  "class": "page-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "page_crumb_label",
+      "label": "Page Crumb Label",
+      "info": "Trailing breadcrumb label. Falls back to the page title."
+    },
+    {
+      "type": "text",
+      "id": "page_crumb_parent",
+      "label": "Page Crumb Parent",
+      "info": "Middle breadcrumb label, e.g. About. Needs a parent page set too."
+    },
+    {
+      "type": "page",
+      "id": "page_crumb_parent_page",
+      "label": "Page Crumb Parent Page"
+    },
+    {
+      "type": "checkbox",
+      "id": "page_show_title",
+      "label": "Page Show Title",
+      "info": "Turn off when sections supply their own heading.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "page_show_content",
+      "label": "Page Show Content",
+      "info": "Turn off when sections supply all the copy.",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "page_top_mobile",
+      "label": "Space Above (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "page_bottom_mobile",
+      "label": "Space Below (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "page_top_desktop",
+      "label": "Space Above (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "page_bottom_desktop",
+      "label": "Space Below (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ]
+}
+{% endschema %}

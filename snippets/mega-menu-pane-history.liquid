@@ -1,0 +1,65 @@
+{% doc %}
+  The About panel's History content — one thumbnail over a large year numeral. Shared by desktop
+  and drawer. Renders nothing when every field is blank.
+
+  @param {object} [history_image] - History thumbnail
+  @param {string} [history_caption] - Caption beneath the thumbnail
+  @param {string} [history_year] - Year rendered as the numeral behind the thumbnail
+  @param {string} [history_link] - Makes the whole block a link to this URL
+{% enddoc %}
+
+{%- liquid
+  assign about_has_history = false
+  if history_image != blank or history_caption != blank or history_year != blank
+    assign about_has_history = true
+  endif
+
+  assign about_history_class = 'mega-menu__about-history relative flex flex-col items-center gap-1 px-[21px] lg:px-[45px]'
+
+  assign about_photo_alt = ''
+  if history_caption == blank
+    assign about_photo_alt = history_year
+  endif
+-%}
+
+{%- capture about_history_inner -%}
+  {%- if history_year != blank -%}
+    <div
+      class="mega-menu__about-year pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden"
+      aria-hidden="true"
+    >
+      <span class="whitespace-nowrap font-primary text-[150px] font-bold leading-none tracking-[-6px] text-black/5 lg:text-[320px] lg:tracking-[-12px]">
+        {{- history_year | escape -}}
+      </span>
+    </div>
+  {%- endif -%}
+
+  {%- if history_image != blank -%}
+    <div class="mega-menu__about-photo relative aspect-[594/390] w-full overflow-hidden rounded-[16px] shadow-[0_16px_16px_rgba(0,0,0,0.08)]">
+      {% render 'image',
+        image: history_image,
+        alt: about_photo_alt,
+        class_name: 'absolute inset-0 block h-full w-full object-cover',
+        lazy: true,
+        decoding: 'async',
+        base_width: 1200,
+        mobile_width: 720,
+        breakpoint: 1024
+      %}
+    </div>
+  {%- endif -%}
+
+  {%- if history_caption != blank -%}
+    <p class="mega-menu__about-caption relative text-center font-primary text-[16px]/[24px] font-medium text-foreground lg:text-[18px]/[27px]">
+      {{- history_caption | escape -}}
+    </p>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- if about_has_history -%}
+  {%- if history_link != blank -%}
+    <a class="{{ about_history_class }}" href="{{ history_link }}">{{ about_history_inner }}</a>
+  {%- else -%}
+    <div class="{{ about_history_class }}">{{ about_history_inner }}</div>
+  {%- endif -%}
+{%- endif -%}

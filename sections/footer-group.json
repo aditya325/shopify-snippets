@@ -1,0 +1,129 @@
+{
+  "type": "footer",
+  "name": "Footer",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "usp_shipping": {
+          "type": "usp",
+          "settings": {
+            "usp_title": "<p>Free <br/>Shipping</p>",
+            "usp_icon": "shopify://shop_images/footer-usp-free-shipping.svg"
+          }
+        },
+        "usp_money_back": {
+          "type": "usp",
+          "settings": {
+            "usp_title": "<p>100% <br/>Money Back</p>",
+            "usp_icon": "shopify://shop_images/footer-usp-money-back.svg"
+          }
+        },
+        "usp_support": {
+          "type": "usp",
+          "settings": {
+            "usp_title": "<p>Support <br/>Online</p>",
+            "usp_icon": "shopify://shop_images/footer-usp-support-online.svg"
+          }
+        },
+        "column_shop": {
+          "type": "link-column",
+          "settings": {
+            "column_menu": "shop"
+          }
+        },
+        "column_quick_links": {
+          "type": "link-column",
+          "settings": {
+            "column_menu": "quick-links"
+          }
+        },
+        "support_details": {
+          "type": "support",
+          "settings": {
+            "support_heading": "Support Details",
+            "support_phone": "1800-425-4545",
+            "support_email": "care@amrutanjan.com"
+          }
+        },
+        "social_instagram": {
+          "type": "social",
+          "settings": {
+            "social_name": "Instagram",
+            "social_icon": "shopify://shop_images/footer-social-instagram.svg",
+            "social_link": "https://www.instagram.com/"
+          }
+        },
+        "social_facebook": {
+          "type": "social",
+          "settings": {
+            "social_name": "Facebook",
+            "social_icon": "shopify://shop_images/footer-social-facebook.svg",
+            "social_link": "https://www.facebook.com/"
+          }
+        },
+        "social_youtube": {
+          "type": "social",
+          "settings": {
+            "social_name": "YouTube",
+            "social_icon": "shopify://shop_images/footer-social-youtube.svg",
+            "social_link": "https://www.youtube.com/"
+          }
+        },
+        "policy_privacy": {
+          "type": "policy",
+          "settings": {
+            "policy_label": "Privacy Policy",
+            "policy_link": "/policies/privacy-policy"
+          }
+        },
+        "policy_terms": {
+          "type": "policy",
+          "settings": {
+            "policy_label": "Terms of Service",
+            "policy_link": "/policies/terms-of-service"
+          }
+        },
+        "policy_shipping": {
+          "type": "policy",
+          "settings": {
+            "policy_label": "Shipping Policy",
+            "policy_link": "/policies/shipping-policy"
+          }
+        },
+        "policy_refund": {
+          "type": "policy",
+          "settings": {
+            "policy_label": "Refund Policy",
+            "policy_link": "/policies/refund-policy"
+          }
+        }
+      },
+      "block_order": [
+        "usp_shipping",
+        "usp_money_back",
+        "usp_support",
+        "column_shop",
+        "column_quick_links",
+        "support_details",
+        "social_instagram",
+        "social_facebook",
+        "social_youtube",
+        "policy_privacy",
+        "policy_terms",
+        "policy_shipping",
+        "policy_refund"
+      ],
+      "settings": {
+        "footer_about": "<p>From pain relief and hydration to women's care and everyday wellness, we're helping millions live healthier, more comfortable lives since 1873</p>",
+        "footer_subscribe_label": "Subscribe With 15% Off!",
+        "footer_heading": "<p>Trusted For Generations. <br/>Built For Today.</p>",
+        "footer_disclaimer": "<p>***By subscribing you agree to the <a href=\"/policies/terms-of-service\">Terms of Use</a> and <a href=\"/policies/privacy-policy\">Privacy Policy.</a></p>",
+        "footer_copyright": "<p>© 2026 Amrutanjan Health Care Ltd. All rights reserved. Since 1893.</p>",
+        "footer_background": "#113422",
+        "footer_text_color": "#FFFFFF"
+      }
+    }
+  },
+  "order": ["footer"]
+}

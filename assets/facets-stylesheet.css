@@ -1,0 +1,82 @@
+.facet-price-slider__input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  margin-top: calc((3px - 19px) / 2);
+  width: 19px;
+  height: 19px;
+  background-color: #ffffff;
+  border: 1px solid #171717;
+  border-radius: 2px;
+  background-image:
+    linear-gradient(#171717, #171717),
+    linear-gradient(#171717, #171717),
+    linear-gradient(#171717, #171717);
+  background-size: 1px 7px;
+  background-position: 6px center, 9px center, 12px center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.facet-price-slider__input::-moz-range-thumb {
+  width: 19px;
+  height: 19px;
+  background-color: #ffffff;
+  border: 1px solid #171717;
+  border-radius: 2px;
+  background-image:
+    linear-gradient(#171717, #171717),
+    linear-gradient(#171717, #171717),
+    linear-gradient(#171717, #171717);
+  background-size: 1px 7px;
+  background-position: 6px center, 9px center, 12px center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.facet-price-slider__input::-webkit-slider-runnable-track {
+  -webkit-appearance: none;
+  height: 3px;
+  background: transparent;
+}
+
+.facet-price-slider__input::-moz-range-track {
+  height: 3px;
+  background: transparent;
+  border: none;
+}
+
+.facet-price-slider__input:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid rgb(var(--color-primary));
+  outline-offset: 2px;
+}
+
+.facet-price-slider__input:focus-visible::-moz-range-thumb {
+  outline: 2px solid rgb(var(--color-primary));
+  outline-offset: 2px;
+}
+
+.facet-price-input::-webkit-outer-spin-button,
+.facet-price-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.facet-price-input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.facet-toolbar {
+  transition:
+    opacity 250ms ease-out,
+    visibility 0s linear 0s;
+}
+
+body:has(.header[data-header-hidden='true']) .facet-toolbar {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 250ms ease-out,
+    visibility 0s linear 250ms;
+}

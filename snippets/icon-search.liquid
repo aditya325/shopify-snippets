@@ -1,0 +1,21 @@
+{% doc %}
+  Search Icon
+
+  @param {string} [class] - Additional CSS classes (optional)
+  @param {number} size - Icon size in pixels (default: 20)
+{% enddoc %}
+
+{%- assign icon_size = size | default: 20 -%}
+
+<svg
+  class="{{ class }}"
+  width="{{ icon_size }}"
+  height="{{ icon_size }}"
+  viewBox="0 0 24 24"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-hidden="true"
+>
+  <path d="M11.0003 19C15.4187 19 19.0006 15.4183 19.0006 11C19.0006 6.58172 15.4187 3 11.0003 3C6.58185 3 3 6.58172 3 11C3 15.4183 6.58185 19 11.0003 19Z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M20.9984 21.0002L16.6982 16.7002" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,58 @@
+{% doc %}
+  Description tab body — intro card, media, eyebrow, benefit cards, buttons (544:24540 / 544:32741).
+
+  @param {product} product - The product being rendered (required)
+{% enddoc %}
+
+{%- liquid
+  assign description_media = product.metafields.custom.description_media.value
+  assign description_eyebrow = product.metafields.custom.description_eyebrow.value
+  assign description_benefits = product.metafields.custom.description_benefits.value
+-%}
+
+<div class="flex flex-col gap-3 lg:gap-5">
+  {%- if product.description != blank -%}
+    <div
+      class="pdp-description__body rounded-[15px] bg-[#fbedb7] p-3.5 text-[14px]/[21px] tracking-[-0.16px] text-[#3c3c3c] lg:rounded-[20px] lg:p-6 lg:text-[20px]/[30px] lg:tracking-normal"
+    >
+      {{ product.description }}
+    </div>
+  {%- endif -%}
+
+  {%- if description_media != blank -%}
+    {%- for media_entry in description_media -%}
+      {%- liquid
+        assign media_image = media_entry.image.value
+        assign media_mobile = media_entry.image_mobile.value
+        assign media_alt = media_image.alt | default: media_entry.name | default: product.title
+      -%}
+      {%- if media_image != blank -%}
+        <div
+          class="pdp-description__media overflow-hidden rounded-xl {% if forloop.first %}lg:rounded-[20px]{% endif %}"
+        >
+          {%- render 'image',
+            image: media_image,
+            mobile_image: media_mobile,
+            alt: media_alt,
+            class_name: 'pdp-description__media-image',
+            mobile_width: 750
+          -%}
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+  {%- if description_eyebrow != blank -%}
+    <span class="text-[12px]/[18px] font-semibold uppercase tracking-[1px] text-muted lg:text-[16px]/[26px]">
+      {{ description_eyebrow | escape }}
+    </span>
+  {%- endif -%}
+
+  {%- if description_benefits != blank -%}
+    <div class="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-5">
+      {%- for benefit in description_benefits -%}
+        {% render 'pdp-benefit-card', benefit: benefit %}
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</div>

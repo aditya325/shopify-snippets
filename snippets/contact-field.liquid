@@ -1,0 +1,166 @@
+{% doc %}
+  Contact Field
+
+  One label + control pair in the contact form, switching between input, select and textarea so the
+  five fields share one set of styles and one label/control binding.
+
+  field_name is the Shopify contact field name. Only contact[email] is required by the platform; every
+  other name is free-form and surfaces as a label in the merchant's notification, so names must be
+  unique within the form. The control id is derived from that name, which keeps the label binding
+  correct without the caller tracking ids.
+
+  @param {string} field_name - Shopify field name, e.g. contact[email]. Blank renders nothing
+  @param {string} field_id_prefix - Prefix for the control id. Pass section.id so two instances cannot collide
+  @param {string} [field_type] - text, email, tel, select or textarea (default: text)
+  @param {string} [field_label] - Visible label text
+  @param {string} [field_placeholder] - Placeholder, and the select's non-selectable first option
+  @param {boolean} [field_required] - Adds the required attribute (default: false)
+  @param {string} [field_options] - Newline-delimited option list. Select only
+  @param {string} [field_pattern] - Regex the value must match. Text-type inputs only, never the textarea
+  @param {string} [field_error] - Message shown when field_pattern fails, natively and in the bubble
+  @param {string} [field_autocomplete] - autocomplete attribute value
+
+  @example
+  {% render 'contact-field',
+    field_type: 'email',
+    field_name: 'contact[email]',
+    field_id_prefix: section.id,
+    field_label: 'Email Address',
+    field_required: true
+  %}
+{% enddoc %}
+
+{%- liquid
+  assign field_type = field_type | default: 'text'
+  assign field_label_text = field_label | default: '' | strip
+  assign field_placeholder_text = field_placeholder | default: '' | strip
+
+  assign field_slug = field_name | remove: 'contact[' | remove: ']'
+  assign field_id = field_id_prefix | append: '-' | append: field_slug
+
+  assign label_class = 'contact-form__label font-secondary text-[14px]/[18px] font-medium text-foreground lg:text-[16px]/[24px]'
+  assign control_class = 'contact-form__control w-full rounded-xl border border-border bg-background px-4 font-secondary text-[14px]/[18px] font-normal text-foreground placeholder:font-normal placeholder:text-muted placeholder:opacity-100 focus-visible:border-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary'
+-%}
+
+{%- if field_name != blank -%}
+  <div class="contact-form__field flex flex-col gap-2">
+    {%- if field_label_text != blank -%}
+      <label class="{{ label_class }}" id="{{ field_id }}-label" for="{{ field_id }}">{{ field_label_text }}</label>
+    {%- endif -%}
+
+    {%- case field_type -%}
+      {%- when 'select' -%}
+        {%- comment -%} Liquid cannot split on a bare newline, so the break is made visible first {%- endcomment -%}
+        {%- assign field_option_list = field_options | strip | newline_to_br | split: '<br />' -%}
+
+        {%- comment -%} The native select stays the value carrier so no-JS, posting and validation are unchanged {%- endcomment -%}
+        <contact-select class="contact-form__select-wrap relative block">
+          <select
+            class="{{ control_class }} contact-form__select h-12 appearance-none bg-none pr-10 invalid:text-muted"
+            id="{{ field_id }}"
+            name="{{ field_name }}"
+            data-contact-select
+            {% if field_required %}
+              required
+            {% endif %}
+          >
+            <option value="" {% if field_placeholder_text != blank %}disabled{% endif %} selected>
+              {{- field_placeholder_text -}}
+            </option>
+
+            {%- for field_option in field_option_list -%}
+              {%- assign field_option_text = field_option | strip -%}
+              {%- if field_option_text != blank -%}
+                <option value="{{ field_option_text | escape }}">{{ field_option_text }}</option>
+              {%- endif -%}
+            {%- endfor -%}
+          </select>
+
+          <button
+            class="{{ control_class }} contact-form__select-button flex h-12 items-center pr-10 text-left text-muted"
+            type="button"
+            role="combobox"
+            id="{{ field_id }}-button"
+            aria-controls="{{ field_id }}-listbox"
+            aria-expanded="false"
+            aria-labelledby="{{ field_id }}-label {{ field_id }}-button"
+            aria-required="{% if field_required %}true{% else %}false{% endif %}"
+            data-contact-select-button
+            hidden
+          >
+            <span class="truncate" data-contact-select-label>{{ field_placeholder_text }}</span>
+          </button>
+
+          <ul
+            class="contact-form__listbox invisible absolute left-0 right-0 top-full z-40 mt-2 max-h-64 -translate-y-1 overflow-auto rounded-xl border border-[#f5f5f5] bg-background py-1 opacity-0 shadow-lg transition-all duration-200 ease-out motion-reduce:transition-none"
+            id="{{ field_id }}-listbox"
+            role="listbox"
+            aria-label="{{ field_label_text | default: 'Options' | escape }}"
+            data-contact-select-menu
+            data-open-class="visible translate-y-0 opacity-100"
+            data-shut-class="invisible -translate-y-1 opacity-0"
+            hidden
+          >
+            {%- for field_option in field_option_list -%}
+              {%- assign field_option_text = field_option | strip -%}
+              {%- if field_option_text != blank -%}
+                <li
+                  class="contact-form__option flex cursor-pointer items-center justify-between gap-3 px-4 py-3 font-secondary text-[14px]/[21px] text-foreground transition-colors aria-selected:font-medium aria-selected:text-primary data-[active=true]:bg-cream-alt [@media(hover:hover)]:hover:bg-cream-alt"
+                  id="{{ field_id }}-opt-{{ forloop.index0 }}"
+                  role="option"
+                  aria-selected="false"
+                  data-contact-select-option
+                  data-value="{{ field_option_text | escape }}"
+                >
+                  <span>{{ field_option_text }}</span>
+                  {%- render 'icon-checkmark', size: 16, class: 'hidden h-4 w-4 shrink-0 aria-selected:block' -%}
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+
+          <span class="contact-form__chevron pointer-events-none absolute right-4 top-6 -translate-y-1/2 text-muted">
+            {%- render 'icon-chevron-down', size: 16 -%}
+          </span>
+        </contact-select>
+
+      {%- when 'textarea' -%}
+        <textarea
+          class="{{ control_class }} contact-form__textarea min-h-[120px] resize-y py-3"
+          id="{{ field_id }}"
+          name="{{ field_name }}"
+          rows="4"
+          {% if field_placeholder_text != blank %}
+            placeholder="{{ field_placeholder_text | escape }}"
+          {% endif %}
+          {% if field_required %}
+            required
+          {% endif %}
+        ></textarea>
+
+      {%- else -%}
+        <input
+          class="{{ control_class }} h-12"
+          id="{{ field_id }}"
+          name="{{ field_name }}"
+          type="{{ field_type | escape }}"
+          {% if field_placeholder_text != blank %}
+            placeholder="{{ field_placeholder_text | escape }}"
+          {% endif %}
+          {% if field_autocomplete != blank %}
+            autocomplete="{{ field_autocomplete | escape }}"
+          {% endif %}
+          {% if field_pattern != blank %}
+            pattern="{{ field_pattern | escape }}"
+          {% endif %}
+          {% if field_error != blank %}
+            title="{{ field_error | escape }}"
+            data-error-message="{{ field_error | escape }}"
+          {% endif %}
+          {% if field_required %}
+            required
+          {% endif %}
+        >
+    {%- endcase -%}
+  </div>
+{%- endif -%}

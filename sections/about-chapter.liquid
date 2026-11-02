@@ -1,0 +1,135 @@
+{%- liquid
+  assign chapter_live_count = 0
+  for block in section.blocks
+    assign chapter_body_plain = block.settings.stat_body | strip_html | strip
+    if block.settings.stat_value != blank or chapter_body_plain != blank
+      assign chapter_live_count = chapter_live_count | plus: 1
+    endif
+  endfor
+-%}
+
+{%- if chapter_live_count > 0 -%}
+  <div
+    class="about-chapter mb-[var(--chapter-bot-mob)] mt-[var(--chapter-top-mob)] lg:mb-[var(--chapter-bot-desk)] lg:mt-[var(--chapter-top-desk)]"
+    style="
+      --chapter-top-mob: {{ section.settings.chapter_top_mobile }}px;
+      --chapter-bot-mob: {{ section.settings.chapter_bottom_mobile }}px;
+      --chapter-top-desk: {{ section.settings.chapter_top_desktop }}px;
+      --chapter-bot-desk: {{ section.settings.chapter_bottom_desktop }}px;
+    "
+  >
+    <div class="about-chapter__row page-width flex flex-col gap-4 lg:flex-row lg:gap-5">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'chapter-stat' -%}
+            {%- render 'chapter-stat', block: block -%}
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "About Chapter",
+  "class": "about-chapter-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "chapter_top_mobile",
+      "label": "Space Above (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "chapter_bottom_mobile",
+      "label": "Space Below (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "chapter_top_desktop",
+      "label": "Space Above (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "chapter_bottom_desktop",
+      "label": "Space Below (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "chapter-stat",
+      "name": "Chapter Stat",
+      "settings": [
+        {
+          "type": "text",
+          "id": "stat_value",
+          "label": "Stat Value",
+          "info": "A year or number, e.g. 1893 or 130+."
+        },
+        {
+          "type": "richtext",
+          "id": "stat_body",
+          "label": "Stat Body"
+        },
+        {
+          "type": "select",
+          "id": "stat_tint",
+          "label": "Stat Tint",
+          "options": [
+            { "value": "light", "label": "Light" },
+            { "value": "strong", "label": "Strong" }
+          ],
+          "default": "light"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "About Chapter",
+      "blocks": [
+        {
+          "type": "chapter-stat",
+          "settings": {
+            "stat_value": "1893",
+            "stat_body": "<p>A man named P.C. Vencata Rao decided that Indian families deserved better medicine. He was not wrong.</p>",
+            "stat_tint": "light"
+          }
+        },
+        {
+          "type": "chapter-stat",
+          "settings": {
+            "stat_value": "130+",
+            "stat_body": "<p>A man named P.C. Vencata Rao decided that Indian families deserved better medicine. He was not wrong.</p>",
+            "stat_tint": "strong"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

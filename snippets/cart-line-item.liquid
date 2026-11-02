@@ -1,0 +1,287 @@
+{% doc %}
+  Cart Line Item
+
+  One cart line in its standard or gift form. The gift form needs both the `_free_gift` property,
+  which the reconciler sets when it attaches the line, AND a zero line price — the drawer must never
+  print FREE on a line the server is still charging for, so the badge follows the price.
+
+  In `optimistic` mode it renders the same markup as an empty shell carrying `data-optimistic-*`
+  hooks, so `assets/product-form.js` can fill it while an add is in flight. Both forms come from
+  this one file — they cannot drift apart.
+
+  @param {line_item} [item] - Cart line item object. Required unless optimistic
+  @param {number} [line_index] - 1-based line index for API calls (default: 1)
+  @param {boolean} [optimistic] - Render the empty add-in-flight shell (default: false)
+  @param {boolean} [optimistic_gift] - Shell for a gift line: FREE badge, no stepper (default: false)
+  @param {product} [gift_product] - With optimistic_gift, prefills the shell so the in-flight row is
+    identical to the settled one — the category label and its accent colour come from metafields JS
+    must not touch (colour is an inline style, and styling from JS is forbidden)
+{% enddoc %}
+
+{%- liquid
+  assign item = item | default: blank
+  assign line_index = line_index | default: 1
+  assign optimistic = optimistic | default: false
+
+  unless item != blank or optimistic
+    break
+  endunless
+
+  # marker alone is not enough: it says a gift was intended, the price says one was granted
+  assign as_gift = false
+  if item.properties._free_gift != blank and item.final_line_price == 0
+    assign as_gift = true
+  endif
+
+  # the in-flight shell has no line to read a price from, so the caller declares the intent
+  if optimistic and optimistic_gift
+    assign as_gift = true
+  endif
+
+  assign gift_product = gift_product | default: blank
+
+  assign prefilled = false
+  if optimistic and optimistic_gift and gift_product != blank
+    assign prefilled = true
+  endif
+
+  # fill means output real values; an unfilled shell keeps empty hooks for JS
+  assign fill = prefilled
+  unless optimistic
+    assign fill = true
+  endunless
+
+  if prefilled
+    assign display_product = gift_product
+    assign display_image = gift_product.featured_image
+  else
+    assign display_product = item.product
+    assign display_image = item.image
+  endif
+
+  assign product_badge = display_product.metafields.custom.product_badge.value
+  assign category_label = display_product.metafields.custom.category_label.value
+  assign category_color = display_product.metafields.custom.highlight_color.value
+
+  assign has_compare_price = false
+  assign compare_at_price = item.variant.compare_at_price
+  if compare_at_price > item.variant.price
+    assign has_compare_price = true
+  endif
+
+  assign line_discount = item.line_level_discount_allocations.first
+
+  assign markdown_percent = 0
+  if line_discount != blank
+    assign strike_unit = item.original_price
+  elsif has_compare_price
+    assign strike_unit = compare_at_price
+    assign markdown_scaled = compare_at_price | minus: item.variant.price | times: 100.0
+    assign markdown_percent = markdown_scaled | divided_by: compare_at_price | round
+  else
+    assign strike_unit = 0
+  endif
+
+  assign line_qty = item.quantity
+  if optimistic
+    assign line_qty = 1
+  endif
+-%}
+
+<div
+  class="cart-line-item relative flex h-18"
+  {%- unless optimistic %}
+    id="CartItem-{{ item.key | replace: ':', '-' }}"
+    data-item-key="{{ item.key }}"
+    data-line-index="{{ line_index }}"
+    data-cart-line="{{ line_index }}"
+  {% endunless -%}
+>
+  <a
+    href="{% if fill %}{% if prefilled %}{{ display_product.url }}{% else %}{{ item.url }}{% endif %}{% else %}#{% endif %}"
+    class="relative block h-18 w-18 shrink-0"
+    aria-label="{{ display_product.title | escape }}"
+    {%- if optimistic and prefilled == false %}
+      data-optimistic-link
+    {% endif %}
+  >
+    {%- if product_badge != blank or optimistic -%}
+      <span
+        class="absolute left-[3.5px] top-[3.5px] z-10 flex px-[2px] py-[1px] items-center justify-center overflow-hidden rounded-[1px] bg-accent font-secondary text-[3px] font-medium leading-none text-primary"
+        {%- if optimistic and prefilled == false %}
+          data-optimistic-badge hidden
+        {% endif %}
+      >
+        {%- if fill %}{{ product_badge | escape }}{% endif -%}
+      </span>
+    {%- endif -%}
+    {%- if display_image != blank or optimistic -%}
+      <img
+        {%- if fill %}
+          src="{{ display_image | image_url: width: 144 }}"
+        {% endif %}
+        alt="{{ display_image.alt | default: display_product.title | escape }}"
+        {%- if optimistic and prefilled == false %}
+          data-optimistic-image
+        {% endif %}
+        width="72"
+        height="72"
+        loading="lazy"
+        class="h-full w-full rounded-xl object-cover outline outline-[0.5px] -outline-offset-[0.5px] outline-[#E5E5E5]"
+      >
+    {%- endif -%}
+  </a>
+
+  <div class="ml-3 flex min-w-0 flex-1 flex-col">
+    {%- if category_label != blank or optimistic -%}
+      <span
+        class="font-primary text-[10px] font-medium uppercase leading-[12px] tracking-[1px] text-[color:var(--cart-line-accent,rgb(var(--color-muted)))]"
+        {%- if category_color != blank and fill %}
+          style="--cart-line-accent: {{ category_color | escape }};"
+        {% endif %}
+        {%- if optimistic and prefilled == false %}
+          data-optimistic-category hidden
+        {% endif -%}
+      >
+        {%- if fill %}{{ category_label | escape }}{% endif -%}
+      </span>
+    {%- endif -%}
+
+    <a
+      href="{% if fill %}{% if prefilled %}{{ display_product.url }}{% else %}{{ item.url }}{% endif %}{% else %}#{% endif %}"
+      class="{% unless as_gift %}truncate {% endunless %}text-sm font-medium leading-5 text-foreground"
+      {%- if optimistic and prefilled == false %}
+        data-optimistic-link data-optimistic-title
+      {% endif -%}
+    >
+      {%- if fill %}{{ display_product.title | escape }}{% endif -%}
+    </a>
+
+    {%- unless as_gift -%}
+      <div class="mt-auto flex items-end gap-2">
+        <div class="flex items-end gap-[5px]">
+          <span
+            class="text-xs tracking-[-0.12px] text-foreground"
+            {%- if optimistic %}
+              data-optimistic-price
+            {% else %}
+              data-cart-line-price="{{ line_index }}"
+            {% endif -%}
+          >
+            {%- unless optimistic -%}
+              {{- item.final_line_price | money_without_trailing_zeros | replace: ' ', '' -}}
+            {%- endunless -%}
+          </span>
+
+          {%- if optimistic -%}
+            <s class="text-[10px] leading-4 text-muted" data-optimistic-compare hidden></s>
+          {%- elsif strike_unit > 0 -%}
+            <s
+              class="text-[10px] leading-4 text-muted"
+              data-cart-line-compare-price="{{ line_index }}"
+              data-compare-at-unit="{{ strike_unit }}"
+            >
+              {{- strike_unit | times: item.quantity | money_without_trailing_zeros | replace: ' ', '' -}}
+            </s>
+          {%- endif -%}
+        </div>
+
+        {%- if optimistic -%}
+          <span
+            class="font-secondary text-[10px] font-semibold leading-4 tracking-normal text-primary"
+            data-optimistic-percent
+            hidden
+          ></span>
+        {%- elsif line_discount != blank -%}
+          <span class="flex min-w-0 items-center gap-1 rounded-[40px] bg-primary/30 px-[5px] py-[2px] font-secondary text-[10px] font-semibold uppercase leading-4 tracking-normal text-primary">
+            {%- render 'icon-tag', size: 14, class: 'shrink-0' -%}
+            <span class="truncate">{{ line_discount.discount_application.title | escape }}</span>
+          </span>
+        {%- elsif markdown_percent > 0 -%}
+          <span class="font-secondary text-[10px] font-semibold leading-4 tracking-normal text-primary">
+            {{- 'cart.percent_off' | t: percent: markdown_percent -}}
+          </span>
+        {%- endif -%}
+      </div>
+    {%- endunless -%}
+
+    <p
+      class="mt-1 text-[10px] text-error"
+      {%- unless optimistic %}
+        data-cart-line-error="{{ line_index }}"
+      {% endunless %}
+      data-error-message="{{ 'cart.update_cart_error' | t | escape }}"
+      hidden
+    ></p>
+  </div>
+
+  <div class="ml-6 flex shrink-0 flex-col justify-end">
+    {%- if as_gift -%}
+      <span class="flex h-6 items-center rounded-md border border-[#FACC15] bg-[#FACC15]/20 px-3 text-[10px] font-medium text-foreground">
+        {{- 'cart.free' | t -}}
+      </span>
+    {%- else -%}
+      <div
+        class="inline-flex h-6 items-center rounded-md outline outline-[0.5px] -outline-offset-[0.5px] outline-[#E5E5E5]"
+        {%- if optimistic %}
+          aria-hidden="true"
+        {% endif -%}
+      >
+        <button
+          type="button"
+          class="flex h-6 w-6 items-center justify-center text-muted transition-colors hover:text-primary"
+          {%- if optimistic %}
+            disabled tabindex="-1"
+          {% endif %}
+          data-quantity-minus
+          data-line-index="{{ line_index }}"
+          data-label-remove="{{ 'cart.remove' | t }}: {{ item.product.title | escape }}"
+          data-label-decrease="{{ 'cart.decrease' | t: product: item.product.title | escape }}"
+          aria-label="{%- if line_qty == 1 -%}{{ 'cart.remove' | t }}: {{ item.product.title | escape }}{%- else -%}{{ 'cart.decrease' | t: product: item.product.title | escape }}{%- endif -%}"
+        >
+          <span
+            data-icon-delete
+            {% unless line_qty == 1 %}
+              hidden
+            {% endunless %}
+          >
+            {%- render 'icon-delete', size: 12 -%}
+          </span>
+          <span
+            data-icon-minus
+            {% if line_qty == 1 %}
+              hidden
+            {% endif %}
+          >
+            {%- render 'icon-minus', size: 12 -%}
+          </span>
+        </button>
+        <input
+          type="number"
+          value="{{ line_qty }}"
+          min="0"
+          max="99"
+          disabled
+          class="h-6 w-4 border-0 bg-transparent p-0 text-center text-xs text-foreground [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          data-line-index="{{ line_index }}"
+          {%- unless optimistic %}
+            data-cart-line-qty="{{ line_index }}"
+          {% endunless %}
+          aria-label="{{ 'cart.quantity_input_label' | t: product: item.product.title | escape }}"
+        >
+        <button
+          type="button"
+          class="flex h-6 w-6 items-center justify-center text-muted transition-colors hover:text-primary"
+          {%- if optimistic %}
+            disabled tabindex="-1"
+          {% endif %}
+          data-quantity-plus
+          data-line-index="{{ line_index }}"
+          aria-label="{{ 'cart.increase' | t: product: item.product.title | escape }}"
+        >
+          {%- render 'icon-plus', class: 'h-3 w-3' -%}
+        </button>
+      </div>
+    {%- endif -%}
+  </div>
+</div>

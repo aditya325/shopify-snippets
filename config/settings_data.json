@@ -1,0 +1,39 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "current": {
+    "type_primary_font": "space_grotesk_n4",
+    "type_secondary_font": "dm_sans_n4",
+    "color_primary": "#466E2E",
+    "color_accent": "#F4C430",
+    "color_brand_yellow": "#FACC15",
+    "color_green_secondary": "#2A7A50",
+    "color_green_dark": "#113422",
+    "color_foreground": "#171717",
+    "color_muted": "#737373",
+    "color_border": "#E5E7EB",
+    "color_background": "#FFFFFF",
+    "color_primary_foreground": "#FFFFFF",
+    "color_cream": "#FEF9EA",
+    "color_cream_alt": "#FAF8F4",
+    "color_error": "#DC2626",
+    "color_success": "#16A34A",
+    "color_sale": "#D93807",
+    "color_rating": "#FF9C05",
+    "logo": "shopify://shop_images/amr-home-a1-header-logo-400.png",
+    "logo_width": 100,
+    "search_concern_menu": "browse-by-concern",
+    "popular_collection": "best-sellers",
+    "popular_products_count": 4,
+    "show_discount_badge": true,
+    "show_sold_out_badge": true,
+    "content_for_index": []
+  }
+}

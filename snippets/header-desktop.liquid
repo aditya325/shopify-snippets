@@ -1,0 +1,123 @@
+{% doc %}
+  Desktop Header
+
+  Renders the desktop header bar with logo, navigation and action icons.
+  Hidden on mobile (lg:flex). The mega-menu panels are rendered by sections/header.liquid.
+
+  @param {object} section - The header section object (for settings.header_menu)
+  @param {string} panelled_handles - Comma-wrapped handles that have a rendered mega-menu panel
+{% enddoc %}
+
+<div class="menu-desktop hidden lg:block">
+  <div class="flex items-center justify-between gap-2 page-width lg:h-[110px] xl:gap-8">
+    {%- comment -%} Logo {%- endcomment -%}
+    <a
+      href="{{ routes.root_url }}"
+      class="flex-shrink-0"
+      aria-label="{{ shop.name | escape }} - Home"
+    >
+      {%- if settings.logo != blank -%}
+        <img
+          class="h-14 w-14 rounded-full object-cover shadow-[0_1px_2px_rgba(0,0,0,0.08)] xl:h-[100px] xl:w-[100px]"
+          src="{{ settings.logo | image_url: width: 300 }}"
+          alt="{{ shop.name | escape }}"
+          width="100"
+          height="100"
+          loading="eager"
+        >
+      {%- else -%}
+        <span class="font-primary text-xl font-bold tracking-tight">{{ shop.name | escape }}</span>
+      {%- endif -%}
+    </a>
+
+    {%- comment -%} Navigation {%- endcomment -%}
+    <nav class="flex-1 self-stretch" aria-label="Main navigation">
+      <ul class="flex h-full items-center justify-center gap-2 xl:gap-10">
+        {%- for link in linklists[section.settings.header_menu].links -%}
+          <li
+            class="nav-trigger relative flex h-full items-center gap-1 xl:gap-2"
+            data-nav-item="{{ link.handle }}"
+          >
+            <a
+              href="{{ link.url }}"
+              class="whitespace-nowrap py-2 font-secondary text-[14px]/[20px] font-medium tracking-normal text-foreground xl:text-[18px]/[27px] transition-opacity duration-200 hover:opacity-70"
+            >
+              {{ link.title | escape }}
+            </a>
+
+            {%- liquid
+              assign handle_key = ',' | append: link.handle | append: ','
+              assign submenu_title = link.title | escape
+            -%}
+
+            {%- if panelled_handles contains handle_key -%}
+              <button
+                class="flex items-center py-2 transition-opacity duration-200 hover:opacity-70 relative before:absolute before:left-1/2 before:top-1/2 before:h-11 before:w-6 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']"
+                type="button"
+                data-mega-trigger="{{ link.handle }}"
+                aria-expanded="false"
+                aria-controls="mega-panel-{{ link.handle }}"
+                aria-label="{{ 'accessibility.submenu' | t: title: submenu_title }}"
+              >
+                {% render 'icon-chevron-down',
+                  size: 18,
+                  class: 'nav-trigger__chevron h-3.5 w-3.5 shrink-0 transition-transform duration-[250ms] ease-out motion-reduce:transition-none xl:h-[18px] xl:w-[18px] [.nav-trigger--open_&]:rotate-180'
+                %}
+              </button>
+
+              <span
+                class="nav-trigger__underline absolute inset-x-0 bottom-0 h-[3px] bg-accent opacity-0 transition-opacity duration-[250ms] ease-out motion-reduce:transition-none [.nav-trigger--open_&]:opacity-100"
+                aria-hidden="true"
+              ></span>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+
+    {%- comment -%} Action icons {%- endcomment -%}
+    <div class="flex shrink-0 items-center gap-3 xl:gap-10">
+      <button
+        type="button"
+        class="search-trigger flex items-center justify-center transition-opacity duration-200 hover:opacity-70 relative before:absolute before:left-1/2 before:top-1/2 before:h-11 before:w-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']"
+        aria-label="{{ 'accessibility.search' | t }}"
+      >
+        {% render 'icon-search', size: 30, class: 'h-6 w-6 xl:h-[30px] xl:w-[30px]' %}
+      </button>
+
+      <a
+        href="{{ routes.account_url }}"
+        class="flex items-center justify-center transition-opacity duration-200 hover:opacity-70 relative before:absolute before:left-1/2 before:top-1/2 before:h-11 before:w-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']"
+        aria-label="{{ 'accessibility.account' | t }}"
+      >
+        {% render 'icon-account', size: 30, class: 'h-6 w-6 xl:h-[30px] xl:w-[30px]' %}
+      </a>
+
+      <button
+        type="button"
+        class="flex items-center justify-center transition-opacity duration-200 hover:opacity-70 relative before:absolute before:left-1/2 before:top-1/2 before:h-11 before:w-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']"
+        aria-label="{{ 'accessibility.cart' | t }}"
+        data-cart-trigger
+      >
+        {% render 'icon-cart', size: 30, class: 'h-6 w-6 xl:h-[30px] xl:w-[30px]' %}
+        {%- comment -%} Geometry pixel-matched to Figma node 581:30880 against the xl:h-[30px] icon; scale offsets if either size changes {%- endcomment -%}
+        <span
+          class="cart-item-count absolute -right-[3px] -top-[13px] flex h-[11px] w-[11px] items-center justify-center rounded-full bg-accent text-[9px] font-extrabold text-foreground shadow-[0_0_0_2px_rgb(var(--color-accent)/0.35)] xl:-right-[4px] xl:-top-[16px] xl:h-[14px] xl:w-[14px] xl:shadow-[0_0_0_3px_rgb(var(--color-accent)/0.35)]"
+          data-cart-count="{{ cart.item_count }}"
+          aria-live="polite"
+          aria-atomic="true"
+          {% if cart.item_count == 0 %}
+            hidden
+          {% endif %}
+        >
+          {{ cart.item_count }}
+        </span>
+      </button>
+      <noscript>
+        <a href="{{ routes.cart_url }}" aria-label="{{ 'accessibility.cart' | t }}">
+          {% render 'icon-cart', size: 30 %}
+        </a>
+      </noscript>
+    </div>
+  </div>
+</div>

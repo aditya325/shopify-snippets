@@ -1,0 +1,45 @@
+{% doc %}
+  Cart Auto-Applied Row
+
+  One chip per discount applied to the cart — order-level and product-level, automatic and
+  code-based alike. Only a code can be removed, so automatic discounts render without the
+  remove control. Renders nothing when empty, so a mutation that clears the last discount
+  removes this row from the DOM entirely via the existing section morph.
+
+  @param {object[]} discounts - cart.discount_applications (every discount, not just cart-level)
+
+  @example
+  {% render 'cart-auto-applied-row', discounts: cart.discount_applications %}
+{% enddoc %}
+
+{%- if discounts.size > 0 -%}
+  <div class="cart-auto-applied-row -mx-[22px] flex items-center justify-between gap-[30px] border-t border-primary bg-[#ECF0EA] pl-[22px] pb-2 pt-[7px]">
+    <span class="shrink-0 font-secondary text-xs text-primary">
+      {{ 'cart.offers_applied' | t: count: discounts.size }}
+    </span>
+    <div class="scrollbar-hide flex items-center gap-2 overflow-x-auto pr-4">
+      {%- for discount in discounts -%}
+        <span
+          class="flex h-[22px] shrink-0 items-center gap-3 rounded-full bg-primary/30 p-[3px]"
+          data-discount-code="{{ discount.title }}"
+        >
+          <span class="flex items-center gap-[2px]">
+            {% render 'icon-tag', size: 14, class: 'text-primary' %}
+            <span class="font-secondary text-xs font-semibold text-primary">{{ discount.title }}</span>
+          </span>
+          {%- if discount.type == 'discount_code' -%}
+            <button
+              type="button"
+              class="flex shrink-0 items-center"
+              data-discount-remove-chip
+              data-discount-code="{{ discount.title }}"
+              aria-label="{{ 'cart.remove' | t }}"
+            >
+              {% render 'icon-x-circle', size: 16, class: 'text-primary' %}
+            </button>
+          {%- endif -%}
+        </span>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}

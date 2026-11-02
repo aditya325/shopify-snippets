@@ -1,0 +1,434 @@
+{%- liquid
+  assign footer_logo = section.settings.footer_logo | default: settings.logo
+
+  assign footer_bg = section.settings.footer_background
+  if footer_bg == blank
+    assign footer_bg = '#113422'
+  endif
+
+  assign footer_text = section.settings.footer_text_color
+  if footer_text == blank
+    assign footer_text = '#FFFFFF'
+  endif
+
+  assign footer_about_plain = section.settings.footer_about | strip_html | strip
+  assign footer_heading_plain = section.settings.footer_heading | strip_html | strip
+  assign footer_disclaimer_plain = section.settings.footer_disclaimer | strip_html | strip
+  assign footer_copyright_plain = section.settings.footer_copyright | strip_html | strip
+
+  assign footer_usp_count = 0
+  assign footer_social_count = 0
+  assign footer_policy_count = 0
+  for block in section.blocks
+    case block.type
+      when 'usp'
+        assign footer_usp_count = footer_usp_count | plus: 1
+      when 'social'
+        assign footer_social_count = footer_social_count | plus: 1
+      when 'policy'
+        assign footer_policy_count = footer_policy_count | plus: 1
+    endcase
+  endfor
+-%}
+
+<footer class="footer mx-auto max-w-[1440px] px-2.5 pb-2.5 lg:px-5 lg:pb-5">
+  <div
+    class="footer__panel flex flex-col gap-8 rounded-xl px-2.5 pb-5 pt-10 lg:gap-6 lg:rounded-[20px] lg:p-10"
+    style="background-color: {{ footer_bg | escape }}; color: {{ footer_text | escape }};"
+  >
+    <div class="flex flex-col gap-6 xl:flex-row lg:gap-6">
+      <div class="contents lg:flex lg:w-[648px] lg:flex-col lg:justify-center lg:gap-8">
+        {%- if footer_logo != blank or footer_about_plain != blank -%}
+          <div class="order-1 flex flex-row items-center gap-4 lg:order-none lg:flex-col lg:items-start lg:gap-5">
+            {%- if footer_logo != blank -%}
+              <a href="{{ routes.root_url }}" aria-label="{{ shop.name }} - Home">
+                <div class="h-[70px] w-[70px] shrink-0 overflow-hidden rounded-full lg:h-[90px] lg:w-[90px]">
+                  {%- render 'image',
+                    image: footer_logo,
+                    alt: shop.name,
+                    class_name: 'h-full w-full object-cover',
+                    decoding: 'async',
+                    responsive_widths: '390:180'
+                  -%}
+                </div>
+              </a>
+            {%- endif -%}
+
+            {%- if footer_about_plain != blank -%}
+              <div class="footer__about text-body-d font-light tracking-normal lg:w-[450px]">
+                {{ section.settings.footer_about }}
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        <div class="order-4 flex flex-col gap-4 lg:order-none">
+          {%- if section.settings.footer_subscribe_label != blank -%}
+            <span class="font-primary text-[16px]/[24px] font-medium tracking-[-0.2px] opacity-60">
+              {{- section.settings.footer_subscribe_label | escape -}}
+            </span>
+          {%- endif -%}
+
+          {%- if footer_heading_plain != blank -%}
+            <div class="footer__heading font-primary text-section-heading font-semibold lg:[&_br]:hidden">
+              {{ section.settings.footer_heading }}
+            </div>
+          {%- endif -%}
+
+          {%- render 'newsletter-form',
+            unique_id: section.id,
+            tag: 'newsletter',
+            placeholder: 'Enter your email... ',
+            button_label: 'Subscribe',
+            form_class: 'flex gap-2.5',
+            input_class: 'h-12 w-[220px] rounded-md border border-[#FFFFFF33] bg-transparent px-3 text-label-md font-medium tracking-normal text-white outline-none placeholder:text-white/70 lg:w-[280px]',
+            button_variant: 'unstyled',
+            button_class: 'h-12 w-[120px] shrink-0 rounded-md border border-white bg-white text-label-md font-semibold tracking-normal text-[#113422] lg:w-[160px] [@media(hover:hover)]:transition-colors [@media(hover:hover)]:hover:bg-transparent [@media(hover:hover)]:hover:text-white',
+            toast_class: 'fixed bottom-5 left-1/2 z-50 w-max max-w-[calc(100vw-40px)] -translate-x-1/2 items-center gap-2 rounded-lg px-4 py-3 text-[14px]/[20px] font-medium shadow-lg'
+          -%}
+
+          {%- if footer_disclaimer_plain != blank -%}
+            <div class="footer__disclaimer text-[10px]/[16px] font-medium italic tracking-normal opacity-60 lg:text-[12px]/[18px] [&_a]:underline">
+              {{ section.settings.footer_disclaimer }}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+
+      <div class="contents lg:flex lg:w-[648px] lg:flex-col md:gap-6 lg:justify-between">
+        {%- if footer_usp_count > 0 -%}
+          <div class="order-2 flex justify-between lg:order-none">
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'usp' -%}
+                <div class="flex w-[100px] flex-col gap-2 lg:w-[216px] lg:gap-1.5" {{ block.shopify_attributes }}>
+                  {%- if block.settings.usp_icon != blank -%}
+                    <div class="h-[34px] w-[34px] lg:h-10 lg:w-10">
+                      {%- render 'image',
+                        image: block.settings.usp_icon,
+                        alt: '',
+                        class_name: 'h-full w-full object-contain',
+                        decoding: 'async',
+                        responsive_widths: '390:80'
+                      -%}
+                    </div>
+                  {%- endif -%}
+
+                  {%- if block.settings.usp_title != blank -%}
+                    <div class="text-label-md font-semibold lg:[&_br]:hidden">
+                      {{ block.settings.usp_title }}
+                    </div>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        <div class="order-3 flex flex-col gap-6 lg:order-none lg:flex-row lg:gap-4">
+          <div class="flex gap-5 lg:contents">
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'link-column' -%}
+                {%- assign footer_menu = linklists[block.settings.column_menu] -%}
+                {%- if footer_menu.links.size > 0 -%}
+                  <div class="flex flex-1 flex-col gap-4" {{ block.shopify_attributes }}>
+                    <h2 class="font-primary text-[16px]/[24px] font-medium tracking-[-0.2px] opacity-60 lg:text-[18px]/[27px]">
+                      {{- footer_menu.title | escape -}}
+                    </h2>
+
+                    <ul class="flex flex-col gap-2.5">
+                      {%- for link in footer_menu.links -%}
+                        <li>
+                          <a
+                            href="{{ link.url }}"
+                            class="text-label-md font-medium tracking-normal [@media(hover:hover)]:hover:underline"
+                          >
+                            {{- link.title | escape -}}
+                          </a>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  </div>
+                {%- endif -%}
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'support' -%}
+              {%- if block.settings.support_phone != blank
+                or block.settings.support_email != blank
+                or footer_social_count > 0
+              -%}
+                <div class="flex flex-col gap-4 lg:flex-1" {{ block.shopify_attributes }}>
+                  {%- if block.settings.support_heading != blank -%}
+                    <h2 class="font-primary text-[16px]/[24px] font-medium tracking-[-0.2px] opacity-60 lg:text-[18px]/[27px]">
+                      {{- block.settings.support_heading | escape -}}
+                    </h2>
+                  {%- endif -%}
+
+                  <div class="flex flex-col gap-5">
+                    {%- if block.settings.support_phone != blank or block.settings.support_email != blank -%}
+                      <div class="flex flex-col gap-2.5">
+                        {%- if block.settings.support_phone != blank -%}
+                          <a
+                            href="tel:{{ block.settings.support_phone | remove: ' ' | remove: '-' | escape }}"
+                            class="text-label-md font-medium tracking-normal [@media(hover:hover)]:hover:underline"
+                          >
+                            {{- block.settings.support_phone | escape -}}
+                          </a>
+                        {%- endif -%}
+
+                        {%- if block.settings.support_email != blank -%}
+                          <a
+                            href="mailto:{{ block.settings.support_email | escape }}"
+                            class="text-label-md font-medium tracking-normal [@media(hover:hover)]:hover:underline"
+                          >
+                            {{- block.settings.support_email | escape -}}
+                          </a>
+                        {%- endif -%}
+                      </div>
+                    {%- endif -%}
+
+                    {%- if footer_social_count > 0 -%}
+                      <ul class="flex gap-2.5">
+                        {%- for social_block in section.blocks -%}
+                          {%- if social_block.type == 'social' and social_block.settings.social_icon != blank -%}
+                            <li {{ social_block.shopify_attributes }}>
+                              <a
+                                href="{{ social_block.settings.social_link | default: '#' }}"
+                                class="block h-10 w-10"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="{{ social_block.settings.social_name | default: 'Social media' | escape }}"
+                              >
+                                {%- render 'image',
+                                  image: social_block.settings.social_icon,
+                                  alt: '',
+                                  class_name: 'h-full w-full object-contain',
+                                  decoding: 'async',
+                                  responsive_widths: '390:80'
+                                -%}
+                              </a>
+                            </li>
+                          {%- endif -%}
+                        {%- endfor -%}
+                      </ul>
+                    {%- endif -%}
+                  </div>
+                </div>
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+
+    {%- if footer_copyright_plain != blank or footer_policy_count > 0 -%}
+      <div class="flex flex-col gap-2 border-t border-[#FFFFFF5C] pt-6">
+        {%- if footer_copyright_plain != blank -%}
+          <div class="footer__legal text-label-xs font-normal tracking-normal opacity-75 lg:text-[12px]/[18px] lg:font-light">
+            {{ section.settings.footer_copyright }}
+          </div>
+        {%- endif -%}
+
+        {%- if footer_policy_count > 0 -%}
+          <ul class="flex justify-between gap-1.5">
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'policy' and block.settings.policy_label != blank -%}
+                <li {{ block.shopify_attributes }}>
+                  {%- if block.settings.policy_link != blank -%}
+                    <a
+                      href="{{ block.settings.policy_link }}"
+                      class="text-label-xs font-normal tracking-normal opacity-75 lg:text-[12px]/[18px] lg:font-light [@media(hover:hover)]:hover:underline"
+                    >
+                      {{- block.settings.policy_label | escape -}}
+                    </a>
+                  {%- else -%}
+                    <span class="text-label-xs font-normal tracking-normal opacity-75 lg:text-[12px]/[18px] lg:font-light">
+                      {{- block.settings.policy_label | escape -}}
+                    </span>
+                  {%- endif -%}
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "class": "footer-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "image_picker",
+      "id": "footer_logo",
+      "label": "Logo",
+      "info": "Falls back to the theme logo."
+    },
+    {
+      "type": "richtext",
+      "id": "footer_about",
+      "label": "About text",
+      "default": "<p>From pain relief and hydration to women's care and everyday wellness, we're helping millions live healthier, more comfortable lives since 1873</p>"
+    },
+    {
+      "type": "text",
+      "id": "footer_subscribe_label",
+      "label": "Subscribe label",
+      "default": "Subscribe With 15% Off!"
+    },
+    {
+      "type": "richtext",
+      "id": "footer_heading",
+      "label": "Heading",
+      "default": "<p>Trusted For Generations. <br/>Built For Today.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "footer_disclaimer",
+      "label": "Disclaimer",
+      "default": "<p>***By subscribing you agree to the <a href=\"/policies/terms-of-service\">Terms of Use</a> and <a href=\"/policies/privacy-policy\">Privacy Policy.</a></p>"
+    },
+    {
+      "type": "richtext",
+      "id": "footer_copyright",
+      "label": "Copyright",
+      "default": "<p>© 2026 Amrutanjan Health Care Ltd. All rights reserved. Since 1893.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "footer_background",
+      "label": "Background",
+      "default": "#113422"
+    },
+    {
+      "type": "color",
+      "id": "footer_text_color",
+      "label": "Text colour",
+      "default": "#FFFFFF"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "usp",
+      "name": "USP",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "usp_icon",
+          "label": "Icon"
+        },
+        {
+          "type": "richtext",
+          "id": "usp_title",
+          "label": "Title"
+        }
+      ]
+    },
+    {
+      "type": "link-column",
+      "name": "Link Column",
+      "settings": [
+        {
+          "type": "link_list",
+          "id": "column_menu",
+          "label": "Menu",
+          "info": "The column heading is the menu's own title."
+        }
+      ]
+    },
+    {
+      "type": "support",
+      "name": "Support",
+      "settings": [
+        {
+          "type": "text",
+          "id": "support_heading",
+          "label": "Heading",
+          "default": "Support Details"
+        },
+        {
+          "type": "text",
+          "id": "support_phone",
+          "label": "Phone"
+        },
+        {
+          "type": "text",
+          "id": "support_email",
+          "label": "Email"
+        }
+      ]
+    },
+    {
+      "type": "social",
+      "name": "Social",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "social_icon",
+          "label": "Icon"
+        },
+        {
+          "type": "text",
+          "id": "social_name",
+          "label": "Name",
+          "info": "Used as the link's accessible name."
+        },
+        {
+          "type": "url",
+          "id": "social_link",
+          "label": "Link"
+        }
+      ]
+    },
+    {
+      "type": "policy",
+      "name": "Policy",
+      "settings": [
+        {
+          "type": "text",
+          "id": "policy_label",
+          "label": "Label"
+        },
+        {
+          "type": "url",
+          "id": "policy_link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Footer",
+      "blocks": [
+        { "type": "usp", "settings": { "usp_title": "<p>Free <br/>Shipping</p>" } },
+        { "type": "usp", "settings": { "usp_title": "<p>100% <br/>Money Back</p>" } },
+        { "type": "usp", "settings": { "usp_title": "<p>Support <br/>Online</p>" } },
+        { "type": "link-column" },
+        { "type": "link-column" },
+        { "type": "support", "settings": { "support_heading": "Support Details" } },
+        { "type": "social", "settings": { "social_name": "Instagram" } },
+        { "type": "social", "settings": { "social_name": "Facebook" } },
+        { "type": "social", "settings": { "social_name": "YouTube" } },
+        { "type": "policy", "settings": { "policy_label": "Privacy Policy" } },
+        { "type": "policy", "settings": { "policy_label": "Terms of Service" } },
+        { "type": "policy", "settings": { "policy_label": "Shipping Policy" } },
+        { "type": "policy", "settings": { "policy_label": "Refund Policy" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

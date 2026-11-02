@@ -1,0 +1,24 @@
+{% doc %}
+  @param {object} block - Certified Logo block, supplying settings and shopify_attributes
+  @param {string} [logo_class] - Sizing classes for the img. The section passes a height
+    driven by its certified_logo_h setting (default: 'h-[30px] w-auto lg:h-[70px]')
+{% enddoc %}
+
+{%- liquid
+  assign logo_image = block.settings.logo_image
+  # strip turns a nil or whitespace-only label into '', which image.liquid treats as a real alt=""
+  assign logo_alt = block.settings.logo_alt | strip
+  assign logo_class = logo_class | default: 'h-[30px] w-auto lg:h-[70px]'
+-%}
+
+{%- if logo_image != blank -%}
+  <div class="certified__logo shrink-0" {{ block.shopify_attributes }}>
+    {%- render 'image',
+      image: logo_image,
+      alt: logo_alt,
+      class_name: logo_class,
+      decoding: 'async',
+      responsive_widths: '390:286'
+    -%}
+  </div>
+{%- endif -%}

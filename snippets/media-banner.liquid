@@ -1,0 +1,56 @@
+{% doc %}
+  @param {object} block - Media Banner block, supplying settings and shopify_attributes
+  @param {string} width_class - Desktop width utility; only the section knows the block count
+{% enddoc %}
+
+{%- liquid
+  assign banner_image = block.settings.banner_desktop_image
+  assign banner_mob_image = block.settings.banner_mobile_image
+  assign banner_video = block.settings.banner_video
+  assign banner_link = block.settings.banner_link
+
+  assign banner_desk_image = banner_image | default: banner_mob_image
+
+  assign banner_slide_class = 'media-carousel__slide shrink-0 basis-full overflow-hidden rounded-xl lg:rounded-[20px]'
+-%}
+
+{%- capture banner_media -%}
+  {%- if banner_video != blank -%}
+    {{
+      banner_video
+      | video_tag:
+        autoplay: true,
+        loop: true,
+        muted: true,
+        loading: 'lazy',
+        image_size: '860x',
+        class: 'h-full w-full object-cover'
+    }}
+  {%- elsif banner_desk_image != blank -%}
+    {%- render 'image',
+      image: banner_desk_image,
+      mobile_image: banner_mob_image,
+      class_name: 'h-full w-full object-cover',
+      lazy: true,
+      decoding: 'async',
+      responsive_widths: '390:740,1024:860'
+    -%}
+  {%- else -%}
+    {{ 'image' | placeholder_svg_tag: 'h-full w-full' }}
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- if banner_link != blank -%}
+  {%- comment -%} Wrapping the media means the image alt becomes the link's accessible name {%- endcomment -%}
+  <a
+    href="{{ banner_link | escape }}"
+    class="{{ banner_slide_class }} {{ width_class }}"
+    {{ block.shopify_attributes }}
+  >
+    {{ banner_media }}
+  </a>
+{%- else -%}
+  <div class="{{ banner_slide_class }} {{ width_class }}" {{ block.shopify_attributes }}>
+    {{ banner_media }}
+  </div>
+{%- endif -%}

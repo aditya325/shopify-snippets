@@ -1,0 +1,152 @@
+{% doc %}
+  @param {object} block - Hero Slide block, supplying settings and shopify_attributes
+  @param {boolean} is_first - First slide, which owns the page h1 and loads its media eagerly
+{% enddoc %}
+
+{%- liquid
+  assign hero_desktop_image = block.settings.hero_desktop_image
+  assign hero_mobile_image = block.settings.hero_mobile_image
+  assign hero_desktop_video = block.settings.hero_desktop_video
+  assign hero_mobile_video = block.settings.hero_mobile_video
+  assign hero_badge_text = block.settings.hero_badge_text
+  assign hero_heading = block.settings.hero_heading
+  assign hero_description = block.settings.hero_description
+  assign hero_primary_label = block.settings.hero_primary_label
+  assign hero_primary_link = block.settings.hero_primary_link
+  assign hero_secondary_label = block.settings.hero_secondary_label
+  assign hero_secondary_link = block.settings.hero_secondary_link
+
+  assign hero_image = hero_desktop_image | default: hero_mobile_image
+
+  assign hero_heading_level = 'h2'
+  assign hero_video_loading = 'lazy'
+  assign hero_image_lazy = true
+  if is_first
+    assign hero_heading_level = 'h1'
+    assign hero_video_loading = 'eager'
+    assign hero_image_lazy = false
+  endif
+
+  assign hero_has_media = false
+  if hero_desktop_video != blank or hero_mobile_video != blank or hero_image != blank
+    assign hero_has_media = true
+  endif
+
+  assign hero_desktop_video_class = 'h-full w-full object-cover'
+  assign hero_mobile_video_class = 'h-full w-full object-cover'
+  if hero_desktop_video != blank and hero_mobile_video != blank
+    assign hero_desktop_video_class = 'h-full w-full object-cover max-lg:hidden'
+    assign hero_mobile_video_class = 'h-full w-full object-cover lg:hidden'
+  endif
+
+  assign hero_badge_bg = block.settings.hero_badge_background | default: '#F4C430'
+  assign hero_badge_txt = block.settings.hero_badge_text_color | default: '#525252'
+  assign hero_primary_bg = block.settings.hero_primary_background | default: '#466E2E'
+  assign hero_primary_txt = block.settings.hero_primary_color | default: '#FFFFFF'
+  assign hero_secondary_txt = block.settings.hero_secondary_color | default: '#466E2E'
+-%}
+
+<div
+  class="hero-banner__slide relative aspect-[187/240] shrink-0 basis-full lg:aspect-[70/31]"
+  style="
+    --hero-badge-bg: {{ hero_badge_bg }};
+    --hero-badge-txt: {{ hero_badge_txt }};
+    --hero-pri-bg: {{ hero_primary_bg }};
+    --hero-pri-txt: {{ hero_primary_txt }};
+    --hero-sec-txt: {{ hero_secondary_txt }};
+  "
+  {{ block.shopify_attributes }}
+>
+  {%- if hero_has_media -%}
+    <div class="absolute inset-0">
+      {%- if hero_desktop_video != blank or hero_mobile_video != blank -%}
+        {%- if hero_desktop_video != blank -%}
+          {{
+            hero_desktop_video
+            | video_tag:
+              autoplay: true,
+              loop: true,
+              muted: true,
+              controls: false,
+              loading: hero_video_loading,
+              image_size: '1400x',
+              class: hero_desktop_video_class
+          }}
+        {%- endif -%}
+        {%- if hero_mobile_video != blank -%}
+          {{
+            hero_mobile_video
+            | video_tag:
+              autoplay: true,
+              loop: true,
+              muted: true,
+              controls: false,
+              loading: hero_video_loading,
+              image_size: '750x',
+              class: hero_mobile_video_class
+          }}
+        {%- endif -%}
+      {%- else -%}
+        {%- render 'image',
+          image: hero_image,
+          mobile_image: hero_mobile_image,
+          alt: '',
+          class_name: 'h-full w-full object-cover',
+          lazy: hero_image_lazy,
+          decoding: 'async',
+          responsive_widths: '1024:2000'
+        -%}
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="absolute inset-0 flex max-w-[335px] flex-col justify-start gap-8 pl-4 pt-[30px] lg:max-w-[708px] lg:gap-10 lg:pl-[50px] lg:pt-[112px]">
+    <div class="flex flex-col items-start gap-2 lg:gap-3.5">
+      {%- if hero_badge_text != blank -%}
+        <div class="w-fit rounded-full bg-[color:var(--hero-badge-bg)] px-3.5 py-[5px] text-[10px]/[15px] font-semibold uppercase tracking-[2px] text-[color:var(--hero-badge-txt)] lg:py-[7px] lg:text-[12px]/[16px]">
+          {{ hero_badge_text | escape }}
+        </div>
+      {%- endif -%}
+
+      <div class="flex flex-col gap-2 lg:gap-3">
+        {%- render 'section-header',
+          heading: hero_heading,
+          heading_level: hero_heading_level,
+          class_name: 'text-left text-hero-heading lg:text-hero-heading-d'
+        -%}
+
+        {%- if hero_description != blank -%}
+          <div class="text-body-d text-[#525252] lg:text-subheading-d">{{ hero_description }}</div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- if hero_primary_label != blank or hero_secondary_label != blank -%}
+      <div class="flex gap-3 lg:gap-4">
+        {%- if hero_primary_label != blank -%}
+          {%- render 'button',
+            label: hero_primary_label,
+            link: hero_primary_link,
+            variant: 'primary',
+            size: 'lg',
+            icon: 'arrow-right',
+            icon_class: 'h-3.5 w-3.5',
+            class_name: 'bg-[color:var(--hero-pri-bg)] text-[color:var(--hero-pri-txt)] border-[color:var(--hero-pri-bg)] rounded-[10px] [&_svg]:flex-1'
+          -%}
+        {%- endif -%}
+
+        {%- if hero_secondary_label != blank -%}
+          {%- render 'button',
+            label: hero_secondary_label,
+            link: hero_secondary_link,
+            variant: 'secondary',
+            size: 'lg',
+            icon: 'arrow-right',
+            icon_class: 'h-3.5 w-3.5',
+            class_name: 'text-[color:var(--hero-sec-txt)] border-[color:var(--hero-sec-txt)] rounded-[10px] [&_svg]:flex-1'
+          -%}
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</div>

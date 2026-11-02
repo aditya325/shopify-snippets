@@ -1,0 +1,86 @@
+{% doc %}
+  @param {string} [card_layout_class] - Mobile/desktop sizing classes. Defaults to the grid span rules
+  @param {object} block - Category Card block, supplying settings and shopify_attributes
+  @param {string} [class_name] - Extra utilities appended to the card root
+{% enddoc %}
+
+{%- liquid
+  assign category_image = block.settings.card_image
+  assign category_video = block.settings.card_video
+  assign category_title = block.settings.card_title
+  assign category_link = block.settings.card_link
+
+  assign category_bg_color = block.settings.card_background
+  if category_bg_color == blank
+    assign category_bg_color = 'rgb(var(--color-primary))'
+  endif
+
+  assign category_txt_color = block.settings.card_text_color
+  if category_txt_color == blank
+    assign category_txt_color = '#FFFFFF'
+  endif
+
+  assign category_is_linked = false
+  if category_link != blank and category_title != blank
+    assign category_is_linked = true
+  endif
+
+  assign category_title_class = 'min-w-0 flex-1 truncate font-primary text-[10px] font-medium uppercase leading-[14px] lg:text-[18px] lg:leading-[27px]'
+
+  assign card_layout_class = card_layout_class | default: 'max-lg:col-span-2 max-lg:[&:nth-child(3n+1):last-child]:col-span-6 max-lg:[&:nth-child(3n+1):nth-last-child(2)]:col-span-3 max-lg:[&:nth-child(3n+2):last-child]:col-span-3'
+  assign category_card_class = 'shop-by-category__card group relative isolate flex flex-col overflow-hidden tracking-normal rounded-xl ' | append: card_layout_class | append: ' lg:rounded-[20px]'
+  if class_name != blank
+    assign category_card_class = category_card_class | append: ' ' | append: class_name
+  endif
+-%}
+
+<div
+  class="{{ category_card_class }}"
+  style="--shop-cat-bg: {{ category_bg_color | escape }}; --shop-cat-fg: {{ category_txt_color | escape }};"
+  {{ block.shopify_attributes }}
+>
+  <div class="overflow-hidden h-[126px] w-full border border-[color:var(--shop-cat-bg)] lg:h-[240px] rounded-t-[20px]">
+    {%- if category_video != blank -%}
+      {{
+        category_video
+        | video_tag:
+          autoplay: true,
+          loop: true,
+          muted: true,
+          loading: 'lazy',
+          image_size: '496x',
+          class: 'h-full w-full object-cover'
+      }}
+    {%- elsif category_image != blank -%}
+      {%- render 'image',
+        image: category_image,
+        alt: '',
+        class_name: 'h-full w-full object-cover',
+        decoding: 'async',
+        responsive_widths: '390:348,1024:496'
+      -%}
+    {%- else -%}
+      {{ 'image' | placeholder_svg_tag: 'h-full w-full object-cover' }}
+    {%- endif -%}
+  </div>
+
+  <div class="px-1.5 pt-1 pb-[5px] text-[color:var(--shop-cat-fg)] bg-[color:var(--shop-cat-bg)] lg:px-2.5 lg:pt-2.5 lg:pb-2.5">
+    {%- comment -%} Never transform the title's ancestors — that would make them the ::after containing block {%- endcomment -%}
+    <div class="flex items-center justify-between gap-1">
+      {%- if category_is_linked -%}
+        <a
+          href="{{ category_link | escape }}"
+          class="{{ category_title_class }} after:absolute after:inset-0 after:z-10"
+        >
+          {{- category_title | escape -}}
+        </a>
+      {%- elsif category_title != blank -%}
+        <span class="{{ category_title_class }}">{{ category_title | escape }}</span>
+      {%- endif -%}
+
+      {%- render 'icon-arrow-right',
+        class: 'shrink-0 h-2.5 w-2.5 [stroke-width:1px] transition-transform duration-300 lg:h-3.5 lg:w-3.5 lg:[stroke-width:1.3px] [@media(hover:hover)]:group-hover:translate-x-1'
+      -%}
+    </div>
+  </div>
+</div>

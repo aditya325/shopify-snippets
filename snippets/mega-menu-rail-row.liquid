@@ -1,0 +1,43 @@
+{% doc %}
+  One row of a mega-menu panel's left rail. Label and icon both come from the row entry.
+
+  @param {object} row - The metaobject entry this row represents
+  @param {string} tab_id - DOM id of this row
+  @param {string} pane_id - DOM id of the pane this row controls
+  @param {boolean} [is_first] - Marks this row selected and puts it in the tab order (default: false)
+{% enddoc %}
+
+{%- liquid
+  assign rail_selected = 'false'
+  assign rail_tabindex = '-1'
+  if is_first
+    assign rail_selected = 'true'
+    assign rail_tabindex = '0'
+  endif
+-%}
+
+<button
+  class="flex items-center gap-3 p-4 text-left shadow-[inset_0_-1px_0_0_#e5e5e5] aria-selected:bg-[#faf9f6] aria-selected:shadow-[inset_3px_0_0_0_rgb(var(--color-primary))]"
+  id="{{ tab_id }}"
+  type="button"
+  role="tab"
+  aria-selected="{{ rail_selected }}"
+  aria-controls="{{ pane_id }}"
+  tabindex="{{ rail_tabindex }}"
+  data-rail-row="{{ row.system.handle | escape }}"
+>
+  {%- if row.icon.value != blank -%}
+    <img
+      class="h-[18px] w-[18px] shrink-0"
+      src="{{ row.icon.value | image_url: width: 18 }}"
+      alt=""
+      width="18"
+      height="18"
+      loading="lazy"
+    >
+  {%- endif -%}
+
+  <span class="font-secondary text-[16px]/[22px] font-medium tracking-[-0.18px] text-foreground">
+    {{- row.title | escape -}}
+  </span>
+</button>

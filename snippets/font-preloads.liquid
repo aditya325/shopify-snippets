@@ -1,0 +1,34 @@
+{% doc %}
+  Font Preloads
+
+  Preloads the three font faces painted above the fold on every page:
+  Space Grotesk 700 (headings), DM Sans 400 and 600 (body and card titles).
+
+  Rendered before css-variables so the fetch starts ahead of the @font-face
+  declarations that request the same files.
+
+  @example
+  {% render 'font-preloads' %}
+{% enddoc %}
+
+{%- liquid
+  assign font_primary = settings.type_primary_font
+  assign font_secondary = settings.type_secondary_font
+
+  assign preload_primary_700 = font_primary | font_modify: 'weight', '700' | default: font_primary
+  assign preload_secondary_400 = font_secondary | font_modify: 'weight', '400' | default: font_secondary
+  assign preload_secondary_600 = font_secondary | font_modify: 'weight', '600' | default: font_secondary
+-%}
+
+{%- comment -%}
+  theme-check-disable AssetPreload
+  Deliberate <head> <link rel="preload">. preload_tag only accepts asset_url,
+  global_asset_url or shopify_asset_url, never font_url, so these are hand-written.
+  crossorigin is required: fonts are CORS-fetched, and without it the browser
+  downloads each file twice.
+{%- endcomment -%}
+{% # theme-check-disable AssetPreload %}
+<link rel="preload" as="font" type="font/woff2" href="{{ preload_primary_700 | font_url }}" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="{{ preload_secondary_400 | font_url }}" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="{{ preload_secondary_600 | font_url }}" crossorigin>
+{% # theme-check-enable AssetPreload %}

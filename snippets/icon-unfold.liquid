@@ -1,0 +1,29 @@
+{% doc %}
+  Unfold Icon
+
+  Stacked chevrons for expand/collapse toggles. Tight viewBox so the glyph keeps
+  its 8 × 17 proportion at any size.
+
+  @param {string} [unfold_state] - 'more' (chevrons apart) or 'less' (chevrons together)
+  @param {string} [class] - Sizing and stroke-weight classes (optional)
+{% enddoc %}
+
+{%- assign unfold_state = unfold_state | default: 'more' -%}
+<svg
+  class="{{ class }}"
+  viewBox="0 0 8 17"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+>
+  {%- if unfold_state == 'less' -%}
+    <polyline points="1 1 4 6 7 1"/>
+    <polyline points="1 16 4 11 7 16"/>
+  {%- else -%}
+    <polyline points="1 6 4 1 7 6"/>
+    <polyline points="1 11 4 16 7 11"/>
+  {%- endif -%}
+</svg>

@@ -1,0 +1,76 @@
+{% doc %}
+  Press Featured Card
+
+  The 2x2 hero cell of the press grid — full-bleed image under a bottom-weighted gradient, with the
+  publisher, date and headline reversed out in white. Desktop only; press-grid-block hides it below lg.
+
+  Takes primitives for the same reason press-card does: blocks and articles both feed this layout.
+
+  absolute inset-0, so the cell's own box decides both dimensions and this card simply fills it. The
+  218/161 ratio lives on press-grid-block's featured cell instead: an element that both carries a
+  ratio and stretches to a row taller than it transfers that ratio back into a width and overflows
+  the column.
+
+  The title is Space Grotesk, not the Manrope in the Figma — the theme loads only two families.
+
+  @param {string} feat_title - Headline (required)
+  @param {string} feat_url - External article URL (required — a hero cell with no destination is not rendered)
+  @param {image} [feat_image] - Card image
+  @param {string} [feat_publisher] - Publication name
+  @param {string} [feat_date] - Pre-formatted date, e.g. "Oct 12, 2025"
+{% enddoc %}
+
+{%- liquid
+  assign feat_title = feat_title | default: blank
+  assign feat_url = feat_url | default: blank
+
+  unless feat_title != blank and feat_url != blank
+    break
+  endunless
+
+  assign feat_image_alt = feat_image.alt | default: feat_title
+-%}
+
+<a
+  href="{{ feat_url }}"
+  class="press-featured-card group absolute inset-0 block overflow-hidden rounded-[20px] bg-foreground tracking-normal"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  {%- if feat_image != blank -%}
+    {%- render 'image',
+      image: feat_image,
+      alt: feat_image_alt,
+      class_name: 'absolute inset-0 block h-full w-full object-cover transition-transform duration-500 ease-out [@media(hover:hover)]:group-hover:scale-[1.02]',
+      base_width: 1744,
+      mobile_width: 1744,
+      breakpoint: 1024,
+      lazy: true,
+      decoding: 'async'
+    -%}
+  {%- endif -%}
+
+  <span class="press-featured-card__scrim absolute inset-0 block bg-gradient-to-b from-black/0 to-black/80"></span>
+
+  <span class="press-featured-card__body absolute inset-x-0 bottom-0 flex flex-col gap-4 p-8 transition-transform duration-500 ease-out [@media(hover:hover)]:group-hover:-translate-y-0.5">
+    {%- if feat_publisher != blank or feat_date != blank -%}
+      <span class="press-featured-card__meta flex items-center justify-between gap-3 whitespace-nowrap">
+        {%- if feat_publisher != blank -%}
+          <span class="press-featured-card__publisher text-[14px]/[21px] font-semibold tracking-[-0.16px] text-white">
+            {{- feat_publisher | escape -}}
+          </span>
+        {%- endif -%}
+
+        {%- if feat_date != blank -%}
+          <span class="press-featured-card__date ml-auto text-[14px]/[18.2px] text-white">{{ feat_date }}</span>
+        {%- endif -%}
+      </span>
+    {%- endif -%}
+
+    <span class="press-featured-card__title block font-primary text-[38px]/[49px] font-bold tracking-[-0.3px] text-white">
+      {{- feat_title | escape -}}
+    </span>
+
+    <span class="sr-only">{{ 'blog.opens_external' | t }}</span>
+  </span>
+</a>

@@ -1,0 +1,41 @@
+{% doc %}
+  Ingredients tab body — grid card widths are derived, never declared (544:30446 / 544:33976).
+
+  @param {object[]} ingredients - ingredient metaobject entries (required)
+{% enddoc %}
+
+<div class="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-x-5 lg:gap-y-10">
+  {%- for ingredient in ingredients -%}
+    {%- if ingredient.title != blank -%}
+      <div class="flex flex-col gap-3 lg:gap-4">
+        {%- if ingredient.image != blank -%}
+          <div class="aspect-square overflow-hidden rounded-xl bg-[#faf8f5] lg:rounded-[20px]">
+            {%- render 'image',
+              image: ingredient.image.value,
+              alt: ingredient.title,
+              class_name: 'h-full w-full rounded-2xl object-cover',
+              width: 315,
+              height: 315
+            -%}
+          </div>
+        {%- endif -%}
+
+        <div class="flex flex-col gap-0.5">
+          <span
+            class="text-[16px]/[24px] font-semibold tracking-normal text-foreground lg:text-center lg:text-[20px]/[30px]"
+          >
+            {{ ingredient.title | escape }}
+          </span>
+
+          {%- if ingredient.description != blank -%}
+            <p
+              class="text-[14px]/[20px] tracking-normal text-[#525252] lg:text-center lg:text-[16px]/[24px]"
+            >
+              {{ ingredient.description | escape | newline_to_br }}
+            </p>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+  {%- endfor -%}
+</div>

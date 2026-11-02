@@ -1,0 +1,350 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "announcement_bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement_1": {
+          "type": "announcement",
+          "settings": {
+            "announce_text": "<p>4.5 ★ Avg Ratings</p>",
+            "announce_link": ""
+          }
+        },
+        "announcement_2": {
+          "type": "announcement",
+          "settings": {
+            "announce_text": "<p>Free Delivery Over ₹499</p>",
+            "announce_link": ""
+          }
+        }
+      },
+      "block_order": [
+        "announcement_1",
+        "announcement_2"
+      ],
+      "settings": {
+        "announce_layout": "static",
+        "announce_size": "compact",
+        "announce_background": "#466e2e",
+        "announce_text_color": "#ffffff",
+        "announce_speed": 4,
+        "announce_top_mobile": 0,
+        "announce_bottom_mobile": 0,
+        "announce_top_desktop": 0,
+        "announce_bottom_desktop": 0
+      }
+    },
+    "main": {
+      "type": "blog-header",
+      "settings": {
+        "bhead_heading": "News & TVCs",
+        "bhead_crumb_label": "News & TVCs",
+        "bhead_top_mobile": 0,
+        "bhead_bottom_mobile": 0,
+        "bhead_top_desktop": 0,
+        "bhead_bottom_desktop": 0
+      }
+    },
+    "press_grid": {
+      "type": "press-grid",
+      "blocks": {
+        "lead": {
+          "type": "press-lead-card",
+          "settings": {
+            "card_image": "shopify://shop_images/press-wellness-flatlay.png",
+            "card_title": "How Amrutanjan is Reimagining Ayurvedic Wisdom for Gen Z Wellness",
+            "card_publisher": "Economic Times",
+            "card_date": "Oct 12, 2025",
+            "card_url": "https://www.incrementors.com/tools/dummy-content-generator/"
+          }
+        },
+        "item_1": {
+          "type": "press-card",
+          "settings": {
+            "card_image": "shopify://shop_images/press-sunlit-interior.png",
+            "card_title": "The Science of Better Sleep: A New Standard",
+            "card_publisher": "Health Shots",
+            "card_date": "Sep 28",
+            "card_url": "https://www.incrementors.com/tools/dummy-content-generator/"
+          }
+        },
+        "item_2": {
+          "type": "press-card",
+          "settings": {
+            "card_image": "shopify://shop_images/press-boardroom.png",
+            "card_title": "Building a 130-Year-Old Modern Startup",
+            "card_publisher": "Economic Times",
+            "card_date": "Sep 15",
+            "card_url": "https://www.incrementors.com/tools/dummy-content-generator/"
+          }
+        },
+        "item_3": {
+          "type": "press-card",
+          "settings": {
+            "card_image": "shopify://shop_images/press-sunlit-interior.png",
+            "card_title": "Sustainable Packaging: The New Frontier",
+            "card_publisher": "Times of India",
+            "card_date": "Aug 30",
+            "card_url": "https://www.incrementors.com/tools/dummy-content-generator/"
+          }
+        },
+        "item_4": {
+          "type": "press-card",
+          "settings": {
+            "card_image": "shopify://shop_images/press-boardroom.png",
+            "card_title": "Amrutanjan: A Case Study in Brand Loyalty",
+            "card_publisher": "Business Insider",
+            "card_date": "Aug 22",
+            "card_url": "https://www.incrementors.com/tools/dummy-content-generator/"
+          }
+        },
+        "item_5": {
+          "type": "press-card",
+          "settings": {
+            "card_image": "shopify://shop_images/press-boardroom.png",
+            "card_title": "Top 5 Rituals for Everyday Energy",
+            "card_publisher": "Femina",
+            "card_date": "Aug 05",
+            "card_url": "https://www.incrementors.com/tools/dummy-content-generator/"
+          }
+        }
+      },
+      "block_order": [
+        "lead",
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4",
+        "item_5"
+      ],
+      "settings": {
+        "press_cta_label": "View All News",
+        "press_cta_blog": "",
+        "press_cta_url": "shopify://blogs/news",
+        "press_mirrored": false,
+        "press_top_mobile": 20,
+        "press_bottom_mobile": 40,
+        "press_top_desktop": 20,
+        "press_bottom_desktop": 64
+      }
+    },
+    "awards": {
+      "type": "awards",
+      "blocks": {
+        "award_1": {
+          "type": "award-item",
+          "settings": {
+            "award_title": "Brand of the Year",
+            "award_year": "2025",
+            "award_body": "Awarded by World Brand Congress"
+          }
+        },
+        "award_2": {
+          "type": "award-item",
+          "settings": {
+            "award_title": "Best Holistic Product",
+            "award_year": "2024",
+            "award_body": "Health & Wellness Expo"
+          }
+        },
+        "award_3": {
+          "type": "award-item",
+          "settings": {
+            "award_title": "Top Innovation Award",
+            "award_year": "2024",
+            "award_body": "Indian Pharmaceutical League"
+          }
+        },
+        "award_4": {
+          "type": "award-item",
+          "settings": {
+            "award_title": "Trust Excellence Mark",
+            "award_year": "2023",
+            "award_body": "Consumer Trust Index"
+          }
+        },
+        "award_5": {
+          "type": "award-item",
+          "settings": {
+            "award_title": "Legacy Brand Award",
+            "award_year": "2023",
+            "award_body": "Economic Times Honours"
+          }
+        }
+      },
+      "block_order": [
+        "award_1",
+        "award_2",
+        "award_3",
+        "award_4",
+        "award_5"
+      ],
+      "settings": {
+        "awards_heading": "<p>Awards & Recognition</p>",
+        "awards_top_mobile": 0,
+        "awards_bottom_mobile": 20,
+        "awards_top_desktop": 0,
+        "awards_bottom_desktop": 32
+      }
+    },
+    "tvc_gallery": {
+      "type": "tvc-gallery",
+      "blocks": {
+        "tvc_filter_chip_B9cD8Y": {
+          "type": "tvc-filter-chip",
+          "settings": {
+            "chip_label": "All",
+            "chip_filter": "all"
+          }
+        },
+        "tvc_filter_chip_pn7iAG": {
+          "type": "tvc-filter-chip",
+          "settings": {
+            "chip_label": "Wellness",
+            "chip_filter": "wellness"
+          }
+        },
+        "tvc_filter_chip_kdMPCN": {
+          "type": "tvc-filter-chip",
+          "settings": {
+            "chip_label": "Relief",
+            "chip_filter": "relief"
+          }
+        },
+        "tvc_filter_chip_Qycbrd": {
+          "type": "tvc-filter-chip",
+          "settings": {
+            "chip_label": "Women's Care",
+            "chip_filter": "womens-care"
+          }
+        },
+        "tvc_filter_chip_zUBry6": {
+          "type": "tvc-filter-chip",
+          "settings": {
+            "chip_label": "Rehydration",
+            "chip_filter": "rehydration"
+          }
+        },
+        "tvc_video_EdKp7T": {
+          "type": "tvc-video",
+          "settings": {
+            "tvc_video": "shopify://files/videos/6912167-uhd_2560_1080_25fps_c9b2d1c3-6ec8-455d-8be5-2b609faa12e1.mp4",
+            "tvc_category": "womens-care"
+          }
+        },
+        "tvc_video_kAWAzC": {
+          "type": "tvc-video",
+          "settings": {
+            "tvc_video": "shopify://files/videos/6912167-uhd_2560_1080_25fps_c9b2d1c3-6ec8-455d-8be5-2b609faa12e1.mp4",
+            "tvc_category": "womens-care"
+          }
+        },
+        "tvc_video_KTwy9Y": {
+          "type": "tvc-video",
+          "settings": {
+            "tvc_video": "shopify://files/videos/6912167-uhd_2560_1080_25fps_c9b2d1c3-6ec8-455d-8be5-2b609faa12e1.mp4",
+            "tvc_category": "wellness"
+          }
+        },
+        "tvc_video_xYJDLA": {
+          "type": "tvc-video",
+          "settings": {
+            "tvc_video": "shopify://files/videos/6912167-uhd_2560_1080_25fps.mp4",
+            "tvc_category": "wellness"
+          }
+        }
+      },
+      "block_order": [
+        "tvc_filter_chip_B9cD8Y",
+        "tvc_filter_chip_pn7iAG",
+        "tvc_filter_chip_kdMPCN",
+        "tvc_filter_chip_Qycbrd",
+        "tvc_filter_chip_zUBry6",
+        "tvc_video_EdKp7T",
+        "tvc_video_kAWAzC",
+        "tvc_video_KTwy9Y",
+        "tvc_video_xYJDLA"
+      ],
+      "settings": {
+        "tvc_heading": "<p>Gallery</p>",
+        "tvc_top_mobile": 0,
+        "tvc_bottom_mobile": 0,
+        "tvc_top_desktop": 0,
+        "tvc_bottom_desktop": 0
+      }
+    },
+    "featured_in": {
+      "type": "featured-in",
+      "blocks": {
+        "logo_1": {
+          "type": "featured-logo",
+          "settings": {
+            "logo_name": "VOGUE INDIA"
+          }
+        },
+        "logo_2": {
+          "type": "featured-logo",
+          "settings": {
+            "logo_name": "ECONOMIC TIMES"
+          }
+        },
+        "logo_3": {
+          "type": "featured-logo",
+          "settings": {
+            "logo_name": "NDTV HEALTH"
+          }
+        },
+        "logo_4": {
+          "type": "featured-logo",
+          "settings": {
+            "logo_name": "FEMINA"
+          }
+        },
+        "logo_5": {
+          "type": "featured-logo",
+          "settings": {
+            "logo_name": "ELLE"
+          }
+        },
+        "logo_6": {
+          "type": "featured-logo",
+          "settings": {
+            "logo_name": "FORBES INDIA"
+          }
+        }
+      },
+      "block_order": [
+        "logo_1",
+        "logo_2",
+        "logo_3",
+        "logo_4",
+        "logo_5",
+        "logo_6"
+      ],
+      "settings": {
+        "feat_in_label": "Featured In",
+        "feat_in_top_mobile": 20,
+        "feat_in_bottom_mobile": 20,
+        "feat_in_top_desktop": 32,
+        "feat_in_bottom_desktop": 64
+      }
+    }
+  },
+  "order": [
+    "announcement_bar",
+    "main",
+    "press_grid",
+    "awards",
+    "tvc_gallery",
+    "featured_in"
+  ]
+}

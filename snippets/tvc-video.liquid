@@ -1,0 +1,73 @@
+{% doc %}
+  Tvc Video
+
+  One video card in the TVC gallery reel — a muted, looping autoplay video with a translucent
+  play/pause control pinned to its bottom-left corner. Every video_tag boolean defaults to false, so
+  omitting `controls` is what suppresses the browser's own control bar in favour of that button.
+
+  Both breakpoints declare a width rather than deriving it from the row, against the usual rule, because
+  the card must stay 304x450 on mobile and 318x450 on desktop at any block count — flex-1 would stretch
+  two videos across the full 1320px. The matching aspect ratio then supplies the height.
+
+  [&[hidden]]:hidden is load-bearing — the filter script sets the hidden property, and the bare `block`
+  utility would otherwise outrank the browser's own [hidden] rule and keep the card visible.
+
+  The control lives inside the frame so a single blank-check covers both the video and its button; it
+  still positions against the card, which is the only relative ancestor.
+
+  The icon reads as a state indicator rather than an action: the triangle shows while the video plays
+  and the bars show while it is paused, which is what the design draws. The aria-label carries the
+  action instead, so the button still announces correctly.
+
+  @param {object} block - Tvc Video block (required)
+{% enddoc %}
+
+{%- liquid
+  assign block = block | default: blank
+
+  unless block != blank
+    break
+  endunless
+
+  assign tvc_video = block.settings.tvc_video
+  assign tvc_category = block.settings.tvc_category
+
+  assign tvc_play_label = 'accessibility.play_video' | t
+  assign tvc_pause_label = 'accessibility.pause_video' | t
+-%}
+
+<tvc-video-card
+  class="tvc-video relative block w-[304px] shrink-0 overflow-hidden rounded-xl [&[hidden]]:hidden lg:w-[318px]"
+  data-tvc-category="{{ tvc_category | escape }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="tvc-video__frame aspect-[304/450] w-full bg-primary/5 lg:aspect-[318/450]">
+    {%- if tvc_video == blank -%}
+      {{ 'image' | placeholder_svg_tag: 'tvc-video__player h-full w-full' }}
+    {%- else -%}
+      {{
+        tvc_video
+        | video_tag:
+          autoplay: true,
+          loop: true,
+          muted: true,
+          loading: 'lazy',
+          image_size: '480x',
+          class: 'tvc-video__player h-full w-full object-cover'
+      }}
+
+      <button
+        type="button"
+        class="tvc-video__toggle group absolute bottom-3 left-3 flex h-11 w-11 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-md lg:bottom-5 lg:left-5"
+        data-tvc-toggle
+        data-playing="true"
+        data-play-label="{{ tvc_play_label | escape }}"
+        data-pause-label="{{ tvc_pause_label | escape }}"
+        aria-label="{{ tvc_pause_label | escape }}"
+      >
+        {%- render 'icon-play', class: 'h-[26px] w-[26px] group-data-[playing=false]:hidden' -%}
+        {%- render 'icon-pause', class: 'hidden h-[26px] w-[26px] group-data-[playing=false]:block' -%}
+      </button>
+    {%- endif -%}
+  </div>
+</tvc-video-card>

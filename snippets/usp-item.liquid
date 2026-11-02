@@ -1,0 +1,35 @@
+{% doc %}
+  @param {object} block - USP Item block, supplying settings and shopify_attributes
+{% enddoc %}
+
+{%- liquid
+  assign usp_icon = block.settings.usp_icon
+  assign usp_title = block.settings.usp_title
+  assign usp_desc = block.settings.usp_description
+-%}
+
+<div class="subscribe-letter__usp flex items-center gap-2.5 lg:gap-4" {{ block.shopify_attributes }}>
+  <div class="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[6px] bg-[#FFFFFF0F] lg:h-[54px] lg:w-[53px]">
+    {%- if usp_icon != blank -%}
+      {%- render 'image',
+        image: usp_icon,
+        alt: '',
+        class_name: 'h-[18px] w-[18px] object-contain lg:h-6 lg:w-6',
+        decoding: 'async',
+        responsive_widths: '390:48'
+      -%}
+    {%- endif -%}
+  </div>
+
+  <div class="flex flex-col gap-0.5">
+    {%- if usp_title != blank -%}
+      <div class="text-[12px]/[18px] font-semibold text-white lg:text-subheading-d lg:font-medium">
+        {{ usp_title }}
+      </div>
+    {%- endif -%}
+
+    {%- if usp_desc != blank -%}
+      <div class="text-label-xs text-[#FFFFFF99] lg:text-[16px]/[24px]">{{ usp_desc | escape }}</div>
+    {%- endif -%}
+  </div>
+</div>

@@ -1,0 +1,103 @@
+{
+  "type": "header",
+  "name": "Header",
+  "sections": {
+    "header": {
+      "type": "header",
+      "blocks": {
+        "mega-need": {
+          "type": "mega-menu-need",
+          "settings": {
+            "mega_parent_handle": "shop-by-need",
+            "mega_panel_title": "I need help with\u2026",
+            "mega_show_promo": false,
+            "mega_rows_need": [
+              "body-pain",
+              "period-care",
+              "rehydration",
+              "cold-congestion",
+              "recovery",
+              "grooming",
+              "shop-all"
+            ]
+          }
+        },
+        "mega-category": {
+          "type": "mega-menu-category",
+          "settings": {
+            "mega_parent_handle": "categories",
+            "mega_panel_title": "Categories",
+            "mega_show_promo": false,
+            "mega_rows_category": [
+              "pain-relief",
+              "womens-care",
+              "cold-congestion",
+              "rehydration",
+              "grooming",
+              "shop-all"
+            ]
+          }
+        },
+        "mega-combo": {
+          "type": "mega-menu-combo",
+          "settings": {
+            "mega_parent_handle": "combo",
+            "mega_panel_title": "Everyday Combo",
+            "mega_show_promo": true,
+            "mega_rows_combo": [
+              "desk-recovery-kit",
+              "womens-comfort-kit",
+              "family-wellness-kit",
+              "travel-essential-kit",
+              "summer-hydration-kit",
+              "workout-recovery-kit"
+            ]
+          }
+        },
+        "mega-about": {
+          "type": "mega-menu-about",
+          "settings": {
+            "mega_parent_handle": "about",
+            "mega_panel_title": "About",
+            "mega_show_promo": true,
+            "mega_rows_story": [
+              "our-story"
+            ],
+            "mega_rows_history": [
+              "history"
+            ]
+          }
+        },
+        "mega-media": {
+          "type": "mega-menu-media",
+          "settings": {
+            "mega_parent_handle": "media",
+            "mega_panel_title": "Media",
+            "mega_show_promo": true,
+            "mega_rows_blogs": [
+              "blogs"
+            ],
+            "mega_rows_press": [
+              "news-events"
+            ]
+          }
+        }
+      },
+      "block_order": [
+        "mega-need",
+        "mega-category",
+        "mega-combo",
+        "mega-about",
+        "mega-media"
+      ],
+      "settings": {
+        "header_menu": "navigation-main",
+        "header_locator_link": "/pages/contact",
+        "header_consult_link": "/pages/contact"
+      }
+    }
+  },
+  "order": [
+    "header"
+  ]
+}

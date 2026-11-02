@@ -1,0 +1,447 @@
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+
+  assign day_seconds = 86400
+  assign now_ts = 'now' | date: '%s' | times: 1
+
+  assign pdp_rating_value = product.metafields.custom.rating_value.value
+  assign pdp_review_count = product.metafields.custom.review_count.value
+  assign pdp_star_fill = pdp_rating_value | times: 20
+-%}
+
+{%- capture pdp_star_row -%}
+  {%- for star_index in (1..5) -%}
+    <span class="grid size-[18px] shrink-0 place-items-center lg:size-6">
+      {%- render 'icon-star', class: 'size-4 lg:size-5' -%}
+    </span>
+  {%- endfor -%}
+{%- endcapture -%}
+
+<div
+  class="product my-6 lg:my-8"
+  style="--pdp-header-height: 110px; --pdp-sticky-top: calc(var(--pdp-header-height) + 24px);"
+  data-product-id="{{ product.id }}"
+  data-product-section
+>
+  <div class="page-width lg:pl-5 lg:pr-15">
+    <div class="product__row lg:grid lg:grid-cols-[minmax(0,175fr)_minmax(0,157fr)] lg:gap-8">
+      <div class="product__media pb-0 pt-2.5 lg:sticky lg:top-[var(--pdp-sticky-top)] lg:self-start lg:pb-6">
+        {%- render 'product-gallery',
+          product: product,
+          enable_share: section.settings.product_enable_share,
+          enable_wishlist: section.settings.product_enable_wishlist
+        -%}
+      </div>
+
+      <div class="product__buy-box flex flex-col gap-2.5 pb-10 pt-6 tracking-normal lg:gap-[18px] lg:pb-6 lg:pt-0">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'title' -%}
+              <h1
+                class="font-secondary text-[20px]/[30px] font-semibold text-foreground lg:text-[36px]/[44px]"
+                {{ block.shopify_attributes }}
+              >
+                {{ product.title }}
+              </h1>
+
+            {%- when 'rating' -%}
+              {%- if pdp_rating_value != blank and pdp_review_count != blank -%}
+                <div class="flex items-center gap-1.5 py-px lg:-mt-1" aria-hidden="true" {{ block.shopify_attributes }}>
+                  <span class="flex items-center gap-[5px]">
+                    <span
+                      class="font-secondary text-[16px]/[22px] font-semibold tracking-[-0.18px] text-[#404040] lg:text-[20px]/[30px]"
+                    >
+                      {{ pdp_rating_value }}
+                    </span>
+
+                    <span class="relative inline-flex h-[18px] w-[102px] shrink-0 lg:h-6 lg:w-32">
+                      <span class="absolute inset-0 flex gap-[3px] text-neutral-200 lg:gap-0.5">
+                        {{- pdp_star_row -}}
+                      </span>
+                      <span class="absolute inset-y-0 left-0 overflow-hidden" style="width: {{ pdp_star_fill }}%">
+                        <span class="flex h-full w-[102px] gap-[3px] text-brand-yellow lg:w-32 lg:gap-0.5">
+                          {{- pdp_star_row -}}
+                        </span>
+                      </span>
+                    </span>
+                  </span>
+
+                  <span class="font-secondary text-[14px]/[21px] tracking-[-0.16px] text-[#737373] lg:font-medium"
+                    >|</span
+                  >
+                  <span
+                    class="font-secondary text-[16px]/[22px] font-medium tracking-[-0.18px] text-[#737373] lg:text-[20px]/[30px]"
+                  >
+                    {{ pdp_review_count }}
+                  </span>
+                  <span class="font-secondary text-[14px]/[21px] tracking-[-0.16px] text-[#737373] lg:text-[18px]/[27px]"
+                    >Reviews</span
+                  >
+                </div>
+              {%- endif -%}
+
+            {%- when 'price' -%}
+              <div class="-mt-1 flex flex-col gap-1.5 lg:-mt-2.5 lg:gap-2" {{ block.shopify_attributes }}>
+                {%- if product.metafields.custom.highlight_text.value != blank -%}
+                  <p class="font-secondary text-[18px]/[27px] font-medium text-[#e0a900]">
+                    {{ product.metafields.custom.highlight_text.value | escape }}
+                  </p>
+                {%- endif -%}
+
+                {%- liquid
+                  assign price_discount = 0
+                  if current_variant.compare_at_price > current_variant.price
+                    assign price_difference = current_variant.compare_at_price | minus: current_variant.price
+                    assign price_scaled = price_difference | times: 100.0
+                    assign price_discount = price_scaled | divided_by: current_variant.compare_at_price | round
+                  endif
+                -%}
+
+                <div class="flex flex-col">
+                  <div class="flex items-center gap-1 lg:gap-1.5">
+                    <div class="flex items-center gap-1.5">
+                      <span
+                        class="font-secondary text-[18px]/[27px] font-bold tracking-[-0.18px] text-foreground lg:text-[32px]/[38px] lg:tracking-[-0.2px]"
+                        data-pdp-price
+                      >
+                        {{- current_variant.price | money_without_trailing_zeros | replace: ' ', '' -}}
+                      </span>
+
+                      <s
+                        class="font-secondary text-[16px]/[24px] font-medium text-foreground/60 lg:text-[20px]/[24px]{% unless current_variant.compare_at_price > current_variant.price %} hidden{% endunless %}"
+                        data-pdp-compare-price
+                      >
+                        {%- if current_variant.compare_at_price > current_variant.price -%}
+                          {{- current_variant.compare_at_price | money_without_trailing_zeros | replace: ' ', '' -}}
+                        {%- endif -%}
+                      </s>
+                    </div>
+
+                    <span
+                      class="font-secondary text-[14px]/[20px] font-medium text-[#d93807] lg:text-[18px]/[28px]{% unless current_variant.compare_at_price > current_variant.price %} hidden{% endunless %}"
+                      data-pdp-discount
+                    >
+                      {%- if current_variant.compare_at_price > current_variant.price -%}
+                        ({{ price_discount }}%)
+                      {%- endif -%}
+                    </span>
+                  </div>
+
+                  <span class="font-secondary text-[10px]/[13px] text-foreground/[0.48] lg:text-[14px]/[18px]"
+                    >Inclusive of all taxes</span
+                  >
+                </div>
+              </div>
+
+            {%- when 'variant_picker' -%}
+              {%- unless product.has_only_default_variant -%}
+                <div {{ block.shopify_attributes }}>
+                  {%- liquid
+                    assign product_options_string = ''
+                    for option in product.options_with_values
+                      unless forloop.first
+                        assign product_options_string = product_options_string | append: ','
+                      endunless
+                      assign product_options_string = product_options_string | append: option.name
+                    endfor
+                  -%}
+                  {%- render 'variant-selector',
+                    product: product,
+                    options: product_options_string,
+                    show_labels: true,
+                    pill_style: 'tile'
+                  -%}
+                </div>
+              {%- endunless -%}
+
+            {%- when 'purchase_options' -%}
+              <div {{ block.shopify_attributes }}>
+                {%- render 'pdp-purchase-options', product: product -%}
+              </div>
+
+            {%- when 'helps_with' -%}
+              {%- liquid
+                assign helps_entries = product.metafields.custom.helps_with.value
+              -%}
+              {%- if helps_entries != blank -%}
+                <div class="flex flex-col gap-2" {{ block.shopify_attributes }}>
+                  <span
+                    class="font-secondary text-[14px]/[18px] font-medium text-foreground lg:text-[18px]/[28px]"
+                  >
+                    {{ block.settings.helps_heading | escape }}
+                  </span>
+
+                  <div class="flex items-start gap-2 overflow-x-auto scrollbar-hide">
+                    {%- for entry in helps_entries -%}
+                      <div class="flex w-20 shrink-0 flex-col gap-1.5">
+                        {%- if entry.icon.value != blank -%}
+                          {%- render 'image',
+                            image: entry.icon.value,
+                            alt: entry.title,
+                            responsive_widths: '390:160',
+                            class_name: 'pdp-helps__image size-20 rounded-md bg-white object-cover'
+                          -%}
+                        {%- endif -%}
+
+                        <span
+                          class="font-secondary text-[12px]/[16px] font-medium tracking-[-0.12px] text-[#525252] lg:text-[14px]/[21px] lg:tracking-[-0.16px]"
+                        >
+                          {{ entry.title }}
+                        </span>
+                      </div>
+                    {%- endfor -%}
+                  </div>
+                </div>
+              {%- endif -%}
+
+            {%- when 'offers' -%}
+              {%- liquid
+                assign offers_entries = product.metafields.custom.offers.value
+              -%}
+              {%- if offers_entries != blank -%}
+                <div {{ block.shopify_attributes }}>
+                  {%- render 'pdp-offers', offers: offers_entries, heading: block.settings.offers_heading -%}
+                </div>
+              {%- endif -%}
+
+            {%- when 'delivery' -%}
+              {%- liquid
+                assign delivery_min_offset = block.settings.product_delivery_min | times: day_seconds
+                assign delivery_max_offset = block.settings.product_delivery_max | times: day_seconds
+                assign delivery_from = now_ts | plus: delivery_min_offset | date: '%b %-d'
+                assign delivery_to = now_ts | plus: delivery_max_offset | date: '%b %-d'
+              -%}
+              <div {{ block.shopify_attributes }}>
+                {%- render 'pdp-delivery',
+                  heading: block.settings.delivery_heading,
+                  subtext: block.settings.delivery_subtext,
+                  date_from: delivery_from,
+                  date_to: delivery_to
+                -%}
+              </div>
+
+            {%- when 'buy_buttons' -%}
+              <div class="mt-[22px] lg:-mt-[18px]" {{ block.shopify_attributes }}>
+                {%- render 'product-form', product: product, show_buy_now: block.settings.buy_show_buy_now -%}
+              </div>
+
+            {%- when 'free_gift' -%}
+              {%- render 'pdp-gift-band',
+                subtitle_template: block.settings.gift_subtitle,
+                counter_template: block.settings.gift_counter,
+                block_attributes: block.shopify_attributes
+              -%}
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ 'product.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Product",
+  "class": "product-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Gallery"
+    },
+    {
+      "type": "checkbox",
+      "id": "product_enable_share",
+      "label": "Show share button",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "product_enable_wishlist",
+      "label": "Show wishlist button",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "title",
+      "name": "Title",
+      "limit": 1,
+      "settings": []
+    },
+    {
+      "type": "rating",
+      "name": "Rating",
+      "limit": 1,
+      "settings": []
+    },
+    {
+      "type": "price",
+      "name": "Price",
+      "limit": 1,
+      "settings": []
+    },
+    {
+      "type": "variant_picker",
+      "name": "Variant Picker",
+      "limit": 1,
+      "settings": []
+    },
+    {
+      "type": "purchase_options",
+      "name": "Purchase Options",
+      "limit": 1,
+      "settings": []
+    },
+    {
+      "type": "helps_with",
+      "name": "Helps With",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "helps_heading",
+          "label": "Helps Heading",
+          "default": "Helps With",
+          "info": "Example: Helps With."
+        }
+      ]
+    },
+    {
+      "type": "offers",
+      "name": "Offers",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "offers_heading",
+          "label": "Offers Heading",
+          "default": "Available Offers",
+          "info": "Example: Available Offers."
+        }
+      ]
+    },
+    {
+      "type": "delivery",
+      "name": "Delivery",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Content"
+        },
+        {
+          "type": "text",
+          "id": "delivery_heading",
+          "label": "Delivery Heading",
+          "default": "Delivery Details",
+          "info": "Example: Delivery Details."
+        },
+        {
+          "type": "text",
+          "id": "delivery_subtext",
+          "label": "Subtext",
+          "default": "Check delivery availability and estimated delivery date"
+        },
+        {
+          "type": "header",
+          "content": "Delivery window"
+        },
+        {
+          "type": "range",
+          "id": "product_delivery_min",
+          "label": "Earliest day",
+          "min": 1,
+          "max": 14,
+          "step": 1,
+          "unit": "d",
+          "default": 3,
+          "info": "Days from today used to work out the delivery window."
+        },
+        {
+          "type": "range",
+          "id": "product_delivery_max",
+          "label": "Latest day",
+          "min": 1,
+          "max": 21,
+          "step": 1,
+          "unit": "d",
+          "default": 5,
+          "info": "Days from today used to work out the delivery window."
+        }
+      ]
+    },
+    {
+      "type": "buy_buttons",
+      "name": "Buy Buttons",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "buy_show_buy_now",
+          "label": "Show Buy Now button",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "free_gift",
+      "name": "Free Gift",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "gift_subtitle",
+          "label": "Gift Subtitle",
+          "info": "Placeholders [shortfall] and [threshold] are replaced with live values.",
+          "default": "Add products worth [shortfall] to unlock"
+        },
+        {
+          "type": "text",
+          "id": "gift_counter",
+          "label": "Gift Counter",
+          "info": "Placeholders [reached] and [total] are replaced with the tier counts.",
+          "default": "[reached]/[total] Claimed"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product",
+      "blocks": [
+        {
+          "type": "title"
+        },
+        {
+          "type": "rating"
+        },
+        {
+          "type": "price"
+        },
+        {
+          "type": "variant_picker"
+        },
+        {
+          "type": "purchase_options"
+        },
+        {
+          "type": "helps_with"
+        },
+        {
+          "type": "offers"
+        },
+        {
+          "type": "delivery"
+        },
+        {
+          "type": "buy_buttons"
+        },
+        {
+          "type": "free_gift"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

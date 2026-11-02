@@ -1,0 +1,189 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "announcement_bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement_1": {
+          "type": "announcement",
+          "settings": {
+            "announce_text": "<p>4.5 ★ Avg Ratings</p>",
+            "announce_link": ""
+          }
+        },
+        "announcement_2": {
+          "type": "announcement",
+          "settings": {
+            "announce_text": "<p>Free Delivery Over ₹499</p>",
+            "announce_link": ""
+          }
+        }
+      },
+      "block_order": [
+        "announcement_1",
+        "announcement_2"
+      ],
+      "settings": {
+        "announce_layout": "static",
+        "announce_size": "compact",
+        "announce_background": "#466e2e",
+        "announce_text_color": "#ffffff",
+        "announce_speed": 4,
+        "announce_top_mobile": 0,
+        "announce_bottom_mobile": 0,
+        "announce_top_desktop": 0,
+        "announce_bottom_desktop": 0
+      }
+    },
+    "main": {
+      "type": "page",
+      "settings": {
+        "page_crumb_parent": "About",
+        "page_crumb_parent_page": "our-story",
+        "page_show_title": false,
+        "page_show_content": false,
+        "page_top_mobile": 0,
+        "page_bottom_mobile": 0,
+        "page_top_desktop": 0,
+        "page_bottom_desktop": 0
+      }
+    },
+    "milestones_intro": {
+      "type": "about-container",
+      "settings": {
+        "container_title": "<p>Our Milestones</p>",
+        "container_body": "<p>We started small, but have always thought big. Ricola's success story begins with a personal passion: Alpine herbs. This love of nature grows into a product unlike any other in the world. How did it all come together? A tale as Swiss as it is unexpected.</p>",
+        "container_title_color": "primary",
+        "container_title_align": "center",
+        "container_title_size_mob": "large",
+        "container_media_h_mob": 415,
+        "container_media_h_desk": 415,
+        "container_top_mobile": 20,
+        "container_bottom_mobile": 48,
+        "container_top_desktop": 20,
+        "container_bottom_desktop": 32
+      }
+    },
+    "milestones_spine": {
+      "type": "milestones-spine",
+      "blocks": {
+        "milestone_1930": {
+          "type": "milestone",
+          "settings": {
+            "milestone_year": "1930",
+            "milestone_image_1": "shopify://shop_images/Art_Directed_Crop.png",
+            "milestone_image_2": "shopify://shop_images/Art_Directed_Crop.png",
+            "milestone_body": "<p>Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London.</p>"
+          }
+        },
+        "milestone_1940": {
+          "type": "milestone",
+          "settings": {
+            "milestone_year": "1940",
+            "milestone_image_1": "shopify://shop_images/Art_Directed_Crop_1.png",
+            "milestone_body": "<p>Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London.</p>"
+          }
+        },
+        "milestone_1960": {
+          "type": "milestone",
+          "settings": {
+            "milestone_year": "1960",
+            "milestone_image_1": "shopify://shop_images/Art_Directed_Crop_1.png",
+            "milestone_body": "<p>Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London.</p>"
+          }
+        },
+        "milestone_1975": {
+          "type": "milestone",
+          "settings": {
+            "milestone_year": "1975",
+            "milestone_image_1": "shopify://shop_images/Art_Directed_Crop.png",
+            "milestone_image_2": "shopify://shop_images/Art_Directed_Crop.png",
+            "milestone_body": "<p>Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London.</p>"
+          }
+        },
+        "milestone_1990": {
+          "type": "milestone",
+          "settings": {
+            "milestone_year": "1990",
+            "milestone_image_1": "shopify://shop_images/Art_Directed_Crop_1.png",
+            "milestone_body": "<p>Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London.</p>"
+          }
+        },
+        "milestone_2005": {
+          "type": "milestone",
+          "settings": {
+            "milestone_year": "2005",
+            "milestone_image_1": "shopify://shop_images/Art_Directed_Crop.png",
+            "milestone_image_2": "shopify://shop_images/Art_Directed_Crop.png",
+            "milestone_body": "<p>Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London.</p>"
+          }
+        },
+        "milestone_2025": {
+          "type": "milestone",
+          "settings": {
+            "milestone_year": "2025",
+            "milestone_image_1": "shopify://shop_images/Art_Directed_Crop_1.png",
+            "milestone_body": "<p>Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London.</p>"
+          }
+        },
+        "milestone_2026": {
+          "type": "milestone",
+          "settings": {
+            "milestone_year": "2026",
+            "milestone_image_1": "shopify://shop_images/Art_Directed_Crop.png",
+            "milestone_image_2": "shopify://shop_images/Art_Directed_Crop.png",
+            "milestone_body": "<p>Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "milestone_1930",
+        "milestone_1940",
+        "milestone_1960",
+        "milestone_1975",
+        "milestone_1990",
+        "milestone_2005",
+        "milestone_2025",
+        "milestone_2026"
+      ],
+      "settings": {
+        "spine_top_mobile": 0,
+        "spine_bottom_mobile": 40,
+        "spine_top_desktop": 0,
+        "spine_bottom_desktop": 64
+      }
+    },
+    "brand_banner": {
+      "type": "about-container",
+      "settings": {
+        "container_title": "",
+        "container_body": "",
+        "container_desk_image": "shopify://shop_images/a1d6f1e0af5169230dae75c88a1323d1b859b1bd.png",
+        "container_title_color": "foreground",
+        "container_title_align": "left",
+        "container_title_size_mob": "section",
+        "container_media_h_mob": 180,
+        "container_media_h_desk": 430,
+        "container_top_mobile": 0,
+        "container_bottom_mobile": 24,
+        "container_top_desktop": 0,
+        "container_bottom_desktop": 64
+      }
+    }
+  },
+  "order": [
+    "announcement_bar",
+    "main",
+    "milestones_intro",
+    "milestones_spine",
+    "brand_banner"
+  ]
+}

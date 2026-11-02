@@ -1,0 +1,391 @@
+{%- liquid
+  assign cart_total_mrp = 0
+  for item in cart.items
+    assign unit_mrp = item.variant.compare_at_price
+    if unit_mrp == blank or unit_mrp < item.variant.price
+      assign unit_mrp = item.variant.price
+    endif
+    assign line_mrp = unit_mrp | times: item.quantity
+    assign cart_total_mrp = cart_total_mrp | plus: line_mrp
+  endfor
+-%}
+
+<cart-drawer
+  class="cart-drawer group/cart"
+  data-section-id="{{ section.id }}"
+  data-cart-state="cart"
+  aria-hidden="true"
+  role="dialog"
+  aria-modal="true"
+  aria-label="{{ 'cart.my_cart' | t }}"
+  hidden
+>
+  <div
+    class="cart-drawer__overlay fixed inset-0 z-[999] bg-black/50 opacity-0 transition-opacity duration-300"
+    data-cart-overlay
+  ></div>
+
+  <div
+    class="cart-drawer__panel fixed inset-y-0 right-0 z-[999] flex w-full max-w-[390px] translate-x-full flex-col bg-background transition-transform duration-300"
+    data-cart-panel
+  >
+    {% render 'cart-offer-banner', rotation_interval: section.settings.rotation_interval %}
+
+    <p class="px-5 py-3 text-sm text-error border-b border-border" data-cart-error hidden></p>
+
+    <div class="flex shrink-0 items-center justify-between border-b border-border bg-background px-5 py-3 group-data-[cart-state=offers]/cart:hidden">
+      <h2 class="flex items-center gap-2 font-primary text-lg font-medium text-foreground">
+        {{ 'cart.my_cart' | t }}
+        <span
+          class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent font-secondary text-sm font-normal text-foreground"
+          data-cart-header-count
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {{ cart.item_count }}
+        </span>
+      </h2>
+      <button
+        type="button"
+        class="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded bg-[#E5E5E5] text-foreground transition-colors hover:bg-[#D9D9D9]"
+        data-cart-close
+        aria-label="{{ 'cart.close' | t }}"
+      >
+        {% render 'icon-close', size: 20 %}
+      </button>
+    </div>
+
+    <div class="hidden shrink-0 items-center gap-3 border-b border-border bg-background px-5 py-3 group-data-[cart-state=offers]/cart:flex">
+      <button
+        type="button"
+        class="flex items-center justify-center text-muted transition-colors hover:text-foreground"
+        data-cart-offers-back
+        aria-label="{{ 'accessibility.back' | t }}"
+      >
+        {% render 'icon-arrow-left', size: 20 %}
+      </button>
+      <h2 class="flex-1 font-primary text-lg font-medium text-foreground">{{ 'cart.all_offers' | t }}</h2>
+      <button
+        type="button"
+        class="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded bg-[#E5E5E5] text-foreground transition-colors hover:bg-[#D9D9D9]"
+        data-cart-close
+        aria-label="{{ 'cart.close' | t }}"
+      >
+        {% render 'icon-close', size: 20 %}
+      </button>
+    </div>
+
+    <div
+      class="relative flex-1 overflow-hidden"
+      data-cart-items
+      {% if cart.item_count == 0 %}
+        hidden
+      {% endif %}
+    >
+      <div
+        data-cart-content
+        class="absolute inset-0 overflow-y-auto pt-2 transition-transform duration-300 group-data-[cart-state=offers]/cart:-translate-x-full"
+      >
+        <div
+          class="animate-pulse px-5 py-3"
+          data-cart-skeleton
+          {% if cart.item_count > 0 %}
+            hidden
+          {% endif %}
+        >
+          <div class="flex h-18">
+            <div class="h-18 w-18 shrink-0 rounded-xl bg-muted/10"></div>
+            <div class="ml-3 flex min-w-0 flex-1 flex-col">
+              <div class="h-3 w-1/3 rounded bg-muted/10"></div>
+              <div class="mt-1 h-5 w-2/3 rounded bg-muted/10"></div>
+              <div class="mt-auto h-4 w-1/2 rounded bg-muted/10"></div>
+            </div>
+            <div class="ml-6 flex shrink-0 flex-col justify-end">
+              <div class="h-6 w-16 rounded-md bg-muted/10"></div>
+            </div>
+          </div>
+        </div>
+        {%- if section.settings.show_tracker -%}
+          {% render 'cart-milestone-tracker',
+            progress_message: section.settings.progress_message,
+            complete_message: section.settings.tracker_complete_message
+          %}
+        {%- endif -%}
+
+        {%- for item in cart.items -%}
+          <div class="cart-line-row px-5 py-3" data-cart-line-row>
+            {% render 'cart-line-item', item: item, line_index: forloop.index %}
+          </div>
+          {%- unless forloop.last -%}
+            <div class="mx-5 border-b-[0.5px] border-[#E5E5E5]"></div>
+          {%- endunless -%}
+        {%- endfor -%}
+        {%- if cart.item_count > 0 -%}
+          <div class="border-b-[0.5px] border-[#E5E5E5]"></div>
+        {%- endif -%}
+        {% render 'cart-discount-code',
+          offers_list: section.settings.offers_list,
+          drawer_coupon_count: section.settings.drawer_coupon_count
+        %}
+        {% render 'cart-recommended-products',
+          products: section.settings.recommended_products,
+          heading: section.settings.recommended_heading
+        %}
+        {% render 'cart-price-summary', total_mrp: cart_total_mrp %}
+      </div>
+      <div
+        data-cart-offers-panel
+        class="absolute inset-0 translate-x-full overflow-y-auto px-5 pt-2 transition-transform duration-300 group-data-[cart-state=offers]/cart:translate-x-0"
+      >
+        {% render 'cart-offers-panel', offers_list: section.settings.offers_list %}
+      </div>
+    </div>
+
+    <template data-cart-line-optimistic>
+      <div class="cart-line-row px-5 py-3" data-cart-line-row>
+        {% render 'cart-line-item', optimistic: true %}
+      </div>
+    </template>
+
+    <div
+      class="flex-1 overflow-y-auto"
+      data-cart-empty
+      {% if cart.item_count > 0 %}
+        hidden
+      {% endif %}
+    >
+      {% render 'cart-empty-state',
+        heading: section.settings.empty_heading,
+        message: section.settings.empty_message,
+        illustration: section.settings.empty_illustration,
+        grid_heading: section.settings.empty_grid_heading,
+        products: section.settings.empty_products,
+        collection: section.settings.empty_collection
+      %}
+    </div>
+
+    <div
+      class="flex shrink-0 flex-col border-t border-border bg-background px-[22px] pb-4 group-data-[cart-state=offers]/cart:hidden{% if cart.discount_applications.size == 0 %} pt-4{% endif %}"
+      data-cart-footer
+    >
+      <div
+        class="flex flex-col gap-4"
+        data-cart-checkout-actions
+        {% if cart.item_count == 0 %}
+          hidden
+        {% endif %}
+      >
+        {% render 'cart-auto-applied-row', discounts: cart.discount_applications %}
+
+        <button
+        type="button"
+        data-cart-checkout
+        data-checkout-url="{{ routes.cart_url | append: '/checkout' }}"
+        class="flex h-[50px] w-full items-center justify-center gap-1.5 rounded-xl bg-primary px-3 font-secondary text-base font-semibold text-primary-foreground transition-colors [@media(hover:hover)]:enabled:hover:bg-green-dark"
+      >
+        <span class="flex items-center gap-2" data-checkout-text>
+          <span>
+            {{ 'cart.checkout' | t }}
+            <span data-cart-total>{{ cart.total_price | money_without_trailing_zeros | replace: ' ', '' }}</span>
+          </span>
+          <s
+            class="text-sm font-normal"
+            data-cart-total-mrp
+            data-mrp-cents="{{ cart_total_mrp }}"
+            {% unless cart_total_mrp > cart.total_price %}
+              hidden
+            {% endunless %}
+          >
+            {{- cart_total_mrp | money_without_trailing_zeros | replace: ' ', '' -}}
+          </s>
+        </span>
+          <span class="loader text-primary-foreground" data-checkout-spinner hidden></span>
+        </button>
+      </div>
+
+      <a
+        href="{{ section.settings.empty_button_link | default: routes.collections_url }}"
+        class="flex h-[50px] w-full items-center justify-center gap-1.5 rounded-xl bg-primary px-3 font-secondary text-base font-semibold text-primary-foreground transition-colors [@media(hover:hover)]:hover:bg-green-dark"
+        data-cart-empty-cta
+        {% if cart.item_count > 0 %}
+          hidden
+        {% endif %}
+      >
+        {%- if section.settings.empty_button_label != blank -%}
+          {{ section.settings.empty_button_label | escape }}
+        {%- else -%}
+          {{ 'cart.shop_now' | t }}
+        {%- endif -%}
+        {%- render 'icon-arrow-right', class: 'h-3.5 w-3.5' -%}
+      </a>
+    </div>
+
+    <div
+      class="absolute inset-0 z-50 flex items-center justify-center bg-background/70"
+      data-cart-drawer-loading
+      aria-hidden="true"
+      hidden
+    >
+      <span class="loader text-primary"></span>
+    </div>
+  </div>
+</cart-drawer>
+
+{% schema %}
+{
+  "name": "Cart Drawer",
+  "class": "cart-drawer-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Offer banner"
+    },
+    {
+      "type": "range",
+      "id": "rotation_interval",
+      "label": "Banner Rotation Interval",
+      "info": "How often the offer banner switches between messages.",
+      "min": 2,
+      "max": 15,
+      "step": 1,
+      "unit": "s",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Coupons"
+    },
+    {
+      "type": "metaobject_list",
+      "id": "offers_list",
+      "label": "Coupon Codes",
+      "metaobject_type": "offer",
+      "info": "Coupon cards shown in the drawer and the offers panel. Points at Offer entries."
+    },
+    {
+      "type": "range",
+      "id": "drawer_coupon_count",
+      "label": "Coupon Cards Shown",
+      "info": "How many coupon cards show before \"See all\" opens the full list.",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "header",
+      "content": "Recommendations"
+    },
+    {
+      "type": "product_list",
+      "id": "recommended_products",
+      "label": "Recommended Products",
+      "info": "Products shown in the drawer's recommended rail."
+    },
+    {
+      "type": "text",
+      "id": "recommended_heading",
+      "label": "Recommended Heading",
+      "default": "Recommended Products"
+    },
+    {
+      "type": "header",
+      "content": "Milestone tracker"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tracker",
+      "label": "Show Tracker",
+      "info": "Controls the milestone rewards progress tracker. Edit the tiers in Content > Metaobjects > Milestone tier.",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "progress_message",
+      "label": "Progress Message",
+      "info": "Shown until every tier is reached. Placeholders [shortfall], [reward] and [threshold] are replaced with live values.",
+      "default": "Add [shortfall] more to unlock [reward] at [threshold]"
+    },
+    {
+      "type": "text",
+      "id": "tracker_complete_message",
+      "label": "Tracker Complete Msg",
+      "info": "Replaces the progress message once every tier is reached.",
+      "default": "You've unlocked the maximum discount 🎉"
+    },
+    {
+      "type": "header",
+      "content": "Empty state"
+    },
+    {
+      "type": "text",
+      "id": "empty_heading",
+      "label": "Empty Heading",
+      "info": "Shown when the cart has no items.",
+      "default": "Your cart is feeling a little empty"
+    },
+    {
+      "type": "text",
+      "id": "empty_message",
+      "label": "Empty Message",
+      "default": "Let's find something that feels right for you."
+    },
+    {
+      "type": "image_picker",
+      "id": "empty_illustration",
+      "label": "Empty Illustration",
+      "info": "140×140px. Optional — the empty state renders without one if left blank."
+    },
+    {
+      "type": "text",
+      "id": "empty_grid_heading",
+      "label": "Empty Grid Heading",
+      "default": "Popular picks to get you started"
+    },
+    {
+      "type": "product_list",
+      "id": "empty_products",
+      "label": "Empty Products",
+      "info": "Used if set. Falls back to the collection below."
+    },
+    {
+      "type": "collection",
+      "id": "empty_collection",
+      "label": "Empty Collection",
+      "info": "Alternative source for the empty state grid when no products are selected above."
+    },
+    {
+      "type": "text",
+      "id": "empty_button_label",
+      "label": "Empty Button Label",
+      "default": "Start Shopping"
+    },
+    {
+      "type": "url",
+      "id": "empty_button_link",
+      "label": "Empty Button Link"
+    }
+  ],
+  "default": {
+    "settings": {
+      "offers_list": [
+        "endyearsale",
+        "welcome50",
+        "flat-15-off-1"
+      ],
+      "recommended_products": [
+        "pain-balm",
+        "back-pain-roll-on",
+        "joint-muscle-spray",
+        "advanced-pain-relief-patch"
+      ],
+      "empty_products": [
+        "fruitnik-electro-apple",
+        "relief-cold-rub",
+        "electro-ors-sachets",
+        "muscle-recovery-gel"
+      ]
+    }
+  }
+}
+{% endschema %}

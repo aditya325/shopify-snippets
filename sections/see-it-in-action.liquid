@@ -1,0 +1,22 @@
+{%- comment -%} Placeholder until D3 (Quinn) lands — holds the slot, renders no app content {%- endcomment -%}
+<div class="see-it-in-action my-6 flex h-[50vh] items-center justify-center bg-[#466E2E1A] lg:my-8">
+  <div class="page-width">
+    {%- render 'section-header',
+      heading: '<p>See It In <em>Action</em></p>',
+      class_name: 'text-center text-section-heading lg:text-section-heading-d'
+    -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "See It In Action",
+  "class": "see-it-in-action-section",
+  "settings": [],
+  "presets": [
+    {
+      "name": "See It In Action"
+    }
+  ]
+}
+{% endschema %}

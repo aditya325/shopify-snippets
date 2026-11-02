@@ -1,0 +1,102 @@
+{% doc %}
+  Bundle Card Featured
+
+  The "Combo of the month" card — image, title, derived savings chip and a tick-list of bundle
+  contents. Everything comes from the product; nothing is passed as a literal string.
+
+  The savings chip reuses product-card's discount arithmetic so the two can never disagree about the
+  same product, and it is omitted entirely rather than rendered at 0% when there is no saving.
+
+  The contents list renders two column groups. Mobile lays them side by side with space between, which
+  is the design's two-column tick-list; lg: stacks them into one column whose gap matches each group's
+  own, so all items end up evenly spaced. One DOM, both designs.
+
+  Figma hides this card's price row and CTA button (node 389:23432), so neither is built here. The title
+  is therefore the card's only link, stretched over the whole card so it stays reachable without one.
+
+  @param {product} bundle_product - Bundle product to render (required)
+{% enddoc %}
+
+{%- liquid
+  assign bundle_product = bundle_product | default: blank
+
+  unless bundle_product != blank
+    break
+  endunless
+
+  assign bundle_discount_percent = 0
+  if bundle_product.compare_at_price > bundle_product.price
+    assign bundle_price_difference = bundle_product.compare_at_price | minus: bundle_product.price
+    assign bundle_discount_scaled = bundle_price_difference | times: 100.0
+    assign bundle_discount_percent = bundle_discount_scaled | divided_by: bundle_product.compare_at_price | round
+  endif
+
+  assign bundle_contents = bundle_product.metafields.custom.bundle_contents.value
+  assign bundle_contents_size = 0
+  if bundle_contents != blank
+    assign bundle_contents_size = bundle_contents.size
+  endif
+  assign bundle_split_at = bundle_contents_size | plus: 1 | divided_by: 2
+
+  assign bundle_image_alt = bundle_product.featured_image.alt | default: bundle_product.title
+  assign bundle_item_class = 'flex items-center gap-1.5 lg:gap-2'
+  assign bundle_label_class = 'text-[10px]/[13px] text-[#666] lg:text-[14px]/[21px] lg:tracking-[-0.16px]'
+-%}
+
+<div class="bundle-card-featured relative flex w-full flex-col overflow-hidden rounded-[15px] bg-[#faf9f6] before:pointer-events-none before:absolute before:inset-0 before:z-10 before:rounded-[15px] before:border before:border-[#1e5631] lg:before:rounded-[20px] transition-[transform,box-shadow] duration-300 motion-reduce:transition-none [@media(hover:hover)]:hover:-translate-y-0.5 [@media(hover:hover)]:hover:shadow-[0_8px_20px_rgba(30,86,49,0.14)] lg:rounded-[20px]">
+  {%- if bundle_product.featured_image != blank -%}
+    <div class="bundle-card-featured__media relative aspect-[320/240] w-full shrink-0 overflow-hidden lg:aspect-[350/198]">
+      {% render 'image',
+        image: bundle_product.featured_image,
+        alt: bundle_image_alt,
+        class_name: 'absolute inset-0 block h-full w-full object-cover',
+        lazy: true,
+        decoding: 'async',
+        base_width: 700,
+        mobile_width: 640,
+        breakpoint: 1024
+      %}
+    </div>
+  {%- endif -%}
+
+  <div class="bundle-card-featured__body flex flex-col gap-2.5 p-3.5 lg:gap-4 lg:p-4">
+    <div class="bundle-card-featured__head flex items-center justify-between gap-1 lg:justify-start">
+      <a
+        class="bundle-card-featured__title text-label-lg font-semibold text-primary after:absolute after:inset-0"
+        href="{{ bundle_product.url }}"
+      >
+        {{- bundle_product.title | escape -}}
+      </a>
+
+      {%- if bundle_discount_percent > 0 -%}
+        <span class="bundle-card-featured__chip shrink-0 rounded-[4px] bg-accent px-2 py-1 text-[8px]/[10px] font-semibold uppercase text-foreground lg:text-[10px]/[12px] lg:font-bold">
+          {{- 'products.save_percent' | t: percent: bundle_discount_percent -}}
+        </span>
+      {%- endif -%}
+    </div>
+
+    {%- if bundle_contents_size > 0 -%}
+      <div class="bundle-card-featured__list flex items-start justify-between lg:flex-col lg:justify-start lg:gap-2">
+        <ul class="bundle-card-featured__col flex list-none flex-col gap-2">
+          {%- for bundle_item in bundle_contents limit: bundle_split_at -%}
+            <li class="{{ bundle_item_class }}">
+              {%- render 'icon-check-circle', class: 'h-3 w-3 shrink-0 text-primary lg:h-3.5 lg:w-3.5' -%}
+              <span class="{{ bundle_label_class }}">{{ bundle_item | escape }}</span>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        {%- if bundle_contents_size > bundle_split_at -%}
+          <ul class="bundle-card-featured__col flex list-none flex-col gap-2">
+            {%- for bundle_item in bundle_contents offset: bundle_split_at -%}
+              <li class="{{ bundle_item_class }}">
+                {%- render 'icon-check-circle', class: 'h-3 w-3 shrink-0 text-primary lg:h-3.5 lg:w-3.5' -%}
+                <span class="{{ bundle_label_class }}">{{ bundle_item | escape }}</span>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</div>

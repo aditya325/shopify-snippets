@@ -1,0 +1,356 @@
+{%- liquid
+  assign header_scroll_desk = section.settings.header_scroll_bg_desk | default: 'rgba(70,110,46,0.3)'
+  assign header_scroll_mob = section.settings.header_scroll_bg_mob | default: 'rgba(70,110,46,0.2)'
+
+  assign panelled_handles = ''
+  for block in section.blocks
+    capture block_row_map
+      render 'mega-menu-row-map', block_type: block.type
+    endcapture
+    assign block_row_settings = block_row_map | strip | split: '|' | first | split: ','
+    assign block_row_count = 0
+    for setting_id in block_row_settings
+      assign block_row_count = block_row_count | plus: block.settings[setting_id].size
+    endfor
+    assign block_parent = block.settings.mega_parent_handle | handleize
+    if block_row_count > 0 and block_parent != blank
+      assign panelled_handles = panelled_handles | append: ',' | append: block_parent | append: ','
+    endif
+  endfor
+-%}
+
+<header
+  class="header sticky top-0 z-50 w-full bg-background transition-all duration-300"
+  id="main-header"
+  data-header-scrolled="false"
+  style="--header-scroll-bg-desk: {{ header_scroll_desk }}; --header-scroll-bg-mob: {{ header_scroll_mob }};"
+>
+  {% render 'header-desktop', section: section, panelled_handles: panelled_handles %}
+
+  {% render 'header-mobile', section: section, panelled_handles: panelled_handles %}
+
+  {%- render 'mega-menu-orphan-notice', section: section -%}
+
+  {%- render 'mega-menu-panel', section: section -%}
+</header>
+
+<div
+  class="pointer-events-none fixed inset-0 z-40 bg-black/20 opacity-0 backdrop-blur-[6px] transition-opacity duration-[250ms] ease-out motion-reduce:transition-none max-lg:hidden data-[open=true]:opacity-100"
+  data-mega-backdrop
+  data-open="false"
+  aria-hidden="true"
+></div>
+
+{% render 'search-modal' %}
+
+<script src="{{ 'accordion.js' | asset_url }}" defer></script>
+<script src="{{ 'header-javascript.js' | asset_url }}" defer></script>
+<script src="{{ 'search-recent-searches.js' | asset_url }}" defer></script>
+<script src="{{ 'search-modal.js' | asset_url }}" defer></script>
+<script src="{{ 'predictive-search.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "header-section",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "header_menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "header",
+      "content": "Scrolled State"
+    },
+    {
+      "type": "color_background",
+      "id": "header_scroll_bg_desk",
+      "label": "Scroll Bg Desktop",
+      "default": "rgba(70,110,46,0.3)"
+    },
+    {
+      "type": "color_background",
+      "id": "header_scroll_bg_mob",
+      "label": "Scroll Bg Mobile",
+      "default": "rgba(70,110,46,0.2)"
+    },
+    {
+      "type": "header",
+      "content": "Utility Links"
+    },
+    {
+      "type": "text",
+      "id": "header_locator_label",
+      "label": "Store Locator Label",
+      "default": "Store Locator"
+    },
+    {
+      "type": "url",
+      "id": "header_locator_link",
+      "label": "Store Locator Link"
+    },
+    {
+      "type": "text",
+      "id": "header_consult_label",
+      "label": "Consultation Label",
+      "default": "Free Expert Consultation"
+    },
+    {
+      "type": "url",
+      "id": "header_consult_link",
+      "label": "Consultation Link"
+    }
+  ],
+  "max_blocks": 10,
+  "blocks": [
+    {
+      "type": "mega-menu-need",
+      "name": "Mega Menu Need",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Pick the rows for this panel below. Each row shows as a tab, in the order you list them."
+        },
+        {
+          "type": "text",
+          "id": "mega_parent_handle",
+          "label": "Menu item",
+          "info": "Type the menu item name exactly as it reads in Navigation, for example Shop By Need. Capitals, spaces and & are fine."
+        },
+        {
+          "type": "text",
+          "id": "mega_panel_title",
+          "label": "Panel title",
+          "info": "Heading shown above the rail, e.g. I need help with\u2026"
+        },
+        {
+          "type": "checkbox",
+          "id": "mega_show_promo",
+          "label": "Show subscribe card",
+          "info": "Adds the Subscribe & Save card beside this panel. Edit the card in Content \u2192 Metaobjects \u2192 Subscribe & Save.",
+          "default": false
+        },
+        {
+          "type": "metaobject_list",
+          "id": "mega_rows_need",
+          "label": "Rows",
+          "metaobject_type": "mega_menu_need_row",
+          "info": "Create these under Content then Metaobjects. Drag to reorder."
+        }
+      ]
+    },
+    {
+      "type": "mega-menu-category",
+      "name": "Mega Menu Category",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Pick the rows for this panel below. Each row shows as a tab, in the order you list them."
+        },
+        {
+          "type": "text",
+          "id": "mega_parent_handle",
+          "label": "Menu item",
+          "info": "Type the menu item name exactly as it reads in Navigation, for example Shop By Need. Capitals, spaces and & are fine."
+        },
+        {
+          "type": "text",
+          "id": "mega_panel_title",
+          "label": "Panel title",
+          "info": "Heading shown above the rail, e.g. I need help with\u2026"
+        },
+        {
+          "type": "checkbox",
+          "id": "mega_show_promo",
+          "label": "Show subscribe card",
+          "info": "Adds the Subscribe & Save card beside this panel. Edit the card in Content \u2192 Metaobjects \u2192 Subscribe & Save.",
+          "default": false
+        },
+        {
+          "type": "metaobject_list",
+          "id": "mega_rows_category",
+          "label": "Rows",
+          "metaobject_type": "mega_menu_category_row",
+          "info": "Create these under Content then Metaobjects. Drag to reorder."
+        }
+      ]
+    },
+    {
+      "type": "mega-menu-combo",
+      "name": "Mega Menu Combo",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Pick the rows for this panel below. Each row shows as a tab, in the order you list them."
+        },
+        {
+          "type": "text",
+          "id": "mega_parent_handle",
+          "label": "Menu item",
+          "info": "Type the menu item name exactly as it reads in Navigation, for example Shop By Need. Capitals, spaces and & are fine."
+        },
+        {
+          "type": "text",
+          "id": "mega_panel_title",
+          "label": "Panel title",
+          "info": "Heading shown above the rail, e.g. I need help with\u2026"
+        },
+        {
+          "type": "checkbox",
+          "id": "mega_show_promo",
+          "label": "Show subscribe card",
+          "info": "Adds the Subscribe & Save card beside this panel. Edit the card in Content \u2192 Metaobjects \u2192 Subscribe & Save.",
+          "default": true
+        },
+        {
+          "type": "metaobject_list",
+          "id": "mega_rows_combo",
+          "label": "Rows",
+          "metaobject_type": "mega_menu_combo_row",
+          "info": "Create these under Content then Metaobjects. Drag to reorder."
+        }
+      ]
+    },
+    {
+      "type": "mega-menu-about",
+      "name": "Mega Menu About",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Pick the rows for this panel below. Each row shows as a tab, in the order you list them."
+        },
+        {
+          "type": "text",
+          "id": "mega_parent_handle",
+          "label": "Menu item",
+          "info": "Type the menu item name exactly as it reads in Navigation, for example Shop By Need. Capitals, spaces and & are fine."
+        },
+        {
+          "type": "text",
+          "id": "mega_panel_title",
+          "label": "Panel title",
+          "info": "Heading shown above the rail, e.g. I need help with\u2026"
+        },
+        {
+          "type": "checkbox",
+          "id": "mega_show_promo",
+          "label": "Show subscribe card",
+          "info": "Adds the Subscribe & Save card beside this panel. Edit the card in Content \u2192 Metaobjects \u2192 Subscribe & Save.",
+          "default": true
+        },
+        {
+          "type": "metaobject_list",
+          "id": "mega_rows_story",
+          "label": "Story rows",
+          "metaobject_type": "mega_menu_about_story",
+          "info": "Create these under Content then Metaobjects. Drag to reorder."
+        },
+        {
+          "type": "metaobject_list",
+          "id": "mega_rows_history",
+          "label": "History rows",
+          "metaobject_type": "mega_menu_about_history",
+          "info": "Create these under Content then Metaobjects. Drag to reorder."
+        }
+      ]
+    },
+    {
+      "type": "mega-menu-media",
+      "name": "Mega Menu Media",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Pick the rows for this panel below. Each row shows as a tab, in the order you list them."
+        },
+        {
+          "type": "text",
+          "id": "mega_parent_handle",
+          "label": "Menu item",
+          "info": "Type the menu item name exactly as it reads in Navigation, for example Shop By Need. Capitals, spaces and & are fine."
+        },
+        {
+          "type": "text",
+          "id": "mega_panel_title",
+          "label": "Panel title",
+          "info": "Heading shown above the rail, e.g. I need help with\u2026"
+        },
+        {
+          "type": "checkbox",
+          "id": "mega_show_promo",
+          "label": "Show subscribe card",
+          "info": "Adds the Subscribe & Save card beside this panel. Edit the card in Content \u2192 Metaobjects \u2192 Subscribe & Save.",
+          "default": true
+        },
+        {
+          "type": "metaobject_list",
+          "id": "mega_rows_blogs",
+          "label": "Blogs rows",
+          "metaobject_type": "mega_menu_media_blogs",
+          "info": "Create these under Content then Metaobjects. Drag to reorder."
+        },
+        {
+          "type": "metaobject_list",
+          "id": "mega_rows_press",
+          "label": "Press rows",
+          "metaobject_type": "mega_menu_media_press",
+          "info": "Create these under Content then Metaobjects. Drag to reorder."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header",
+      "settings": {
+        "header_menu": "navigation-main",
+        "header_locator_link": "/pages/contact",
+        "header_consult_link": "/pages/contact"
+      },
+      "blocks": [
+        {
+          "type": "mega-menu-need",
+          "settings": {
+            "mega_parent_handle": "shop-by-need",
+            "mega_panel_title": "I need help with\u2026",
+            "mega_show_promo": false
+          }
+        },
+        {
+          "type": "mega-menu-category",
+          "settings": {
+            "mega_parent_handle": "categories",
+            "mega_panel_title": "Categories",
+            "mega_show_promo": false
+          }
+        },
+        {
+          "type": "mega-menu-combo",
+          "settings": {
+            "mega_parent_handle": "combo",
+            "mega_panel_title": "Everyday Combo",
+            "mega_show_promo": true
+          }
+        },
+        {
+          "type": "mega-menu-about",
+          "settings": {
+            "mega_parent_handle": "about",
+            "mega_panel_title": "About",
+            "mega_show_promo": true
+          }
+        },
+        {
+          "type": "mega-menu-media",
+          "settings": {
+            "mega_parent_handle": "media",
+            "mega_panel_title": "Media",
+            "mega_show_promo": true
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

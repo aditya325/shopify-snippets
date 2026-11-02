@@ -1,0 +1,183 @@
+{%- liquid
+  assign tvc_heading = section.settings.tvc_heading
+  assign tvc_chips = section.blocks | where: 'type', 'tvc-filter-chip'
+  assign tvc_videos = section.blocks | where: 'type', 'tvc-video'
+-%}
+
+<div
+  class="tvc-gallery mb-[var(--tvc-bottom-mobile)] mt-[var(--tvc-top-mobile)] bg-brand-yellow/10 py-5 lg:mb-[var(--tvc-bottom-desktop)] lg:mt-[var(--tvc-top-desktop)] lg:py-8"
+  style="
+    --tvc-top-mobile: {{ section.settings.tvc_top_mobile }}px;
+    --tvc-bottom-mobile: {{ section.settings.tvc_bottom_mobile }}px;
+    --tvc-top-desktop: {{ section.settings.tvc_top_desktop }}px;
+    --tvc-bottom-desktop: {{ section.settings.tvc_bottom_desktop }}px;
+  "
+>
+  <div class="page-width">
+    {%- if tvc_heading != blank -%}
+      <div class="tvc-gallery__header mb-5">
+        {%- render 'section-header', heading: tvc_heading -%}
+      </div>
+    {%- endif -%}
+
+    <tvc-video-filters class="block">
+      {%- if tvc_chips.size > 0 and tvc_videos.size > 0 -%}
+        <div class="tvc-gallery__filters scrollbar-hide mb-5 flex items-center gap-1.5 overflow-x-auto lg:gap-2">
+          {%- for block in tvc_chips -%}
+            {%- render 'tvc-filter-chip', block: block, chip_active: forloop.first -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- if tvc_videos.size > 0 -%}
+        <div class="tvc-gallery__reel scrollbar-hide flex gap-5 overflow-x-auto lg:gap-4">
+          {%- for block in tvc_videos -%}
+            {%- render 'tvc-video', block: block -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      <p
+        class="tvc-gallery__empty text-center font-primary text-[14px]/[20px] text-muted lg:text-[18px]/[27px]"
+        data-tvc-empty
+        {%- if tvc_videos.size > 0 %} hidden{% endif -%}
+      >
+        {{- 'general.no_videos' | t -}}
+      </p>
+    </tvc-video-filters>
+  </div>
+</div>
+
+{%- if tvc_videos.size > 0 -%}
+  <script src="{{ 'tvc-gallery.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Tvc Gallery",
+  "class": "tvc-gallery-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "tvc_heading",
+      "label": "Tvc Heading",
+      "default": "<p>Gallery</p>"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "tvc_top_mobile",
+      "label": "Space Above (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "tvc_bottom_mobile",
+      "label": "Space Below (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "tvc_top_desktop",
+      "label": "Space Above (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "tvc_bottom_desktop",
+      "label": "Space Below (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tvc-filter-chip",
+      "name": "Tvc Filter Chip",
+      "settings": [
+        {
+          "type": "text",
+          "id": "chip_label",
+          "label": "Chip Label"
+        },
+        {
+          "type": "select",
+          "id": "chip_filter",
+          "label": "Chip Filter",
+          "info": "Category this chip shows.",
+          "options": [
+            { "value": "all", "label": "All" },
+            { "value": "wellness", "label": "Wellness" },
+            { "value": "relief", "label": "Relief" },
+            { "value": "womens-care", "label": "Women\u2019s Care" },
+            { "value": "rehydration", "label": "Rehydration" }
+          ],
+          "default": "all"
+        }
+      ]
+    },
+    {
+      "type": "tvc-video",
+      "name": "Tvc Video",
+      "settings": [
+        {
+          "type": "video",
+          "id": "tvc_video",
+          "label": "Tvc Video"
+        },
+        {
+          "type": "select",
+          "id": "tvc_category",
+          "label": "Tvc Category",
+          "info": "Chip this video appears under.",
+          "options": [
+            { "value": "wellness", "label": "Wellness" },
+            { "value": "relief", "label": "Relief" },
+            { "value": "womens-care", "label": "Women\u2019s Care" },
+            { "value": "rehydration", "label": "Rehydration" }
+          ],
+          "default": "wellness"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tvc Gallery",
+      "blocks": [
+        { "type": "tvc-filter-chip", "settings": { "chip_label": "All", "chip_filter": "all" } },
+        { "type": "tvc-filter-chip", "settings": { "chip_label": "Wellness", "chip_filter": "wellness" } },
+        { "type": "tvc-filter-chip", "settings": { "chip_label": "Relief", "chip_filter": "relief" } },
+        { "type": "tvc-filter-chip", "settings": { "chip_label": "Women’s Care", "chip_filter": "womens-care" } },
+        { "type": "tvc-filter-chip", "settings": { "chip_label": "Rehydration", "chip_filter": "rehydration" } },
+        { "type": "tvc-video" },
+        { "type": "tvc-video" },
+        { "type": "tvc-video" },
+        { "type": "tvc-video" }
+      ]
+    }
+  ]
+}
+{% endschema %}

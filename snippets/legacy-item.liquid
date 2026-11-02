@@ -1,0 +1,51 @@
+{% doc %}
+  Legacy Item
+
+  One credential card in the Legacy Details grid — title over subtitle, with a decorative icon
+  bleeding off the bottom-right corner.
+
+  The icon is anchored to the card's right/bottom edges rather than the design's measured left/top
+  offsets, which are computed values that only hold at one card width. The bleed past the bottom edge is
+  deliberate: the icons are SVGs whose artwork is inset inside its own viewBox, so bottom:0 would leave a
+  visible gap. Bleeding and clipping is how Figma makes the mark meet the edge.
+
+  @param {object} block - Legacy Item block, supplying settings and shopify_attributes
+{% enddoc %}
+
+{%- liquid
+  assign legacy_icon = block.settings.legacy_icon
+  assign legacy_title = block.settings.legacy_title
+  assign legacy_subtitle = block.settings.legacy_subtitle
+-%}
+
+{%- if legacy_title != blank or legacy_subtitle != blank -%}
+  <div
+    class="legacy-details__card relative flex h-[110px] flex-col gap-px overflow-hidden rounded-[15px] bg-[#507838] p-3 lg:h-[124px] lg:gap-1 lg:rounded-[20px] lg:p-5"
+    {{ block.shopify_attributes }}
+  >
+    {%- if legacy_title != blank -%}
+      <p class="legacy-details__title -mr-2 font-secondary text-[18px] font-semibold leading-normal tracking-normal text-primary-foreground lg:mr-0 lg:text-[24px]">
+        {{- legacy_title | escape -}}
+      </p>
+    {%- endif -%}
+
+    {%- if legacy_subtitle != blank -%}
+      <p class="legacy-details__subtitle font-secondary text-[12px]/[16px] tracking-normal text-primary-foreground lg:text-[16px]/[24px]">
+        {{- legacy_subtitle | escape -}}
+      </p>
+    {%- endif -%}
+
+    {%- if legacy_icon != blank -%}
+      <img
+        class="legacy-details__icon pointer-events-none absolute -bottom-[9px] right-3 size-[54px] object-contain opacity-50 lg:-bottom-[14px] lg:right-2 lg:size-16"
+        src="{{ legacy_icon | image_url: width: 128 }}"
+        alt=""
+        width="64"
+        height="64"
+        loading="lazy"
+        decoding="async"
+        aria-hidden="true"
+      >
+    {%- endif -%}
+  </div>
+{%- endif -%}

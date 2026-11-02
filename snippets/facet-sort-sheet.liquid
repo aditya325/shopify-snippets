@@ -1,0 +1,88 @@
+{% doc %}
+  Facet Sort Sheet
+
+  Bottom sheet of sort options for mobile. Keeps the `data-sort-*` contract
+  assets/collection.js reads, so it needs no JS of its own.
+
+  @param {object} filter_source - Object exposing .sort_options (required)
+  @param {string} [current_sort] - Currently active sort value
+
+  @example
+  {% render 'facet-sort-sheet', filter_source: collection, current_sort: current_sort %}
+{% enddoc %}
+
+{%- liquid
+  assign filter_source = filter_source | default: blank
+
+  unless filter_source != blank and filter_source.sort_options.size > 0
+    break
+  endunless
+
+  assign current_sort = current_sort | default: filter_source.default_sort_by
+-%}
+
+<div
+  class="fixed inset-0 z-[100] hidden"
+  data-sort-drawer
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="facet-sort-sheet-title"
+>
+  <div class="absolute inset-0 bg-black/50 opacity-0 transition-opacity duration-300" data-sort-overlay></div>
+
+  <div
+    class="absolute inset-x-0 bottom-0 flex max-h-[85vh] translate-y-full flex-col rounded-t-md bg-background shadow-xl transition-transform duration-300"
+    data-sort-panel
+  >
+    <div class="flex shrink-0 flex-col gap-3 px-5 pb-4 pt-3">
+      <span
+          class="mx-auto -my-2 flex h-5 w-16 shrink-0 cursor-grab touch-none items-center justify-center active:cursor-grabbing"
+          data-sheet-handle
+        >
+          <span class="h-1 w-10 rounded-sm bg-[#dcd7ce]"></span>
+        </span>
+      <div class="flex items-center gap-2.5">
+        {%- render 'icon-sort', size: 18, class: 'h-[18px] w-[18px] text-foreground' -%}
+        <h2
+          id="facet-sort-sheet-title"
+          class="font-secondary text-[18px] font-medium leading-[23.4px] text-foreground"
+        >
+          {{ 'facets.sort' | t }}
+        </h2>
+        <button
+          type="button"
+          class="ml-auto -mr-1 flex h-9 w-9 items-center justify-center text-foreground transition-colors hover:text-muted"
+          data-sort-close
+          aria-label="{{ 'accessibility.close' | t }}"
+        >
+          {%- render 'icon-close', size: 18, class: 'h-[18px] w-[18px]' -%}
+        </button>
+      </div>
+    </div>
+
+    <div class="min-h-0 flex-1 overflow-y-auto" data-sort-options>
+      {%- for option in filter_source.sort_options -%}
+        {%- assign is_current = false -%}
+        {%- if option.value == current_sort -%}
+          {%- assign is_current = true -%}
+        {%- endif -%}
+
+        <button
+          type="button"
+          class="flex w-full items-center justify-between gap-4 border-b border-[#e5e5e5] px-5 py-3.5 text-left transition-colors [@media(hover:hover)]:hover:bg-cream-alt"
+          data-sort-option
+          data-sort-value="{{ option.value }}"
+          aria-pressed="{{ is_current }}"
+        >
+          <span class="min-w-0 font-secondary text-[14px] leading-[18.2px] tracking-normal {% if is_current %}font-medium text-primary{% else %}text-[#282828]{% endif %}">
+            {{ option.name }}
+          </span>
+          <span
+            class="h-[18px] w-[18px] shrink-0 rounded-full bg-background {% if is_current %}border-[5px] border-primary{% else %}border-[1.5px] border-[#c8c3ba]{% endif %}"
+            data-sort-radio
+          ></span>
+        </button>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>

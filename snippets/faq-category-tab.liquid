@@ -1,0 +1,64 @@
+{% doc %}
+  FAQ Category Tab
+
+  Filter control for one faq-category block. State lives on aria-pressed, so the
+  tile fill and the icon swap are driven by group-aria-pressed:* variants with no JS styling.
+  The first renderable tab is pressed on the server so faq.js has nothing to correct.
+
+  @param {object} block - faq-category block, supplying settings and shopify_attributes
+  @param {number} index - Zero-based renderable index, pairing the tab with its body group
+  @param {string} section_id - Section id, keeping aria-controls unique across two instances
+{% enddoc %}
+
+{%- liquid
+  assign tab_label = block.settings.faq_category_name | strip_html | strip
+  assign tab_icon = block.settings.faq_category_icon
+  assign tab_icon_active = block.settings.faq_cat_icon_active | default: tab_icon
+  assign tab_icon_class = 'h-5 w-5 lg:h-[26px] lg:w-[26px]'
+
+  assign tab_pressed = 'false'
+  if index == 0
+    assign tab_pressed = 'true'
+  endif
+-%}
+
+<button
+  class="faq__tab group flex shrink-0 basis-[110px] flex-col items-center justify-center gap-2 lg:basis-[140px] lg:gap-2.5"
+  type="button"
+  aria-pressed="{{ tab_pressed }}"
+  aria-controls="faq-group-{{ section_id }}-{{ index }}"
+  data-faq-tab
+  data-faq-index="{{ index }}"
+  {{ block.shopify_attributes }}
+>
+  <span
+    class="faq__tab-tile flex h-11 w-11 items-center justify-center rounded-[10px] border border-[#D8E0C8] bg-[#F4F7ED] transition-colors group-aria-pressed:border-transparent group-aria-pressed:bg-primary lg:h-[54px] lg:w-[54px] lg:rounded-xl"
+  >
+    {%- if tab_icon != blank -%}
+      <span class="faq__tab-icon group-aria-pressed:hidden">
+        {%- render 'image',
+          image: tab_icon,
+          alt: '',
+          class_name: tab_icon_class,
+          lazy: false,
+          decoding: 'async'
+        -%}
+      </span>
+      <span class="faq__tab-icon hidden group-aria-pressed:block">
+        {%- render 'image',
+          image: tab_icon_active,
+          alt: '',
+          class_name: tab_icon_class,
+          lazy: false,
+          decoding: 'async'
+        -%}
+      </span>
+    {%- endif -%}
+  </span>
+
+  <span
+    class="faq__tab-label font-secondary text-[12px]/[16px] font-semibold tracking-normal text-[#1A1A1A] lg:text-[14px]/[18px]"
+  >
+    {{ tab_label | escape_once }}
+  </span>
+</button>

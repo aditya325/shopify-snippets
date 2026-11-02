@@ -1,0 +1,21 @@
+{% doc %}
+  Coupon Ticket Edge
+
+  The coupon ticket's dashed outline. Drawn as an SVG rather than border-dashed because the
+  dash period is not controllable on a CSS border. Positioned absolutely — the caller is relative.
+{% enddoc %}
+
+<svg
+  class="pointer-events-none absolute -left-2 top-0 h-full w-[calc(100%+8px)] max-w-none text-primary"
+  aria-hidden="true"
+>
+  <rect
+    x="0.5"
+    y="0.5"
+    rx="7.5"
+    class="h-[calc(100%-1px)] w-[calc(100%-1px)]"
+    fill="none"
+    stroke="currentColor"
+    stroke-dasharray="4 3"
+  />
+</svg>

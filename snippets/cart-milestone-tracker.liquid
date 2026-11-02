@@ -1,0 +1,206 @@
+{% doc %}
+  Cart Milestone Tracker
+
+  The rewards ladder above the cart lines: one badge per tier, connectors that fill proportionally
+  toward the next tier, and a templated shortfall message replaced by a completion message once
+  every tier is met.
+
+  Tiers come from the app-owned `milestone_tier` metaobject, the same entries the cart-transform
+  function prices against — so a threshold cannot be edited here and charged differently there.
+  Entries are read by the fixed handles below because the function can only look them up by handle.
+
+  Reached badge is a solid primary disc with a white double-ring tick (Figma `598:29615`), not the
+  20%-tint-plus-stroke TDD §5.3 described. Not-reached keeps the tint and a 1px ring with a padlock.
+
+  Reached state is computed from the subtotal BEFORE milestone discounts, summed from
+  `original_line_price`. Using the post-discount total would un-reach a tier the moment its own
+  discount landed, and counting free-gift lines would let a gift pay for the next tier.
+
+  Thresholds are authored in rupees; cart totals are in cents. Every comparison multiplies by 100.
+
+  @param {string} [tier_type] - Metaobject type; defaults to `app--418662776833--milestone_tier`
+  @param {string} [progress_message] - Shortfall copy carrying [shortfall], [reward] and [threshold]
+  @param {string} [complete_message] - Copy shown once every tier is reached
+
+  @example
+  {% render 'cart-milestone-tracker',
+    progress_message: section.settings.progress_message,
+    complete_message: section.settings.tracker_complete_message
+  %}
+{% enddoc %}
+
+{%- liquid
+  # the app owning the cart-transform function; re-registering that app changes this string
+  assign tier_type = tier_type | default: 'app--418662776833--milestone_tier'
+
+  unless tier_type != blank
+    break
+  endunless
+
+  assign tier_entries = shop.metaobjects[tier_type]
+
+  # handles mirror the function's static lookups — renaming one silently drops that tier from both
+  assign tier_handles = 'tier1,tier2,tier3' | split: ','
+
+  capture present_handles
+    for handle in tier_handles
+      assign candidate = tier_entries[handle]
+      if candidate != blank and candidate.threshold != blank
+        echo handle
+        echo ','
+      endif
+    endfor
+  endcapture
+
+  assign tiers = present_handles | split: ','
+
+  unless tiers.size > 0
+    break
+  endunless
+
+  # a gift must never count toward earning itself, so its line is left out of the basis
+  assign basis = 0
+  for cart_line in cart.items
+    if cart_line.properties._free_gift == blank
+      assign basis = basis | plus: cart_line.original_line_price
+    endif
+  endfor
+
+  # the next unreached tier is the lowest threshold above the basis — found by comparison, never by
+  # position, so a mis-ordered list still computes correctly
+  assign next_threshold = 0
+  assign next_reward = blank
+  assign reached_count = 0
+
+  for handle in tiers
+    assign tier = tier_entries[handle]
+    assign tier_cents = tier.threshold | times: 100
+    if basis >= tier_cents
+      assign reached_count = reached_count | plus: 1
+    else
+      if next_threshold == 0 or tier_cents < next_threshold
+        assign next_threshold = tier_cents
+        assign next_reward = tier.label
+      endif
+    endif
+  endfor
+
+  assign all_reached = false
+  if reached_count == tiers.size
+    assign all_reached = true
+  endif
+
+  if all_reached
+    assign strip_message = complete_message
+  else
+    assign shortfall = next_threshold | minus: basis
+    assign shortfall_money = shortfall | money_without_trailing_zeros | replace: ' ', ''
+    assign threshold_money = next_threshold | money_without_trailing_zeros | replace: ' ', ''
+    assign strip_message = progress_message | replace: '[shortfall]', shortfall_money | replace: '[reward]', next_reward | replace: '[threshold]', threshold_money
+  endif
+-%}
+
+<div
+  class="cart-milestone-tracker mx-2 flex flex-col gap-[14px] rounded-[15px] border-2 border-primary bg-accent/10"
+  data-milestone-tracker
+  data-progress-template="{{ progress_message | escape }}"
+  data-complete-message="{{ complete_message | escape }}"
+>
+  <p
+    class="w-full rounded-t-[15px] bg-primary/20 px-2.5 py-1.5 text-center font-secondary text-xs font-semibold leading-normal tracking-normal text-primary"
+    data-milestone-message
+    {% if strip_message == blank %}
+      hidden
+    {% endif %}
+  >
+    {{- strip_message -}}
+  </p>
+
+  <div class="flex flex-col gap-[5px] px-2.5 pb-2.5">
+    <div class="flex items-center px-5">
+      {%- for handle in tiers -%}
+        {%- liquid
+          assign tier = tier_entries[handle]
+          assign tier_cents = tier.threshold | times: 100
+          assign gift_variant = tier.gift.value.first_available_variant
+          assign is_reached = false
+          if basis >= tier_cents
+            assign is_reached = true
+          endif
+        -%}
+
+        {%- unless forloop.first -%}
+          {%- liquid
+            assign prev_index = forloop.index0 | minus: 1
+            assign prev_handle = tiers[prev_index]
+            assign prev_cents = tier_entries[prev_handle].threshold | times: 100
+            assign span = tier_cents | minus: prev_cents
+            assign fill_percent = 0
+            if is_reached
+              assign fill_percent = 100
+            elsif span > 0 and basis > prev_cents
+              assign travelled = basis | minus: prev_cents | times: 100.0
+              assign fill_percent = travelled | divided_by: span | round
+            endif
+          -%}
+          <div
+            class="h-[3px] flex-1 bg-[#FACC15]/40"
+            data-milestone-connector
+            data-lower="{{ prev_cents }}"
+            data-upper="{{ tier_cents }}"
+          >
+            <div
+              class="h-full w-[var(--milestone-fill,0%)] bg-primary transition-[width] duration-300"
+              style="--milestone-fill: {{ fill_percent }}%;"
+            ></div>
+          </div>
+        {%- endunless -%}
+
+        <div
+          class="group/badge flex size-9 shrink-0 items-center justify-center rounded-[22px] border transition-colors duration-300 data-[reached=false]:border-[#FACC15] data-[reached=false]:bg-[#FACC15]/20 data-[reached=false]:text-[#FACC15] data-[reached=true]:border-transparent data-[reached=true]:bg-primary data-[reached=true]:text-white"
+          data-milestone-badge
+          data-reached="{{ is_reached }}"
+          data-threshold="{{ tier_cents }}"
+          data-reward="{{ tier.label | escape }}"
+          {% if gift_variant != blank %}
+            data-gift-variant="{{ gift_variant.id }}"
+          {% endif %}
+        >
+          {%- render 'icon-milestone-reached', size: 26, class: 'hidden group-data-[reached=true]/badge:block' -%}
+          {%- render 'icon-lock', size: 18, class: 'hidden group-data-[reached=false]/badge:block' -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- for handle in tiers -%}
+      {%- liquid
+        assign tier = tier_entries[handle]
+        assign tier_gift = tier.gift.value
+        assign tier_variant = tier_gift.first_available_variant
+      -%}
+      {%- if tier_variant != blank -%}
+        <template data-gift-row="{{ tier_variant.id }}">
+          <div class="cart-line-row px-5 py-3" data-cart-line-row>
+            {% render 'cart-line-item', optimistic: true, optimistic_gift: true, gift_product: tier_gift %}
+          </div>
+        </template>
+      {%- endif -%}
+    {%- endfor -%}
+
+    <div class="flex items-start justify-between px-2.5">
+      {%- for handle in tiers -%}
+        {%- assign tier = tier_entries[handle] -%}
+        <div class="flex w-[70px] flex-col items-center gap-0.5 text-center text-primary">
+          <span class="font-secondary text-xs font-bold leading-4 tracking-normal">
+            {{- 'cart.tier_threshold' | t: amount: tier.threshold -}}
+          </span>
+          {%- if tier.label != blank -%}
+            <span class="font-secondary text-[10px] font-semibold leading-normal tracking-normal">
+              {{- tier.label | escape -}}
+            </span>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>

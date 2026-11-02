@@ -1,0 +1,47 @@
+{% doc %}
+  Renders one timeline milestone — product image, year, marker dot and product count.
+
+  Each milestone owns one slot — 60% of the track on mobile, a third on desktop. The desktop third
+  shows exactly 3 whole milestones; mobile's 60% matches Figma's 279/390 pitch closely enough to keep
+  the art from crowding, at the cost of the second milestone's image running past the edge, which is
+  what Figma does too. Slot width also caps the art, so images never collide.
+
+  Media slot and year carry fixed heights because `timeline__line` sits at a measured offset — a
+  collapsed slot on a block with no image or no year would drop that dot off the connector.
+
+  @param {object} block - The milestone block, for its settings and shopify_attributes
+{% enddoc %}
+
+{%- liquid
+  assign milestone_image = block.settings.milestone_image
+  assign milestone_year = block.settings.milestone_year
+  assign milestone_label = block.settings.milestone_label
+-%}
+
+<div
+  class="timeline__milestone flex w-3/5 shrink-0 flex-col items-center lg:w-1/3"
+  {{ block.shopify_attributes }}
+>
+  <div class="timeline__media flex h-[126px] max-w-full items-end lg:h-[200px]">
+    {%- if milestone_image != blank -%}
+      {%- render 'image',
+        image: milestone_image,
+        alt: '',
+        class_name: 'block h-full w-auto max-w-full object-contain',
+        decoding: 'async'
+      -%}
+    {%- endif -%}
+  </div>
+
+  <p class="timeline__year mt-6 h-[30px] whitespace-nowrap font-secondary text-[20px] leading-[30px] font-semibold text-white lg:h-9 lg:text-[24px] lg:leading-9">
+    {{- milestone_year -}}
+  </p>
+
+  <span class="timeline__dot mt-1 h-3.5 w-3.5 shrink-0 rounded-full bg-white lg:mt-2 z-[2]" data-timeline-dot></span>
+
+  {%- if milestone_label != blank -%}
+    <p class="timeline__label mt-1 whitespace-nowrap font-secondary text-body-d text-white lg:mt-2 lg:text-[18px] lg:leading-[27px]">
+      {{- milestone_label -}}
+    </p>
+  {%- endif -%}
+</div>

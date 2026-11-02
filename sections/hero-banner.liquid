@@ -1,0 +1,242 @@
+{%- liquid
+  assign hero_slide_count = 0
+  for block in section.blocks
+    case block.type
+      when 'hero-slide'
+        if block.settings.hero_desktop_image != blank
+          assign hero_slide_count = hero_slide_count | plus: 1
+        elsif block.settings.hero_mobile_image != blank
+          assign hero_slide_count = hero_slide_count | plus: 1
+        elsif block.settings.hero_desktop_video != blank
+          assign hero_slide_count = hero_slide_count | plus: 1
+        elsif block.settings.hero_mobile_video != blank
+          assign hero_slide_count = hero_slide_count | plus: 1
+        elsif block.settings.hero_heading != blank
+          assign hero_slide_count = hero_slide_count | plus: 1
+        endif
+    endcase
+  endfor
+
+  assign hero_carousel_class = ''
+  if hero_slide_count > 1
+    assign hero_carousel_class = ' hero-banner__carousel'
+  endif
+-%}
+
+{%- if hero_slide_count > 0 -%}
+  <div
+    class="hero-banner mt-[var(--hero-top-mobile)] mb-[var(--hero-bottom-mobile)] lg:mt-[var(--hero-top-desktop)] lg:mb-[var(--hero-bottom-desktop)]"
+    style="
+      --hero-top-mobile: {{ section.settings.hero_top_mobile }}px;
+      --hero-bottom-mobile: {{ section.settings.hero_bottom_mobile }}px;
+      --hero-top-desktop: {{ section.settings.hero_top_desktop }}px;
+      --hero-bottom-desktop: {{ section.settings.hero_bottom_desktop }}px;
+    "
+  >
+    <div class="page-width px-2 lg:px-5 2xl:px-15">
+      <div
+        class="hero-banner__viewport{{ hero_carousel_class }} relative overflow-hidden rounded-xl lg:rounded-[20px]"
+        data-autoplay-delay="5000"
+      >
+        <div class="hero-banner__container flex">
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+              {%- when 'hero-slide' -%}
+                {%- render 'hero-slide', block: block, is_first: forloop.first -%}
+            {%- endcase -%}
+          {%- endfor -%}
+        </div>
+
+        {%- if hero_slide_count > 1 -%}
+          <div class="hero-banner__dots absolute bottom-4 left-4 z-10 flex items-center gap-1 lg:bottom-[31px] lg:left-[50px] lg:gap-1.5">
+            {%- for block in section.blocks -%}
+              {%- case block.type -%}
+                {%- when 'hero-slide' -%}
+                  <button
+                    type="button"
+                    class="hero-banner__dot h-2 w-2 rounded-full bg-black/30 transition-all aria-[current=true]:w-[30px] aria-[current=true]:border-[0.5px] aria-[current=true]:border-black aria-[current=true]:bg-white lg:h-2.5 lg:w-2.5"
+                    data-hero-dot
+                    aria-label="{{ 'general.slide' | t: number: forloop.index, total: hero_slide_count }}"
+                  ></button>
+              {%- endcase -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ 'hero-banner.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Hero Banner",
+  "class": "hero-banner-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "hero_top_mobile",
+      "label": "Space above (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "hero_bottom_mobile",
+      "label": "Space below (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "hero_top_desktop",
+      "label": "Space above (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "hero_bottom_desktop",
+      "label": "Space below (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "hero-slide",
+      "name": "Hero Slide",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Content"
+        },
+        {
+          "type": "image_picker",
+          "id": "hero_desktop_image",
+          "label": "Desktop image"
+        },
+        {
+          "type": "image_picker",
+          "id": "hero_mobile_image",
+          "label": "Mobile image"
+        },
+        {
+          "type": "video",
+          "id": "hero_desktop_video",
+          "label": "Desktop video",
+          "info": "Takes priority over the image."
+        },
+        {
+          "type": "video",
+          "id": "hero_mobile_video",
+          "label": "Mobile video"
+        },
+        {
+          "type": "text",
+          "id": "hero_badge_text",
+          "label": "Badge text"
+        },
+        {
+          "type": "richtext",
+          "id": "hero_heading",
+          "label": "Heading"
+        },
+        {
+          "type": "richtext",
+          "id": "hero_description",
+          "label": "Description"
+        },
+        {
+          "type": "text",
+          "id": "hero_primary_label",
+          "label": "Primary button text"
+        },
+        {
+          "type": "url",
+          "id": "hero_primary_link",
+          "label": "Primary button link"
+        },
+        {
+          "type": "text",
+          "id": "hero_secondary_label",
+          "label": "Secondary button text"
+        },
+        {
+          "type": "url",
+          "id": "hero_secondary_link",
+          "label": "Secondary button link"
+        },
+        {
+          "type": "header",
+          "content": "Style"
+        },
+        {
+          "type": "color",
+          "id": "hero_badge_background",
+          "label": "Badge background",
+          "default": "#F4C430"
+        },
+        {
+          "type": "color",
+          "id": "hero_badge_text_color",
+          "label": "Badge text color",
+          "default": "#525252"
+        },
+        {
+          "type": "color",
+          "id": "hero_primary_background",
+          "label": "Primary button color",
+          "default": "#466E2E"
+        },
+        {
+          "type": "color",
+          "id": "hero_primary_color",
+          "label": "Primary text color",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "color",
+          "id": "hero_secondary_color",
+          "label": "Secondary text color",
+          "default": "#466E2E"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Banner",
+      "blocks": [
+        {
+          "type": "hero-slide",
+          "settings": {
+            "hero_badge_text": "128+ Years of Ayurvedic Trust",
+            "hero_heading": "<p>Trusted Relief for<br/>Every Indian Home</p>",
+            "hero_description": "<p>From pain management to congestion relief, Amrutanjan combines trusted formulations with modern wellness care.</p>",
+            "hero_primary_label": "Explore Wellness",
+            "hero_secondary_label": "Shop By Need"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

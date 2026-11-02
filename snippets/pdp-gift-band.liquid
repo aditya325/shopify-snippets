@@ -1,0 +1,139 @@
+{% doc %}
+  PDP Gift Band
+
+  The buy-box strip naming the next reward the shopper can still unlock: the tier's headline, the
+  shortfall to its threshold beneath it, and a claimed counter on the right.
+
+  The headline is the tier's own `title` field, falling back to `label`. Not every tier is a gift —
+  one may be a percentage off — so the wording belongs to the merchant per tier, and `label` stays
+  short for the 70px column the drawer prints it in.
+
+  Tiers come from the same app-owned `milestone_tier` metaobject the cart drawer's
+  `cart-milestone-tracker` reads, by the same fixed handles, so the band and the drawer can never
+  quote different thresholds. The type is not a setting: it is the owning app's reserved namespace,
+  not merchant copy, and both snippets default to the same constant.
+
+  Reached state is computed from the subtotal BEFORE milestone discounts, summed from
+  `original_line_price`, with free-gift lines excluded so a gift never pays for the next tier. The
+  product being viewed is NOT counted: the shortfall is the gap from the cart as it stands.
+
+  Renders nothing when every tier is already reached — there is no next reward to name.
+
+  Thresholds are authored in rupees; cart totals are in cents. Every comparison multiplies by 100.
+
+  @param {string} [tier_type] - Metaobject type; defaults to `app--418662776833--milestone_tier`
+  @param {string} [subtitle_template] - Shortfall copy carrying [shortfall] and [threshold]
+  @param {string} [counter_template] - Claimed copy carrying [reached] and [total]
+  @param {string} [block_attributes] - The block's `shopify_attributes`, for the theme editor
+
+  @example
+  {% render 'pdp-gift-band',
+    subtitle_template: block.settings.gift_subtitle,
+    counter_template: block.settings.gift_counter,
+    block_attributes: block.shopify_attributes
+  %}
+{% enddoc %}
+
+{%- liquid
+  # the app owning the cart-transform function; re-registering that app changes this string
+  assign tier_type = tier_type | default: 'app--418662776833--milestone_tier'
+
+  assign tier_entries = shop.metaobjects[tier_type]
+
+  # handles mirror the tracker's static lookups — renaming one silently drops that tier from both
+  assign tier_handles = 'tier1,tier2,tier3' | split: ','
+
+  capture present_handles
+    for handle in tier_handles
+      assign candidate = tier_entries[handle]
+      if candidate != blank and candidate.threshold != blank
+        echo handle
+        echo ','
+      endif
+    endfor
+  endcapture
+
+  assign gift_tiers = present_handles | split: ','
+
+  unless gift_tiers.size > 0
+    break
+  endunless
+
+  # a gift must never count toward earning itself, so its line is left out of the basis
+  assign gift_basis = 0
+  for cart_line in cart.items
+    if cart_line.properties._free_gift == blank
+      assign gift_basis = gift_basis | plus: cart_line.original_line_price
+    endif
+  endfor
+
+  # the next unreached tier is the lowest threshold above the basis — found by comparison, never by
+  # position, so a mis-ordered list still computes correctly
+  assign next_threshold = 0
+  assign next_title = blank
+  assign reached_count = 0
+
+  for handle in gift_tiers
+    assign tier = tier_entries[handle]
+    assign tier_cents = tier.threshold | times: 100
+    if gift_basis >= tier_cents
+      assign reached_count = reached_count | plus: 1
+    else
+      if next_threshold == 0 or tier_cents < next_threshold
+        assign next_threshold = tier_cents
+        assign next_title = tier.title | default: tier.label
+      endif
+    endif
+  endfor
+
+  unless next_threshold > 0
+    break
+  endunless
+
+  assign gift_shortfall = next_threshold | minus: gift_basis
+  assign shortfall_money = gift_shortfall | money_without_trailing_zeros | replace: ' ', ''
+  assign threshold_money = next_threshold | money_without_trailing_zeros | replace: ' ', ''
+  assign band_subtitle = subtitle_template | replace: '[shortfall]', shortfall_money | replace: '[threshold]', threshold_money
+  assign band_counter = counter_template | replace: '[reached]', reached_count | replace: '[total]', gift_tiers.size
+-%}
+
+<div
+  class="pdp-gift-band mt-0.5 flex items-start justify-between gap-2 rounded-[10px] bg-[radial-gradient(119.02%_611.28%_at_-15.91%_-20.62%,#F4C430_0%,#72842F_42.43%,#466E2E_77.41%)] p-2.5 lg:rounded-xl"
+  data-pdp-gift-band
+  data-subtitle-template="{{ subtitle_template | escape }}"
+  data-counter-template="{{ counter_template | escape }}"
+  {{ block_attributes }}
+>
+  <script type="application/json" data-pdp-gift-tiers>
+    [
+      {%- for handle in gift_tiers -%}
+        {
+          "threshold": {{ tier_entries[handle].threshold | times: 100 | json }},
+          "title": {{ tier_entries[handle].title | default: tier_entries[handle].label | json }}
+        }{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ]
+  </script>
+
+  <span class="flex items-start gap-2">
+    {%- render 'icon-gift', class: 'size-[18px] shrink-0 text-white [stroke-width:1]' -%}
+
+    <span class="flex flex-col gap-0.5">
+      <span class="font-primary text-[14px]/[16px] text-white" data-pdp-gift-title>
+        {{- next_title | escape -}}
+      </span>
+
+      {%- if band_subtitle != blank -%}
+        <span class="font-secondary text-[12px]/[19px] text-white/70" data-pdp-gift-subtitle>
+          {{- band_subtitle -}}
+        </span>
+      {%- endif -%}
+    </span>
+  </span>
+
+  {%- if band_counter != blank -%}
+    <span class="shrink-0 font-secondary text-[14px]/[16px] text-white" data-pdp-gift-counter>
+      {{- band_counter -}}
+    </span>
+  {%- endif -%}
+</div>

@@ -1,0 +1,87 @@
+{% doc %}
+  Cart Empty State
+
+  Hero, message and a two-column "Popular picks" grid, shown when the drawer's cart has no
+  items. The Start Shopping CTA is not here — it lives in the shared footer so the drawer
+  keeps one 82-tall footer container across both states.
+
+  @param {string} heading - Empty-state headline (required)
+  @param {string} message - Supporting copy under the headline (required)
+  @param {image} [illustration] - 140×140 hero illustration. The slot collapses when unset
+  @param {string} [grid_heading] - Heading above the product grid
+  @param {product[]} [products] - Grid products, preferred source
+  @param {collection} [collection] - Fallback source when no products are selected
+
+  @example
+  {% render 'cart-empty-state',
+    heading: section.settings.empty_heading,
+    message: section.settings.empty_message,
+    illustration: section.settings.empty_illustration,
+    grid_heading: section.settings.empty_grid_heading,
+    products: section.settings.empty_products,
+    collection: section.settings.empty_collection
+  %}
+{% enddoc %}
+
+{%- liquid
+  assign grid_products = products
+  if grid_products == blank or grid_products.size == 0
+    assign grid_products = collection.products
+  endif
+
+  # product-card sizes off the viewport; this one sits in a fixed 390 panel, so pin it to the
+  # compact scale the same way snippets/mega-menu-products.liquid does
+  assign card_compact = 'h-full [&.product-card]:rounded-[15px]'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_media]:aspect-[174/156]'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_overlay]:p-2.5'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_badge]:h-[21px] [&_.product-card\_\_badge]:rounded-md [&_.product-card\_\_badge]:px-[7px] [&_.product-card\_\_badge]:text-[10px] [&_.product-card\_\_badge]:leading-[12px]'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_body]:gap-2.5 [&_.product-card\_\_body]:px-2.5 [&_.product-card\_\_body]:pb-2.5 [&_.product-card\_\_body]:pt-0'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_eyebrow]:text-[10px] [&_.product-card\_\_eyebrow]:leading-[12px]'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_title]:text-[14px] [&_.product-card\_\_title]:leading-[21px]'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_stack]:gap-1 [&_.product-card\_\_text]:gap-1'
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_rating]:flex-nowrap [&_.product-card\_\_rating]:gap-0.5 [&_.product-card\_\_rating>span]:gap-[3px]'
+  # Figma shows the bracketed short form, which the card otherwise swaps out above lg
+  assign card_compact = card_compact | append: ' [&_.product-card\_\_reviews-short]:block [&_.product-card\_\_reviews-long]:hidden'
+  assign card_compact = card_compact | append: ' [&_product-form_.button]:h-[36px] [&_product-form_.button]:gap-2.5 [&_product-form_.button]:rounded-lg [&_product-form_.button]:text-sm [&_product-form_.button]:leading-[21px]'
+-%}
+
+<div class="cart-empty-state flex flex-col">
+  <div class="flex flex-col items-center gap-2.5 px-4 pt-2">
+    {%- if illustration != blank -%}
+      {% render 'image',
+        image: illustration,
+        width: 140,
+        height: 140,
+        class_name: 'h-[140px] w-[140px] object-contain',
+        lazy: false
+      %}
+    {%- endif -%}
+
+    <div class="flex flex-col gap-2 text-center">
+      {%- if heading != blank -%}
+        <h2 class="font-primary text-[22px] font-bold leading-7 tracking-normal text-[#1A1A1A]">
+          {{- heading | escape -}}
+        </h2>
+      {%- endif -%}
+      {%- if message != blank -%}
+        <p class="font-secondary text-sm leading-5 tracking-normal text-[#6B7280]">{{ message | escape }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- if grid_products.size > 0 -%}
+    <div class="flex flex-col gap-2.5 px-4 py-6">
+      {%- if grid_heading != blank -%}
+        <h3 class="font-primary text-base font-normal capitalize leading-6 tracking-normal text-foreground">
+          {{- grid_heading | escape -}}
+        </h3>
+      {%- endif -%}
+
+      <div class="grid grid-cols-2 gap-2.5">
+        {%- for grid_product in grid_products -%}
+          {% render 'product-card', card_product: grid_product, hide_wishlist: true, card_class: card_compact %}
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+</div>

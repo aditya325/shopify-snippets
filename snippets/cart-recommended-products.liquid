@@ -1,0 +1,88 @@
+{% doc %}
+  Cart Recommended Products
+
+  Bordered rail of up to four merchant-selected products, each with a Buy control that adds to
+  the cart without closing the drawer. 3.1's empty state reuses this snippet with a different
+  `button_label`.
+
+  @param {product[]} products - Products to show, capped at four (required)
+  @param {string} heading - Rail heading (required)
+  @param {string} [button_label] - Card control label (default: the products.buy string)
+
+  @example
+  {% render 'cart-recommended-products', products: section.settings.recommended_products, heading: section.settings.recommended_heading %}
+{% enddoc %}
+
+{%- liquid
+  assign products = products | default: blank
+
+  unless products != blank and products.size > 0
+    break
+  endunless
+
+  assign card_label = button_label
+  if card_label == blank
+    assign card_label = 'products.buy' | t
+  endif
+-%}
+
+<div class="cart-recommended-products mx-[7px] rounded-xl border border-primary bg-[#ECF0EA] p-2.5">
+  {%- if heading != blank -%}
+    <h3 class="font-primary text-base text-foreground">{{ heading | escape }}</h3>
+  {%- endif -%}
+
+  <div class="scrollbar-hide mt-4 flex snap-x snap-mandatory gap-2.5 overflow-x-auto">
+    {%- for card_product in products limit: 4 -%}
+      {%- liquid
+        assign card_badge = card_product.metafields.custom.product_badge.value
+        assign card_category = card_product.metafields.custom.category_label.value
+        assign card_category_color = card_product.metafields.custom.highlight_color.value
+      -%}
+      <div class="min-w-0 shrink-0 basis-[38.3%] snap-start">
+        <div class="flex h-full flex-col rounded-lg bg-background p-2">
+          <a href="{{ card_product.url }}" class="relative block" aria-label="{{ card_product.title | escape }}">
+            {%- if card_badge != blank -%}
+              <span class="absolute left-[1px] top-[1px] z-10 flex items-center justify-center p-[2px] overflow-hidden rounded-[1px] bg-accent font-secondary text-[4px] font-medium leading-none text-primary">
+                {{- card_badge | escape -}}
+              </span>
+            {%- endif -%}
+            {%- if card_product.featured_image != blank -%}
+              <img
+                src="{{ card_product.featured_image | image_url: width: 260 }}"
+                alt="{{ card_product.featured_image.alt | default: card_product.title | escape }}"
+                width="130"
+                height="130"
+                loading="lazy"
+                class="aspect-square w-full rounded object-contain"
+              >
+            {%- endif -%}
+          </a>
+
+          {%- if card_category != blank -%}
+            <span
+              class="mt-2 font-primary text-[10px] font-medium uppercase leading-[12px] tracking-[1px] text-[color:var(--cart-card-accent,rgb(var(--color-muted)))]"
+              {%- if card_category_color != blank %}
+                style="--cart-card-accent: {{ card_category_color | escape }};"
+              {% endif %}
+            >
+              {{- card_category | escape -}}
+            </span>
+          {%- endif -%}
+
+          <a href="{{ card_product.url }}" class="mt-1 line-clamp-2 font-secondary text-sm font-medium text-foreground">
+            {{- card_product.title | escape -}}
+          </a>
+
+          <div class="mt-auto pt-2.5">
+            {%- render 'add-to-cart-button',
+              product: card_product,
+              button_text: card_label,
+              hide_icon: true,
+              button_class: 'rounded-[3px]'
+            -%}
+          </div>
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+</div>

@@ -1,0 +1,313 @@
+{% doc %}
+  Button
+
+  Variant and size styles live in assets/base.css. Global Standards 6.1 documents the size
+  scale and the class_name override rules.
+
+  @param {string} [label] - Button text, escaped
+  @param {string} [content] - HTML body, overrides label. Echoed raw — trusted input only
+  @param {string} [link] - Destination URL. Present renders an anchor, absent renders a button
+  @param {string} [variant] - primary, secondary, accent, pill, badge or unstyled (default: primary)
+  @param {string} [size] - xs, sm, md, lg, xl, 2xl, pill or badge
+  @param {string} [class_name] - Per-placement overrides, applied after the size
+  @param {string} [type] - button, submit or reset (default: button)
+  @param {boolean} [disabled] - Disable the button (default: false)
+  @param {boolean} [loading] - Render in the loading state (default: false). Implies with_loader
+  @param {boolean} [with_loader] - Emit the label wrapper and loader markup for JS to toggle (default: false)
+  @param {string} [icon] - arrow-right, arrow-left, chevron-down, chevron-left, chevron-right, plus, minus, close, delete, search, cart, filter, checkmark, spinner, wishlist, file-text or list
+  @param {string} [icon_position] - leading or trailing (default: trailing)
+  @param {string} [icon_class] - Sizing and stroke classes for the icon
+  @param {number} [icon_size] - Pixel size for the icons that size by attribute
+  @param {boolean} [with_arrow] - Shorthand for icon: 'arrow-right' (default: false)
+  @param {string} [id] - Element id
+  @param {string} [name] - Form control name. Button only
+  @param {string} [title] - Native tooltip text
+  @param {string} [target] - Anchor target. _blank auto-adds rel="noopener noreferrer"
+  @param {string} [rel] - Anchor rel
+  @param {string} [aria_label] - Accessible name. Required when there is no readable text
+  @param {string} [aria_controls] - id of the controlled element
+  @param {string} [aria_describedby] - id of the describing element
+  @param {string} [aria_haspopup] - aria-haspopup value
+  @param {string} [aria_expanded] - 'true' or 'false' as a string
+  @param {string} [aria_pressed] - 'true' or 'false' as a string
+  @param {string} [bg_color] - Inline background colour. Pill only
+  @param {string} [text_color] - Inline text colour. Pill only
+  @param {string} [data_attributes] - Attribute string echoed raw and unescaped — trusted input only
+{% enddoc %}
+
+{%- liquid
+  assign btn_label = label | default: blank
+  assign btn_content = content | default: blank
+  assign btn_icon = icon | default: blank
+  assign btn_with_arrow = with_arrow | default: false
+
+  if btn_icon == blank and btn_with_arrow
+    assign btn_icon = 'arrow-right'
+  endif
+
+  if btn_label == blank and btn_content == blank and btn_icon == blank
+    break
+  endif
+
+  assign btn_link = link | default: blank
+  assign btn_variant = variant | default: 'primary'
+  assign btn_size = size | default: blank
+  assign btn_class_name = class_name | default: ''
+  assign btn_disabled = disabled | default: false
+  assign btn_loading = loading | default: false
+  assign btn_with_loader = with_loader | default: false
+  assign btn_icon_position = icon_position | default: 'trailing'
+  assign btn_icon_class = icon_class | default: ''
+  assign btn_icon_size = icon_size | default: blank
+  assign btn_id = id | default: blank
+  assign btn_name = name | default: blank
+  assign btn_title = title | default: blank
+  assign btn_target = target | default: blank
+  assign btn_rel = rel | default: blank
+  assign btn_aria_label = aria_label | default: blank
+  assign btn_aria_controls = aria_controls | default: blank
+  assign btn_aria_describedby = aria_describedby | default: blank
+  assign btn_aria_haspopup = aria_haspopup | default: blank
+  assign btn_aria_expanded = aria_expanded | default: blank
+  assign btn_aria_pressed = aria_pressed | default: blank
+  assign btn_bg_color = bg_color | default: blank
+  assign btn_text_color = text_color | default: blank
+  assign btn_data_attributes = data_attributes | default: ''
+
+  if btn_loading
+    assign btn_with_loader = true
+  endif
+
+  if btn_target == '_blank' and btn_rel == blank
+    assign btn_rel = 'noopener noreferrer'
+  endif
+
+  case type
+    when 'submit'
+      assign btn_type = 'submit'
+    when 'reset'
+      assign btn_type = 'reset'
+    else
+      assign btn_type = 'button'
+  endcase
+
+  case btn_variant
+    when 'secondary'
+      assign btn_variant_class = 'button button--secondary'
+    when 'accent'
+      assign btn_variant_class = 'button button--accent'
+    when 'pill'
+      assign btn_variant_class = 'button button--pill'
+    when 'badge'
+      assign btn_variant_class = 'button button--badge'
+    when 'unstyled'
+      assign btn_variant_class = 'button'
+    else
+      assign btn_variant_class = 'button button--primary'
+  endcase
+
+  case btn_size
+    when 'xs'
+      assign btn_size_class = ' button--size-xs'
+    when 'sm'
+      assign btn_size_class = ' button--size-sm'
+    when 'md'
+      assign btn_size_class = ' button--size-md'
+    when 'lg'
+      assign btn_size_class = ' button--size-lg'
+    when 'xl'
+      assign btn_size_class = ' button--size-xl'
+    when '2xl'
+      assign btn_size_class = ' button--size-2xl'
+    when 'pill'
+      assign btn_size_class = ' button--size-pill'
+    when 'badge'
+      assign btn_size_class = ' button--size-badge'
+    else
+      assign btn_size_class = ''
+  endcase
+
+  assign btn_state_class = ''
+  if btn_loading
+    assign btn_state_class = ' is-loading'
+  endif
+
+  assign btn_class = btn_variant_class | append: btn_size_class | append: btn_state_class | append: ' ' | append: btn_class_name | strip
+
+  capture btn_shared_attributes
+    if btn_id != blank
+      echo ' id="'
+      echo btn_id | escape
+      echo '"'
+    endif
+    if btn_title != blank
+      echo ' title="'
+      echo btn_title | escape
+      echo '"'
+    endif
+    if btn_aria_label != blank
+      echo ' aria-label="'
+      echo btn_aria_label | escape
+      echo '"'
+    endif
+    if btn_aria_controls != blank
+      echo ' aria-controls="'
+      echo btn_aria_controls | escape
+      echo '"'
+    endif
+    if btn_aria_describedby != blank
+      echo ' aria-describedby="'
+      echo btn_aria_describedby | escape
+      echo '"'
+    endif
+    if btn_aria_haspopup != blank
+      echo ' aria-haspopup="'
+      echo btn_aria_haspopup | escape
+      echo '"'
+    endif
+    if btn_aria_expanded != blank
+      echo ' aria-expanded="'
+      echo btn_aria_expanded | escape
+      echo '"'
+    endif
+    if btn_aria_pressed != blank
+      echo ' aria-pressed="'
+      echo btn_aria_pressed | escape
+      echo '"'
+    endif
+    if btn_loading
+      echo ' aria-busy="true"'
+    endif
+  endcapture
+
+  capture btn_form_attributes
+    if btn_name != blank
+      echo ' name="'
+      echo btn_name | escape
+      echo '"'
+    endif
+    if btn_disabled
+      echo ' disabled'
+    endif
+  endcapture
+
+  capture btn_anchor_attributes
+    if btn_target != blank
+      echo ' target="'
+      echo btn_target | escape
+      echo '"'
+    endif
+    if btn_rel != blank
+      echo ' rel="'
+      echo btn_rel | escape
+      echo '"'
+    endif
+    if btn_disabled
+      echo ' aria-disabled="true"'
+    endif
+  endcapture
+
+  capture btn_style
+    if btn_bg_color != blank
+      echo 'background-color: '
+      echo btn_bg_color | escape
+      echo ';'
+    endif
+    if btn_text_color != blank
+      echo 'color: '
+      echo btn_text_color | escape
+      echo ';'
+    endif
+  endcapture
+
+  assign btn_style = btn_style | strip
+
+  capture btn_style_attribute
+    if btn_style != blank
+      echo ' style="'
+      echo btn_style
+      echo '"'
+    endif
+  endcapture
+
+  capture btn_data_attributes_fragment
+    if btn_data_attributes != blank
+      echo ' '
+      echo btn_data_attributes
+    endif
+  endcapture
+
+  assign btn_icon_full_class = 'button__icon ' | append: btn_icon_class | strip
+
+  capture btn_icon_markup
+    case btn_icon
+      when 'arrow-right'
+        render 'icon-arrow-right', class: btn_icon_full_class
+      when 'arrow-left'
+        render 'icon-arrow-left', class: btn_icon_full_class, size: btn_icon_size
+      when 'chevron-down'
+        render 'icon-chevron-down', class: btn_icon_full_class, size: btn_icon_size
+      when 'chevron-left'
+        render 'icon-chevron-left', class: btn_icon_full_class, size: btn_icon_size
+      when 'chevron-right'
+        render 'icon-chevron-right', class: btn_icon_full_class
+      when 'plus'
+        render 'icon-plus', class: btn_icon_full_class
+      when 'minus'
+        render 'icon-minus', class: btn_icon_full_class, size: btn_icon_size
+      when 'close'
+        render 'icon-close', class: btn_icon_full_class, size: btn_icon_size
+      when 'delete'
+        render 'icon-delete', class: btn_icon_full_class, size: btn_icon_size
+      when 'search'
+        render 'icon-search', class: btn_icon_full_class, size: btn_icon_size
+      when 'cart'
+        render 'icon-cart', class: btn_icon_full_class, size: btn_icon_size
+      when 'filter'
+        render 'icon-filter', class: btn_icon_full_class, size: btn_icon_size
+      when 'checkmark'
+        render 'icon-checkmark', class: btn_icon_full_class, size: btn_icon_size
+      when 'spinner'
+        render 'icon-spinner', class: btn_icon_full_class, size: btn_icon_size
+      when 'wishlist'
+        render 'icon-wishlist', class: btn_icon_full_class
+      when 'file-text'
+        render 'icon-file-text', class: btn_icon_full_class
+      when 'list'
+        render 'icon-list', class: btn_icon_full_class
+    endcase
+  endcapture
+
+  assign btn_icon_markup = btn_icon_markup | strip
+
+  capture btn_body
+    if btn_icon_position == 'leading'
+      echo btn_icon_markup
+    endif
+    if btn_with_loader
+      echo '<span class="button__label" data-button-text>'
+    endif
+    if btn_content != blank
+      echo btn_content
+    else
+      echo btn_label | escape
+    endif
+    if btn_with_loader
+      echo '</span>'
+    endif
+    unless btn_icon_position == 'leading'
+      echo btn_icon_markup
+    endunless
+    if btn_with_loader
+      echo '<span class="button__loader" data-button-loader><span class="loader"></span></span>'
+    endif
+  endcapture
+-%}
+
+{%- if btn_variant == 'pill' or btn_variant == 'badge' -%}
+  <span class="{{ btn_class }}"{{ btn_shared_attributes }}{{ btn_style_attribute }}{{ btn_data_attributes_fragment }}>{{ btn_body }}</span>
+{%- elsif btn_link != blank -%}
+  <a href="{{ btn_link | escape }}" class="{{ btn_class }}"{{ btn_anchor_attributes }}{{ btn_shared_attributes }}{{ btn_style_attribute }}{{ btn_data_attributes_fragment }}>{{ btn_body }}</a>
+{%- else -%}
+  <button type="{{ btn_type }}" class="{{ btn_class }}"{{ btn_form_attributes }}{{ btn_shared_attributes }}{{ btn_style_attribute }}{{ btn_data_attributes_fragment }}>{{ btn_body }}</button>
+{%- endif -%}

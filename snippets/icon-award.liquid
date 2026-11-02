@@ -1,0 +1,24 @@
+{% doc %}
+  Award Icon
+
+  Fallback badge for an award block with no uploaded logo. Colour comes from the parent's text utility,
+  so the paths carry no fill or stroke colour of their own.
+
+  @param {string} [class] - Sizing classes (optional)
+{% enddoc %}
+
+<svg
+  class="icon {{ class }}"
+  viewBox="0 0 64 64"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+>
+  <circle cx="32" cy="24" r="16"/>
+  <circle cx="32" cy="24" r="9"/>
+  <polyline points="22 38 16 58 32 50 48 58 42 38"/>
+</svg>

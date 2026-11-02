@@ -1,0 +1,335 @@
+{%- liquid
+  assign details_pro_tip = product.metafields.custom.pro_tip.value
+
+  # A tab is live only when its label is set and the source it points at actually holds something
+  capture details_flags_raw
+    for block in section.blocks
+      assign block_has_content = false
+
+      if block.type == 'details-tab'
+        assign block_source = block.settings.tab_source
+
+        case block_source
+          when 'description'
+            if product.description != blank
+              assign block_has_content = true
+            elsif product.metafields.custom.description_media.value != blank
+              assign block_has_content = true
+            elsif product.metafields.custom.description_eyebrow.value != blank
+              assign block_has_content = true
+            elsif product.metafields.custom.description_benefits.value != blank
+              assign block_has_content = true
+            endif
+          when 'custom'
+            if block.settings.tab_body != blank
+              assign block_has_content = true
+            endif
+          else
+            if product.metafields.custom[block_source].value != blank
+              assign block_has_content = true
+            endif
+        endcase
+      endif
+
+      # A positional flag, not block.id — theme check's BlockIdUsage forbids branching on that value
+      if block_has_content and block.settings.tab_label != blank
+        echo '1,'
+      else
+        echo '0,'
+      endif
+    endfor
+  endcapture
+
+  assign details_flags = details_flags_raw | strip | split: ','
+
+  assign details_live_count = 0
+  assign details_first_index = -1
+  for details_flag in details_flags
+    if details_flag == '1'
+      assign details_live_count = details_live_count | plus: 1
+      if details_first_index == -1
+        assign details_first_index = forloop.index0
+      endif
+    endif
+  endfor
+
+  # Comma-delimited so a PDF button can test its target tab without substring collisions
+  capture details_live_sources
+    echo ','
+    for block in section.blocks
+      if details_flags[forloop.index0] == '1'
+        echo block.settings.tab_source
+        echo ','
+      endif
+    endfor
+  endcapture
+
+  assign details_tab_class = 'product-details__tab shrink-0 border-b-2 border-transparent pb-[3px] pt-6 text-[18px]/[27px] font-semibold tracking-normal text-muted transition-colors aria-selected:font-bold aria-selected:text-foreground lg:pb-0 lg:pt-8 lg:text-[26px]/[39px] lg:font-medium lg:tracking-[-0.15px]'
+-%}
+
+{%- capture details_modals -%}
+  {%- for doc_block in section.blocks -%}
+    {%- if doc_block.type == 'pdf-button' -%}
+      {%- liquid
+        assign doc_url = doc_block.settings.pdf_doc.file.value.url
+        assign doc_needle = ',' | append: doc_block.settings.pdf_tab | append: ','
+      -%}
+      {%- if doc_block.settings.pdf_label != blank and doc_url != blank and details_live_sources contains doc_needle -%}
+        {%- render 'pdp-lab-report-modal',
+          report_url: doc_url,
+          report_label: doc_block.settings.pdf_label,
+          report_key: doc_block.id,
+          section_id: section.id
+        -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- if details_live_count > 0 -%}
+  <div
+    class="product-details mb-[var(--details-bottom-mobile)] mt-[var(--details-top-mobile)] lg:mb-[var(--details-bottom-desktop)] lg:mt-[var(--details-top-desktop)]"
+    style="
+      --details-top-mobile: {{ section.settings.details_top_mobile }}px;
+      --details-bottom-mobile: {{ section.settings.details_bottom_mobile }}px;
+      --details-top-desktop: {{ section.settings.details_top_desktop }}px;
+      --details-bottom-desktop: {{ section.settings.details_bottom_desktop }}px;
+    "
+  >
+    <div class="product-details__band bg-[#f9f5ee]">
+      <div
+        class="product-details__strip page-width flex gap-[22px] overflow-x-auto scrollbar-hide lg:gap-8"
+        role="tablist"
+        aria-label="{{ 'accessibility.product_details_tabs' | t }}"
+        data-details-tabs
+      >
+        {%- for block in section.blocks -%}
+          {%- if details_flags[forloop.index0] == '1' -%}
+            {%- liquid
+              assign details_selected = 'false'
+              assign details_tabindex = '-1'
+              if forloop.index0 == details_first_index
+                assign details_selected = 'true'
+                assign details_tabindex = '0'
+              endif
+            -%}
+
+            <button
+              id="tab-{{ block.id }}"
+              class="{{ details_tab_class }}"
+              type="button"
+              role="tab"
+              aria-controls="panel-{{ block.id }}"
+              aria-selected="{{ details_selected }}"
+              tabindex="{{ details_tabindex }}"
+              data-details-tab
+              {{ block.shopify_attributes }}
+            >
+              {{- block.settings.tab_label | escape -}}
+            </button>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      <div class="product-details__viewport page-width pb-6 pt-5 lg:pb-[52px] lg:pt-6" data-details-viewport>
+        {%- for block in section.blocks -%}
+          {%- if details_flags[forloop.index0] == '1' -%}
+            {%- capture details_docs -%}
+              {%- assign doc_position = 0 -%}
+              {%- for doc_block in section.blocks -%}
+                {%- if doc_block.type == 'pdf-button' and doc_block.settings.pdf_tab == block.settings.tab_source -%}
+                  {%- if doc_block.settings.pdf_label != blank and doc_block.settings.pdf_doc.file.value.url != blank -%}
+                    {%- assign doc_position = doc_position | plus: 1 -%}
+                    {%- render 'pdp-pdf-button',
+                      block: doc_block,
+                      section_id: section.id,
+                      position: doc_position
+                    -%}
+                  {%- endif -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endcapture -%}
+
+            <div
+              id="panel-{{ block.id }}"
+              role="tabpanel"
+              aria-labelledby="tab-{{ block.id }}"
+              data-details-panel
+              {% unless forloop.index0 == details_first_index %}
+                hidden
+              {% endunless %}
+            >
+              {%- case block.settings.tab_source -%}
+                {%- when 'description' -%}
+                  {%- render 'pdp-panel-description', product: product -%}
+                {%- when 'how_to_use_steps' -%}
+                  {%- render 'pdp-panel-how-to-use',
+                    steps: product.metafields.custom.how_to_use_steps.value,
+                    pro_tip: details_pro_tip
+                  -%}
+                {%- when 'ingredients' -%}
+                  {%- render 'pdp-panel-ingredients', ingredients: product.metafields.custom.ingredients.value -%}
+                {%- when 'faqs' -%}
+                  {%- render 'pdp-panel-faqs', faqs: product.metafields.custom.faqs.value, section_id: block.id -%}
+                {%- when 'custom' -%}
+                  <div class="text-[14px]/[21px] tracking-[-0.16px] text-foreground lg:text-[18px]/[28px] lg:tracking-normal">
+                    {{ block.settings.tab_body }}
+                  </div>
+              {%- endcase -%}
+
+              {%- if details_docs != blank -%}
+                <div
+                  class="mt-3 flex flex-col items-center gap-3.5 lg:mt-5 lg:flex-row lg:justify-center lg:gap-5"
+                >
+                  {{ details_docs }}
+                </div>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+
+  {{ details_modals }}
+
+  <script src="{{ 'product-details-javascript.js' | asset_url }}" defer></script>
+  {%- if details_modals != blank -%}
+    <script src="{{ 'pdp-lab-report.js' | asset_url }}" defer></script>
+  {%- endif -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Product Details",
+  "class": "product-details-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "details_top_mobile",
+      "label": "Space above (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "details_bottom_mobile",
+      "label": "Space below (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "details_top_desktop",
+      "label": "Space above (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "details_bottom_desktop",
+      "label": "Space below (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "details-tab",
+      "name": "Details tab",
+      "settings": [
+        {
+          "type": "text",
+          "id": "tab_label",
+          "label": "Tab label",
+          "default": "Product Description",
+          "info": "Text on the tab. Example: Ingredients. Leave empty to hide this tab."
+        },
+        {
+          "type": "select",
+          "id": "tab_source",
+          "label": "Content source",
+          "default": "description",
+          "info": "Which product field fills this tab. The tab hides itself on products where that field is empty.",
+          "options": [
+            { "value": "description", "label": "Product description" },
+            { "value": "how_to_use_steps", "label": "How to use steps" },
+            { "value": "ingredients", "label": "Ingredients" },
+            { "value": "faqs", "label": "FAQs" },
+            { "value": "custom", "label": "Custom text" }
+          ]
+        },
+        {
+          "type": "richtext",
+          "id": "tab_body",
+          "label": "Custom text",
+          "info": "Used only when the source is Custom text. Connect a product metafield here to vary it per product."
+        }
+      ]
+    },
+    {
+      "type": "pdf-button",
+      "name": "PDF button",
+      "settings": [
+        {
+          "type": "text",
+          "id": "pdf_label",
+          "label": "Button text",
+          "default": "Product Trust Report",
+          "info": "Text on the button, and the heading inside the popup. Example: Product Trust Report. Leave empty to hide this button."
+        },
+        {
+          "type": "metaobject",
+          "id": "pdf_doc",
+          "label": "PDF document",
+          "metaobject_type": "document",
+          "info": "Connect this to a product file field so each product opens its own PDF. Use the dynamic source button rather than picking one document, or every product shows the same file."
+        },
+        {
+          "type": "select",
+          "id": "pdf_tab",
+          "label": "Show in tab",
+          "default": "description",
+          "info": "Pick the same content source as the tab you want this button in. Two buttons in one tab sit side by side.",
+          "options": [
+            { "value": "description", "label": "Product description" },
+            { "value": "how_to_use_steps", "label": "How to use steps" },
+            { "value": "ingredients", "label": "Ingredients" },
+            { "value": "faqs", "label": "FAQs" },
+            { "value": "custom", "label": "Custom text" }
+          ]
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Details",
+      "blocks": [
+        { "type": "details-tab", "settings": { "tab_label": "Product Description", "tab_source": "description" } },
+        { "type": "details-tab", "settings": { "tab_label": "How to Use", "tab_source": "how_to_use_steps" } },
+        { "type": "details-tab", "settings": { "tab_label": "Ingredients", "tab_source": "ingredients" } },
+        { "type": "details-tab", "settings": { "tab_label": "FAQs", "tab_source": "faqs" } },
+        { "type": "pdf-button", "settings": { "pdf_label": "Product Trust Report", "pdf_tab": "description" } },
+        { "type": "pdf-button", "settings": { "pdf_label": "Detailed Ingredients List", "pdf_tab": "description" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

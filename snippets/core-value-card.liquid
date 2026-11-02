@@ -1,0 +1,53 @@
+{% doc %}
+  Core Value Card
+
+  One value in the Core Values grid — icon above a title and description, all centred.
+
+  The icon is a plain img rather than image.liquid on purpose: the setting accepts SVG, and Shopify's
+  CDN cannot resize an SVG, so a srcset would be dead weight. Follows trust-item.liquid.
+
+  @param {object} block - Core Value Card block, supplying settings and shopify_attributes
+{% enddoc %}
+
+{%- liquid
+  assign value_icon = block.settings.value_icon
+  assign value_title = block.settings.value_title
+  assign value_desc = block.settings.value_desc
+  assign value_desc_plain = value_desc | strip_html | strip
+-%}
+
+{%- if value_icon != blank or value_title != blank or value_desc_plain != blank -%}
+  <div
+    class="core-values__card flex flex-col items-center justify-center gap-2.5 rounded-[15px] border-2 border-accent bg-accent/10 p-4 text-center lg:gap-3 lg:rounded-[20px] lg:px-3 lg:py-6"
+    {{ block.shopify_attributes }}
+  >
+    {%- if value_icon != blank -%}
+      <span
+        class="core-values__icon grid size-[50px] shrink-0 place-items-center rounded-lg bg-accent lg:size-[60px] lg:rounded-[11px]"
+      >
+        <img
+          class="size-6 object-contain lg:size-7"
+          src="{{ value_icon | image_url: width: 56 }}"
+          alt=""
+          width="28"
+          height="28"
+          loading="lazy"
+          decoding="async"
+          aria-hidden="true"
+        >
+      </span>
+    {%- endif -%}
+
+    {%- if value_title != blank -%}
+      <p class="core-values__title font-primary text-[18px]/[27px] font-semibold tracking-normal text-foreground lg:text-[20px]/[30px]">
+        {{- value_title | escape -}}
+      </p>
+    {%- endif -%}
+
+    {%- if value_desc_plain != blank -%}
+      <div class="core-values__desc font-secondary text-[16px]/[24px] tracking-normal text-[#525252]">
+        {{ value_desc }}
+      </div>
+    {%- endif -%}
+  </div>
+{%- endif -%}

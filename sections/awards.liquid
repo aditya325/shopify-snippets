@@ -1,0 +1,138 @@
+{%- liquid
+  assign awards_heading = section.settings.awards_heading
+-%}
+
+{%- if section.blocks.size > 0 -%}
+  <div
+    class="awards mb-[var(--awards-bottom-mobile)] mt-[var(--awards-top-mobile)] lg:mb-[var(--awards-bottom-desktop)] lg:mt-[var(--awards-top-desktop)]"
+    style="
+      --awards-top-mobile: {{ section.settings.awards_top_mobile }}px;
+      --awards-bottom-mobile: {{ section.settings.awards_bottom_mobile }}px;
+      --awards-top-desktop: {{ section.settings.awards_top_desktop }}px;
+      --awards-bottom-desktop: {{ section.settings.awards_bottom_desktop }}px;
+    "
+  >
+    <div class="page-width">
+      {%- if awards_heading != blank -%}
+        <div class="awards__header mb-[18px] lg:mb-10">
+          {%- render 'section-header', heading: awards_heading -%}
+        </div>
+      {%- endif -%}
+
+      <div class="awards__list scrollbar-hide flex gap-5 overflow-x-auto lg:gap-10 lg:overflow-x-visible">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'award-item' -%}
+              <div class="w-[140px] shrink-0 lg:w-auto lg:flex-1 lg:shrink">
+                {%- render 'award-item', block: block -%}
+              </div>
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Awards",
+  "class": "awards-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "awards_heading",
+      "label": "Awards Heading",
+      "default": "<p>Awards & Recognition</p>"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "awards_top_mobile",
+      "label": "Space Above (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "awards_bottom_mobile",
+      "label": "Space Below (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "awards_top_desktop",
+      "label": "Space Above (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "awards_bottom_desktop",
+      "label": "Space Below (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "award-item",
+      "name": "Award Item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "award_icon",
+          "label": "Award Icon"
+        },
+        {
+          "type": "text",
+          "id": "award_title",
+          "label": "Award Title"
+        },
+        {
+          "type": "text",
+          "id": "award_year",
+          "label": "Award Year"
+        },
+        {
+          "type": "text",
+          "id": "award_body",
+          "label": "Award Body"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Awards",
+      "blocks": [
+        { "type": "award-item", "settings": { "award_title": "Brand of the Year", "award_year": "2025", "award_body": "Awarded by World Brand Congress" } },
+        { "type": "award-item", "settings": { "award_title": "Best Holistic Product", "award_year": "2024", "award_body": "Health & Wellness Expo" } },
+        { "type": "award-item", "settings": { "award_title": "Top Innovation Award", "award_year": "2024", "award_body": "Indian Pharmaceutical League" } },
+        { "type": "award-item", "settings": { "award_title": "Trust Excellence Mark", "award_year": "2023", "award_body": "Consumer Trust Index" } },
+        { "type": "award-item", "settings": { "award_title": "Legacy Brand Award", "award_year": "2023", "award_body": "Economic Times Honours" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

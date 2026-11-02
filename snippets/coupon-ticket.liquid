@@ -1,0 +1,52 @@
+{% doc %}
+  Coupon Ticket
+
+  One custom.offer entry as a 68px-tall ticket. Width is layout-derived by the caller (drawer's
+  horizontal scroll row vs. offers panel's vertical stack), not fixed here.
+
+  @param {metaobject} offer - A custom.offer entry (title, description, code fields)
+{% enddoc %}
+
+{%- liquid
+  assign is_applied = false
+  assign offer_code = offer.code | upcase
+  for discount in cart.cart_level_discount_applications
+    assign applied_code = discount.title | upcase
+    if applied_code == offer_code
+      assign is_applied = true
+      break
+    endif
+  endfor
+-%}
+
+<div class="coupon-ticket flex h-[68px] w-full overflow-hidden rounded-lg">
+  <div class="relative z-10 flex w-[34px] shrink-0 items-center justify-center bg-primary before:absolute before:-left-[9px] before:top-1/2 before:h-[18px] before:w-[18px] before:-translate-y-1/2 before:rounded-full before:bg-background before:content-['']">
+    <span class="rotate-180 whitespace-nowrap font-secondary text-[10px] font-normal text-primary-foreground [writing-mode:vertical-rl]">
+      {{ offer.title }}
+    </span>
+  </div>
+  <div class="relative flex min-w-0 flex-1 items-center justify-between gap-3 px-3 py-3">
+    {% render 'coupon-ticket-edge' %}
+    <div class="relative min-w-0">
+      <p class="font-primary text-sm font-medium text-foreground">{{ offer.code }}</p>
+      {%- if offer.description != blank -%}
+        <p class="truncate font-secondary text-xs text-muted">{{ offer.description }}</p>
+      {%- endif -%}
+    </div>
+    <button
+      type="button"
+      class="relative shrink-0 font-secondary text-sm font-semibold uppercase text-primary underline transition-opacity duration-150 disabled:cursor-not-allowed disabled:opacity-40"
+      data-coupon-apply
+      data-coupon-code="{{ offer.code }}"
+      {% if is_applied %}
+        data-coupon-applied disabled
+      {% endif %}
+    >
+      {%- if is_applied -%}
+        {{ 'cart.applied' | t }}
+      {%- else -%}
+        {{ 'cart.apply' | t }}
+      {%- endif -%}
+    </button>
+  </div>
+</div>

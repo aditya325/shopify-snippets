@@ -1,0 +1,25 @@
+{
+  "name": "themex",
+  "version": "1.0.0",
+  "description": "Shopify theme boilerplate with Tailwind CSS",
+  "scripts": {
+    "build": "tailwindcss -i ./src/input.css -o ./assets/tailwind.css",
+    "build:prod": "tailwindcss -i ./src/input.css -o ./assets/tailwind.css --minify",
+    "dev": "tailwindcss -i ./src/input.css -o ./assets/tailwind.css --watch",
+    "shopify": "shopify theme dev --store amrutanjan.myshopify.com",
+    "docs:view": "ROADMAP_DIR=roadmap-homepage node ./scripts/docs-viewer/server.mjs",
+    "docs:view:nav": "ROADMAP_DIR=roadmap-navigation DOCS_VIEWER_PORT=4489 node ./scripts/docs-viewer/server.mjs",
+    "docs:view:search": "ROADMAP_DIR=roadmap-search DOCS_VIEWER_PORT=4490 node ./scripts/docs-viewer/server.mjs",
+    "docs:view:pdp": "ROADMAP_DIR=roadmap-pdp DOCS_VIEWER_PORT=4491 node ./scripts/docs-viewer/server.mjs",
+    "docs:view:cart-drawer": "ROADMAP_DIR=roadmap-cart-drawer DOCS_VIEWER_PORT=4492 node ./scripts/docs-viewer/server.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.11.3",
+    "@playwright/test": "^1.60.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.14",
+    "tailwindcss": "^3.4.0"
+  }
+}

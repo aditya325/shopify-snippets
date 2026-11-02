@@ -1,0 +1,42 @@
+{% doc %}
+  Chapter Stat
+
+  One statistic card in the About Chapter row — a large year or number beside its body copy.
+  The tint is a per-block choice so card order is not baked into the markup.
+
+  @param {object} block - Chapter Stat block, supplying settings and shopify_attributes
+{% enddoc %}
+
+{%- liquid
+  assign stat_value = block.settings.stat_value
+  assign stat_body = block.settings.stat_body
+  assign stat_body_plain = stat_body | strip_html | strip
+
+  assign stat_tint_class = 'bg-accent/20'
+  if block.settings.stat_tint == 'strong'
+    assign stat_tint_class = 'bg-accent/40'
+  endif
+-%}
+
+{%- if stat_value != blank or stat_body_plain != blank -%}
+  <div
+    class="about-chapter__card flex flex-1 items-start gap-6 rounded-[15px] p-4 lg:self-stretch lg:rounded-[20px] lg:px-10 lg:py-6 {{ stat_tint_class }}"
+    {{ block.shopify_attributes }}
+  >
+    {%- if stat_value != blank -%}
+      <p
+        class="about-chapter__value shrink-0 font-primary text-[45px] font-medium leading-none tracking-normal text-[#0d3b2a] max-lg:w-[104px] lg:whitespace-nowrap"
+      >
+        {{- stat_value | escape -}}
+      </p>
+    {%- endif -%}
+
+    {%- if stat_body_plain != blank -%}
+      <div
+        class="about-chapter__body min-w-0 flex-1 font-secondary text-[16px]/[24px] tracking-[-0.18px] text-[#525252] lg:text-subheading-d lg:tracking-normal"
+      >
+        {{ stat_body }}
+      </div>
+    {%- endif -%}
+  </div>
+{%- endif -%}

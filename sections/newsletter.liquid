@@ -1,0 +1,63 @@
+<section
+  class="newsletter py-12 md:py-20"
+  style="background-color: {{ section.settings.newsletter_background }}; color: {{ section.settings.newsletter_text_color }};"
+>
+  <div class="page-width">
+    <div class="mx-auto max-w-xl text-center">
+      {%- if section.settings.newsletter_heading != blank -%}
+        <h2 class="mb-3 font-heading text-2xl font-bold md:text-3xl lg:text-4xl">{{ section.settings.newsletter_heading | escape }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.newsletter_description != blank -%}
+        <p class="mb-8 text-base opacity-70">{{ section.settings.newsletter_description | escape }}</p>
+      {%- endif -%}
+
+      {% render 'newsletter-form',
+        unique_id: section.id,
+        form_class: 'flex gap-2',
+        input_class: 'flex-1 border border-white/30 bg-transparent px-4 py-3 text-sm text-current placeholder:opacity-50 focus:border-white/60 focus:outline-none',
+        button_variant: 'accent',
+        button_class: 'px-6 py-3 text-sm font-medium',
+        toast_class: 'mt-4 items-center gap-2 overflow-hidden rounded p-3 text-sm transition-all duration-300'
+      %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "class": "newsletter-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "Heading",
+      "default": "Subscribe to our newsletter"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_description",
+      "label": "Description",
+      "default": "Be the first to know about new arrivals and exclusive offers."
+    },
+    {
+      "type": "color",
+      "id": "newsletter_background",
+      "label": "Background color",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "color",
+      "id": "newsletter_text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter"
+    }
+  ]
+}
+{% endschema %}

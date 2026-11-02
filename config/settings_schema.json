@@ -1,0 +1,398 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "themex",
+    "theme_version": "1.0.0",
+    "theme_author": "devx commerce",
+    "theme_documentation_url": "https://devxcommerce.com",
+    "theme_support_url": "https://devxcommerce.com/support"
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Fonts"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_primary_font",
+        "default": "space_grotesk_n4",
+        "label": "Primary"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_secondary_font",
+        "default": "dm_sans_n4",
+        "label": "Secondary"
+      }
+    ]
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Primary Brand"
+      },
+      {
+        "type": "color",
+        "id": "color_primary",
+        "label": "Green (primary)",
+        "default": "#466E2E",
+        "info": "Primary buttons, active states, nav highlights, links"
+      },
+      {
+        "type": "color",
+        "id": "color_accent",
+        "label": "Accent yellow",
+        "default": "#F4C430",
+        "info": "Badges, accent CTA, smile underline default"
+      },
+      {
+        "type": "color",
+        "id": "color_brand_yellow",
+        "label": "Brand yellow",
+        "default": "#FACC15",
+        "info": "Hero background yellow"
+      },
+      {
+        "type": "color",
+        "id": "color_green_secondary",
+        "label": "Green secondary",
+        "default": "#2A7A50",
+        "info": "Strokes, badge borders"
+      },
+      {
+        "type": "color",
+        "id": "color_green_dark",
+        "label": "Green dark",
+        "default": "#113422",
+        "info": "Footer background"
+      },
+      {
+        "type": "header",
+        "content": "Neutrals"
+      },
+      {
+        "type": "color",
+        "id": "color_foreground",
+        "label": "Near black (headings)",
+        "default": "#171717",
+        "info": "Page titles, primary headings, high-emphasis text"
+      },
+      {
+        "type": "color",
+        "id": "color_muted",
+        "label": "Muted grey (captions)",
+        "default": "#737373",
+        "info": "Captions, timestamps, footer text, breadcrumb separators"
+      },
+      {
+        "type": "color",
+        "id": "color_border",
+        "label": "Border grey",
+        "default": "#E5E7EB",
+        "info": "Card borders, dividers, table rules, input borders"
+      },
+      {
+        "type": "color",
+        "id": "color_background",
+        "label": "Background",
+        "default": "#FFFFFF",
+        "info": "Page background, card backgrounds, input backgrounds"
+      },
+      {
+        "type": "color",
+        "id": "color_primary_foreground",
+        "label": "Primary button text",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "color",
+        "id": "color_cream",
+        "label": "Cream",
+        "default": "#FEF9EA",
+        "info": "Cream section backgrounds"
+      },
+      {
+        "type": "color",
+        "id": "color_cream_alt",
+        "label": "Cream alt",
+        "default": "#FAF8F4",
+        "info": "Alternate cream section background"
+      },
+      {
+        "type": "header",
+        "content": "Status Colors"
+      },
+      {
+        "type": "color",
+        "id": "color_error",
+        "label": "Error",
+        "default": "#DC2626"
+      },
+      {
+        "type": "color",
+        "id": "color_success",
+        "label": "Success",
+        "default": "#16A34A"
+      },
+      {
+        "type": "color",
+        "id": "color_sale",
+        "label": "Sale",
+        "default": "#D93807",
+        "info": "Discount percentage text"
+      },
+      {
+        "type": "color",
+        "id": "color_rating",
+        "label": "Rating",
+        "default": "#FF9C05",
+        "info": "Rating stars"
+      }
+    ]
+  },
+  {
+    "name": "Logo & Favicon",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo"
+      },
+      {
+        "type": "range",
+        "id": "logo_width",
+        "label": "Logo width",
+        "min": 50,
+        "max": 300,
+        "step": 10,
+        "default": 120,
+        "unit": "px"
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon"
+      }
+    ]
+  },
+  {
+    "name": "Search",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Recent Search"
+      },
+      {
+        "type": "text",
+        "id": "search_recent_heading",
+        "label": "Recent Heading",
+        "default": "Recent Search"
+      },
+      {
+        "type": "range",
+        "id": "recent_searches_limit",
+        "label": "Recent Searches Limit",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 6,
+        "info": "Maximum recent searches shown in the modal."
+      },
+      {
+        "type": "header",
+        "content": "Browse By Concern"
+      },
+      {
+        "type": "text",
+        "id": "search_concern_heading",
+        "label": "Concern Heading",
+        "default": "Browse by concern"
+      },
+      {
+        "type": "link_list",
+        "id": "search_concern_menu",
+        "label": "Concern Menu",
+        "info": "Menu for the Browse by concern chips. Edit its items in Content → Menus."
+      },
+      {
+        "type": "header",
+        "content": "Popular Products"
+      },
+      {
+        "type": "text",
+        "id": "popular_heading",
+        "label": "Popular Heading",
+        "default": "Popular Products"
+      },
+      {
+        "type": "collection",
+        "id": "popular_collection",
+        "label": "Popular Collection"
+      },
+      {
+        "type": "range",
+        "id": "popular_products_count",
+        "label": "Popular Products Count",
+        "min": 1,
+        "max": 12,
+        "step": 1,
+        "default": 4
+      },
+      {
+        "type": "header",
+        "content": "Results"
+      },
+      {
+        "type": "range",
+        "id": "search_results_count",
+        "label": "Search Results Count",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 10,
+        "info": "Results per type. 10 is the Shopify maximum."
+      },
+      {
+        "type": "header",
+        "content": "No Results"
+      },
+      {
+        "type": "richtext",
+        "id": "no_results_text",
+        "label": "No Results Text",
+        "default": "<p>Sorry, no results found.</p>"
+      },
+      {
+        "type": "text",
+        "id": "no_results_cta_label",
+        "label": "No Results CTA Label",
+        "default": "Shop All"
+      },
+      {
+        "type": "url",
+        "id": "no_results_cta_link",
+        "label": "No Results CTA Link",
+        "info": "Where the Shop All button goes when a search returns nothing."
+      }
+    ]
+  },
+  {
+    "name": "Product card",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Discount Badge"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_discount_badge",
+        "label": "Show Discount Badge",
+        "default": true
+      },
+      {
+        "type": "color",
+        "id": "discount_badge_bg_color",
+        "label": "Discount Badge Background",
+        "default": "#000"
+      },
+      {
+        "type": "color",
+        "id": "discount_badge_text_color",
+        "label": "Discount Badge Text",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "header",
+        "content": "Sold Out Badge"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_sold_out_badge",
+        "label": "Show Sold Out Badge",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "sold_out_badge_text",
+        "label": "Sold Out Badge Text",
+        "default": "Sold out"
+      },
+      {
+        "type": "color",
+        "id": "sold_out_badge_bg_color",
+        "label": "Sold Out Badge Background",
+        "default": "#0a0a0a"
+      },
+      {
+        "type": "color",
+        "id": "sold_out_badge_text_color",
+        "label": "Sold Out Badge Text Color",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "header",
+        "content": "Color display"
+      },
+      {
+        "type": "select",
+        "id": "product_color_display",
+        "label": "Color display mode",
+        "options": [
+          { "value": "hide", "label": "Hide" },
+          { "value": "count", "label": "Count" },
+          { "value": "swatch", "label": "Swatch" },
+          { "value": "variant", "label": "Variant image" }
+        ],
+        "default": "swatch"
+      }
+    ]
+  },
+  {
+    "name": "Social media",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Accounts"
+      },
+      {
+        "type": "url",
+        "id": "social_facebook",
+        "label": "Facebook"
+      },
+      {
+        "type": "url",
+        "id": "social_twitter",
+        "label": "X (formerly Twitter)"
+      },
+      {
+        "type": "url",
+        "id": "social_instagram",
+        "label": "Instagram"
+      },
+      {
+        "type": "url",
+        "id": "social_youtube",
+        "label": "YouTube"
+      },
+      {
+        "type": "url",
+        "id": "social_tiktok",
+        "label": "TikTok"
+      },
+      {
+        "type": "url",
+        "id": "social_pinterest",
+        "label": "Pinterest"
+      },
+      {
+        "type": "url",
+        "id": "social_linkedin",
+        "label": "LinkedIn"
+      }
+    ]
+  }
+]

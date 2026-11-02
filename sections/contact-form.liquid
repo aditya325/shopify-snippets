@@ -1,0 +1,328 @@
+{%- liquid
+  assign form_heading = section.settings.form_heading
+  assign form_heading_plain = form_heading | strip_html | strip
+  assign form_desk_image = section.settings.form_desk_image
+  assign form_dom_id = 'ContactForm-' | append: section.id
+
+  assign success_message = section.settings.form_ok_msg | default: 'Message sent successfully!'
+  assign error_message = section.settings.form_err_msg | default: 'Something went wrong. Please try again.'
+
+  assign error_class = 'contact-form__error flex min-h-10 items-center justify-center rounded-lg bg-error px-4 text-center font-secondary text-[14px]/[21px] font-semibold tracking-[-0.16px] text-primary-foreground lg:min-h-[52px] lg:rounded-xl lg:text-[18px]/[28px] lg:tracking-normal'
+  # The check knockout must match the button ground, which the primary hover flips to the page background
+  assign submit_class = 'w-full h-10 rounded-lg text-[14px]/[21px] tracking-[-0.16px] [--contact-check:rgb(var(--color-primary))] [@media(hover:hover)]:hover:[--contact-check:rgb(var(--color-background))] lg:h-[52px] lg:rounded-xl lg:text-subheading-d lg:tracking-normal'
+  assign cta_state_class = 'inline-flex items-center justify-center gap-2'
+  assign cta_icon_class = 'h-[18px] w-[18px] lg:h-[22px] lg:w-[22px]'
+-%}
+
+<div
+  class="contact-form pb-[var(--form-bottom-mobile)] pt-[var(--form-top-mobile)] lg:pb-[var(--form-bottom-desktop)] lg:pt-[var(--form-top-desktop)]"
+  style="
+    --form-top-mobile: {{ section.settings.form_top_mobile }}px;
+    --form-bottom-mobile: {{ section.settings.form_bottom_mobile }}px;
+    --form-top-desktop: {{ section.settings.form_top_desktop }}px;
+    --form-bottom-desktop: {{ section.settings.form_bottom_desktop }}px;
+    --form-media-h: {{ section.settings.form_media_h_desk }}px;
+  "
+>
+  <div class="contact-form__inner page-width flex flex-col gap-6 lg:flex-row lg:items-center lg:gap-6">
+    {%- if form_desk_image != blank -%}
+      <div class="contact-form__media hidden overflow-hidden rounded-xl lg:block lg:h-[var(--form-media-h)] lg:flex-1">
+        {%- render 'image',
+          image: form_desk_image,
+          alt: '',
+          class_name: 'h-full w-full object-cover object-right',
+          decoding: 'async',
+          responsive_widths: '1024:660'
+        -%}
+      </div>
+    {%- endif -%}
+
+    <contact-form class="contact-form__panel flex w-full flex-col gap-6 lg:flex-1">
+      {%- if form_heading_plain != blank -%}
+        {%- render 'section-header',
+          heading: form_heading,
+          heading_level: 'h2',
+          class_name: 'text-left text-foreground'
+        -%}
+      {%- endif -%}
+
+      {%- form 'contact', id: form_dom_id, class: 'contact-form__form flex flex-col gap-6' -%}
+        <div
+          class="{{ error_class }}"
+          data-contact-error
+          role="alert"
+          {% unless form.errors %}
+            hidden
+          {% endunless %}
+        >
+          {%- if form.errors -%}
+            {{ form.errors | default_errors }}
+          {%- else -%}
+            {{ error_message }}
+          {%- endif -%}
+        </div>
+
+        <div class="contact-form__fields flex flex-col gap-4" data-contact-fields>
+          {%- render 'contact-field',
+            field_type: 'text',
+            field_name: 'contact[name]',
+            field_id_prefix: form_dom_id,
+            field_label: section.settings.form_name_label,
+            field_placeholder: section.settings.form_name_ph,
+            field_autocomplete: 'name',
+            field_pattern: "[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[ '\-][A-Za-zÀ-ÖØ-öø-ÿ]+)*",
+            field_error: 'Please enter a valid full name',
+            field_required: true
+          -%}
+
+          {%- render 'contact-field',
+            field_type: 'email',
+            field_name: 'contact[email]',
+            field_id_prefix: form_dom_id,
+            field_label: section.settings.form_email_label,
+            field_placeholder: section.settings.form_email_ph,
+            field_autocomplete: 'email',
+            field_required: true
+          -%}
+
+          {%- render 'contact-field',
+            field_type: 'tel',
+            field_name: 'contact[phone]',
+            field_id_prefix: form_dom_id,
+            field_label: section.settings.form_phone_label,
+            field_placeholder: section.settings.form_phone_ph,
+            field_autocomplete: 'tel',
+            field_pattern: "(?=(?:\D*\d){10,15}\D*$)\+?[0-9\s\-]+",
+            field_error: 'Please enter a valid phone number',
+            field_required: true
+          -%}
+
+          {%- render 'contact-field',
+            field_type: 'select',
+            field_name: 'contact[subject]',
+            field_id_prefix: form_dom_id,
+            field_label: section.settings.form_subject_label,
+            field_placeholder: section.settings.form_subject_ph,
+            field_options: section.settings.form_subjects,
+            field_required: true
+          -%}
+
+          {%- render 'contact-field',
+            field_type: 'textarea',
+            field_name: 'contact[body]',
+            field_id_prefix: form_dom_id,
+            field_label: section.settings.form_msg_label,
+            field_placeholder: section.settings.form_msg_ph,
+            field_required: true
+          -%}
+        </div>
+
+        {%- comment -%} Captured inside the form tag because form is only in scope here {%- endcomment -%}
+        {%- capture submit_body -%}
+          <span
+            class="contact-form__cta-idle {{ cta_state_class }}"
+            data-contact-idle
+            {% if form.posted_successfully? %}hidden{% endif %}
+          >
+            {{- section.settings.form_btn_label | escape -}}
+            {%- render 'icon-arrow-right', class: cta_icon_class -%}
+          </span>
+
+          <span
+            class="contact-form__cta-sent {{ cta_state_class }}"
+            data-contact-sent
+            {% unless form.posted_successfully? %}hidden{% endunless %}
+          >
+            {%- render 'icon-check-circle-filled',
+              size: 18,
+              class: 'shrink-0',
+              check_color: 'var(--contact-check)'
+            -%}
+            {{- success_message -}}
+          </span>
+        {%- endcapture -%}
+
+        {%- render 'button',
+          content: submit_body,
+          type: 'submit',
+          variant: 'primary',
+          size: 'lg',
+          with_loader: true,
+          class_name: submit_class,
+          data_attributes: 'data-contact-submit aria-live="polite"'
+        -%}
+      {%- endform -%}
+    </contact-form>
+  </div>
+</div>
+
+<script src="{{ 'contact-form-javascript.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Contact Form",
+  "class": "contact-form-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "form_heading",
+      "label": "Form Heading",
+      "default": "<p>Your Voice Matters</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "form_desk_image",
+      "label": "Form Desk Image",
+      "info": "Desktop only. Blank centres the form."
+    },
+    {
+      "type": "text",
+      "id": "form_name_label",
+      "label": "Form Name Label",
+      "default": "Full Name"
+    },
+    {
+      "type": "text",
+      "id": "form_name_ph",
+      "label": "Form Name Ph",
+      "default": "e.g. John Doe"
+    },
+    {
+      "type": "text",
+      "id": "form_email_label",
+      "label": "Form Email Label",
+      "default": "Email Address"
+    },
+    {
+      "type": "text",
+      "id": "form_email_ph",
+      "label": "Form Email Ph",
+      "default": "e.g. john@example.com"
+    },
+    {
+      "type": "text",
+      "id": "form_phone_label",
+      "label": "Form Phone Label",
+      "default": "Phone Number"
+    },
+    {
+      "type": "text",
+      "id": "form_phone_ph",
+      "label": "Form Phone Ph",
+      "default": "e.g. +91 98765 43210"
+    },
+    {
+      "type": "text",
+      "id": "form_subject_label",
+      "label": "Form Subject Label",
+      "default": "Subject"
+    },
+    {
+      "type": "text",
+      "id": "form_subject_ph",
+      "label": "Form Subject Ph",
+      "default": "Select a reason"
+    },
+    {
+      "type": "textarea",
+      "id": "form_subjects",
+      "label": "Form Subjects",
+      "info": "One reason per line.",
+      "default": "Product Support\nOrders\nReturns\nSubscription\nBusiness Enquiry\nFeedback\nCareers"
+    },
+    {
+      "type": "text",
+      "id": "form_msg_label",
+      "label": "Form Msg Label",
+      "default": "Message"
+    },
+    {
+      "type": "text",
+      "id": "form_msg_ph",
+      "label": "Form Msg Ph",
+      "default": "How can we help you?"
+    },
+    {
+      "type": "text",
+      "id": "form_btn_label",
+      "label": "Form Btn Label",
+      "default": "Send Message"
+    },
+    {
+      "type": "text",
+      "id": "form_ok_msg",
+      "label": "Form Ok Msg",
+      "default": "Message sent successfully!"
+    },
+    {
+      "type": "text",
+      "id": "form_err_msg",
+      "label": "Form Err Msg",
+      "default": "Something went wrong. Please try again."
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "form_media_h_desk",
+      "label": "Form Media H Desk",
+      "min": 400,
+      "max": 800,
+      "step": 5,
+      "unit": "px",
+      "default": 690
+    },
+    {
+      "type": "range",
+      "id": "form_top_mobile",
+      "label": "Space Above (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "form_bottom_mobile",
+      "label": "Space Below (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "form_top_desktop",
+      "label": "Space Above (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "form_bottom_desktop",
+      "label": "Space Below (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact Form"
+    }
+  ]
+}
+{% endschema %}

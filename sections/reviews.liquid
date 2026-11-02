@@ -1,0 +1,22 @@
+{%- comment -%} Placeholder until D2 (Judge.me) lands — holds the slot, renders no app content {%- endcomment -%}
+<div class="reviews my-6 flex h-[50vh] items-center justify-center bg-[#466E2E1A] lg:my-8">
+  <div class="page-width">
+    {%- render 'section-header',
+      heading: '<p>Real People. <em>Real Relief.</em></p>',
+      class_name: 'text-center text-section-heading lg:text-section-heading-d'
+    -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Reviews",
+  "class": "reviews-section",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Reviews"
+    }
+  ]
+}
+{% endschema %}

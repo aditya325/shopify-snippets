@@ -1,0 +1,400 @@
+{%- comment -%} CSS {%- endcomment -%}
+{{ 'facets-stylesheet.css' | asset_url | stylesheet_tag: preload: true }}
+
+{%- comment -%} HTML {%- endcomment -%}
+{%- liquid
+  assign has_filters = false
+  if search.filters.size > 0
+    assign has_filters = true
+  endif
+
+  assign current_sort = search.sort_by | default: search.default_sort_by
+
+  assign active_filter_count = 0
+  for filter in search.filters
+    for value in filter.active_values
+      assign active_filter_count = active_filter_count | plus: 1
+    endfor
+    if filter.type == 'price_range'
+      if filter.min_value.value or filter.max_value.value
+        assign active_filter_count = active_filter_count | plus: 1
+      endif
+    endif
+  endfor
+
+  case section.settings.columns_desktop
+    when 2
+      assign grid_cols_class = 'lg:grid-cols-2'
+    when 4
+      assign grid_cols_class = 'lg:grid-cols-4'
+    else
+      assign grid_cols_class = 'lg:grid-cols-3'
+  endcase
+-%}
+
+{%- capture search_clear_url -%}{{ routes.search_url }}?q={{ search.terms | url_encode }}&amp;type=product{%- endcapture -%}
+
+<div
+  class="search-page my-6 lg:my-8"
+  data-collection-section
+  data-section-id="{{ section.id }}"
+>
+  <div class="page-width">
+    {%- comment -%} Breadcrumbs {%- endcomment -%}
+    {%- liquid
+      assign search_crumb_label = 'search.title' | t
+      assign breadcrumb_count = blank
+      if search.performed
+        assign breadcrumb_count = 'facets.products_count' | t: count: search.results_count
+      endif
+    -%}
+
+    <div class="search-page__breadcrumbs py-2.5 lg:py-3" data-active-filters-container>
+      {%- render 'breadcrumbs',
+        breadcrumb_current: search.terms,
+        breadcrumb_parent: search_crumb_label,
+        breadcrumb_parent_url: routes.search_url,
+        breadcrumb_count: breadcrumb_count
+      -%}
+    </div>
+
+    <div class="search-page__header flex flex-col gap-1.5 pb-5 pt-2.5 lg:pb-6 lg:pt-5">
+      <h1 class="font-primary text-[24px] font-semibold leading-8 tracking-[-0.2px] text-foreground lg:font-bold">
+        {%- if search.terms != blank -%}
+          {{ 'search.searched_for' | t: terms: search.terms }}
+        {%- else -%}
+          {{ 'search.title' | t }}
+        {%- endif -%}
+      </h1>
+
+      <form action="{{ routes.search_url }}" method="get" role="search" class="relative w-full lg:max-w-[520px]">
+        <input type="hidden" name="type" value="product">
+        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+          {%- render 'icon-search', size: 18, class: 'text-muted' -%}
+        </div>
+        <input
+          type="search"
+          name="q"
+          value="{{ search.terms | escape }}"
+          placeholder="{{ 'search.placeholder' | t }}"
+          class="h-12 w-full rounded-full border border-[#f5f5f5] bg-background pl-12 pr-28 font-secondary text-[16px] leading-6 text-foreground shadow-[0_1px_2px_rgba(0,0,0,0.04)] placeholder:text-[#525252] focus:border-primary focus:outline-none"
+          aria-label="{{ 'search.title' | t }}"
+        >
+        <button
+          type="submit"
+          class="absolute inset-y-1.5 right-1.5 inline-flex items-center rounded-full bg-primary px-5 font-secondary text-[14px] font-semibold leading-5 text-primary-foreground transition-colors [@media(hover:hover)]:hover:bg-green-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        >
+          {{ 'search.submit' | t }}
+        </button>
+      </form>
+    </div>
+
+    {%- if search.performed -%}
+      <div class="search-page__results flex gap-5 lg:gap-8">
+        {%- if has_filters -%}
+          <aside
+            class="hidden shrink-0 lg:block lg:basis-[280px] lg:sticky lg:top-[126px] lg:self-start lg:max-h-[calc(100vh-142px)] lg:overflow-y-auto lg:pr-5"
+            data-filters-sidebar
+          >
+            <div class="flex items-center justify-between gap-5 pb-5">
+              <span class="inline-flex items-center gap-2 font-secondary text-[18px] font-medium leading-7 text-primary">
+                {%- render 'icon-filter-lines', size: 20, class: 'h-5 w-5' -%}
+                {{ 'facets.filters_with_count' | t: count: active_filter_count }}
+              </span>
+              {%- if active_filter_count > 0 -%}
+                <a
+                  href="{{ search_clear_url }}"
+                  class="shrink-0 rounded-md border-[0.5px] border-primary px-3 py-2 font-secondary text-[14px] font-semibold leading-[21px] text-primary transition-colors [@media(hover:hover)]:hover:bg-primary/10"
+                  data-clear-filters
+                >
+                  {{ 'facets.clear_all' | t }}
+                </a>
+              {%- endif -%}
+            </div>
+            {%- render 'facet-filters', filter_source: search -%}
+          </aside>
+        {%- endif -%}
+
+        <div class="flex min-w-0 flex-1 flex-col">
+          <div
+            class="facet-toolbar sticky top-[66px] z-30 flex items-center justify-between gap-4 border-b border-[#f5f5f5] bg-background py-3 lg:static lg:z-auto lg:justify-end lg:border-b-0 lg:pb-5 lg:pt-0"
+            data-collection-toolbar
+          >
+            {%- if has_filters -%}
+              <button
+                type="button"
+                class="inline-flex items-center gap-2 font-secondary text-[14px] font-semibold leading-[21px] text-primary lg:hidden"
+                data-filter-toggle
+                aria-expanded="false"
+                aria-controls="search-filter-drawer"
+              >
+                {%- render 'icon-filter-lines', size: 16, class: 'h-4 w-4' -%}
+                {{ 'facets.filters_with_count' | t: count: active_filter_count }}
+              </button>
+            {%- endif -%}
+
+            <button
+              type="button"
+              class="inline-flex items-center gap-2 font-secondary text-[14px] font-semibold leading-[21px] text-primary lg:hidden"
+              data-sort-toggle
+              aria-expanded="false"
+            >
+              {%- render 'icon-sort', size: 16, class: 'h-4 w-4' -%}
+              {{ 'facets.sort' | t }}
+            </button>
+
+            <div class="relative hidden items-center gap-2 lg:flex" data-facet-sort>
+              <span class="inline-flex shrink-0 items-center gap-2 font-secondary text-[16px] font-semibold leading-6 text-primary">
+                {%- render 'icon-sort', size: 20, class: 'h-5 w-5' -%}
+                {{ 'facets.sort' | t }}
+              </span>
+
+              {%- liquid
+                assign current_sort_name = ''
+                for option in search.sort_options
+                  if option.value == current_sort
+                    assign current_sort_name = option.name
+                  endif
+                endfor
+              -%}
+
+              <button
+                type="button"
+                class="inline-flex items-center gap-2 rounded-lg px-1 py-1 font-secondary text-[16px] leading-6 text-[#525252] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [@media(hover:hover)]:hover:text-foreground"
+                data-facet-sort-toggle
+                aria-expanded="false"
+                aria-haspopup="listbox"
+              >
+                <span data-facet-sort-label>{{ current_sort_name }}</span>
+                {%- render 'icon-chevron-down', size: 16, class: 'h-4 w-4 shrink-0' -%}
+              </button>
+
+              <div
+                class="invisible absolute right-0 top-full z-40 mt-2 min-w-[220px] -translate-y-1 overflow-hidden rounded-xl border border-[#f5f5f5] bg-background opacity-0 shadow-lg transition-all duration-200 ease-out motion-reduce:transition-none"
+                data-facet-sort-menu
+                role="listbox"
+              >
+                {%- for option in search.sort_options -%}
+                  {%- assign is_current = false -%}
+                  {%- if option.value == current_sort -%}
+                    {%- assign is_current = true -%}
+                  {%- endif -%}
+                  <button
+                    type="button"
+                    role="option"
+                    class="flex w-full items-center justify-between gap-3 border-b border-[#f5f5f5] px-4 py-3 text-left font-secondary text-[14px] leading-[21px] transition-colors last:border-b-0 [@media(hover:hover)]:hover:bg-cream-alt {% if is_current %}font-medium text-primary{% else %}text-[#282828]{% endif %}"
+                    data-facet-sort-option
+                    data-value="{{ option.value }}"
+                    data-label="{{ option.name | escape }}"
+                    aria-selected="{{ is_current }}"
+                  >
+                    <span>{{ option.name }}</span>
+                    {%- if is_current -%}
+                      {%- render 'icon-checkmark', size: 16, class: 'h-4 w-4 shrink-0' -%}
+                    {%- endif -%}
+                  </button>
+                {%- endfor -%}
+              </div>
+
+              <select id="search-sort" class="sr-only" data-collection-sort tabindex="-1" aria-hidden="true">
+                {%- for option in search.sort_options -%}
+                  <option
+                    value="{{ option.value }}"
+                    {% if option.value == current_sort %}
+                      selected
+                    {% endif %}
+                  >
+                    {{ option.name }}
+                  </option>
+                {%- endfor -%}
+              </select>
+            </div>
+          </div>
+          <div class="relative transition-opacity duration-300" data-collection-products>
+            <div class="absolute inset-0 z-20 hidden bg-background/60" data-collection-loader></div>
+
+            {% paginate search.results by section.settings.products_per_page %}
+              {%- liquid
+                assign product_total = 0
+                for result in search.results
+                  if result.object_type == 'product'
+                    assign product_total = product_total | plus: 1
+                  endif
+                endfor
+
+                assign mobile_break = section.settings.concern_bar_position | times: 2 | at_most: product_total
+                assign desktop_columns = section.settings.columns_desktop
+                assign desktop_break = section.settings.concern_bar_position | times: desktop_columns | at_most: product_total
+              -%}
+
+              {%- if product_total == 0 -%}
+                <div class="py-16 text-center">
+                  <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted/10 text-muted">
+                    {%- render 'icon-search', size: 32 -%}
+                  </div>
+                  <p class="mb-2 font-primary text-[18px] font-medium text-foreground">
+                    {{ 'search.no_results_html' | t: terms: search.terms }}
+                  </p>
+                  <p class="mb-6 font-secondary text-[14px] text-muted">{{ 'search.try_different' | t }}</p>
+                  <a
+                    href="{{ routes.all_products_collection_url }}"
+                    class="inline-block rounded-lg border border-border px-6 py-2.5 font-secondary text-[14px] font-medium transition-colors hover:border-foreground"
+                  >
+                    {{ 'general.continue_shopping' | t }}
+                  </a>
+                </div>
+              {%- else -%}
+                <div class="grid grid-cols-2 gap-2.5 lg:gap-5 {{ grid_cols_class }}" data-facet-grid>
+                  {%- assign product_index = 0 -%}
+                  {%- for result in search.results -%}
+                    {%- if result.object_type == 'product' -%}
+                      {%- assign product_index = product_index | plus: 1 -%}
+                      {%- render 'product-card', card_product: result -%}
+
+                      {%- if section.settings.show_concern_bar and paginate.current_page == 1 -%}
+                        {%- if product_index == mobile_break -%}
+                          <div class="col-span-full my-2 lg:my-0 lg:hidden">
+                            {%- render 'concern-bar', filter_source: search -%}
+                          </div>
+                        {%- endif -%}
+                        {%- if product_index == desktop_break -%}
+                          <div class="col-span-full hidden lg:block">
+                            {%- render 'concern-bar', filter_source: search -%}
+                          </div>
+                        {%- endif -%}
+                      {%- endif -%}
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+
+                {%- if paginate.pages > 1 -%}
+                  <div class="mt-8" data-facet-pagination>
+                    {%- render 'pagination', paginate: paginate -%}
+                  </div>
+                {%- endif -%}
+
+                {%- render 'facet-load-more', paginate: paginate -%}
+              {%- endif -%}
+            {% endpaginate %}
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{%- if search.performed and has_filters -%}
+  <div class="fixed inset-0 z-[100] hidden" id="search-filter-drawer" data-filter-drawer>
+    <div class="absolute inset-0 bg-black/50 opacity-0 transition-opacity duration-300" data-filter-overlay></div>
+
+    <div
+      class="absolute inset-x-0 bottom-0 flex max-h-[85vh] translate-y-full flex-col rounded-t-md bg-background shadow-xl transition-transform duration-300"
+      data-filter-panel
+      data-sheet
+    >
+      <div class="flex shrink-0 flex-col gap-3 px-5 pb-4 pt-3">
+        <span
+          class="mx-auto -my-2 flex h-5 w-16 shrink-0 cursor-grab touch-none items-center justify-center active:cursor-grabbing"
+          data-sheet-handle
+        >
+          <span class="h-1 w-10 rounded-sm bg-[#dcd7ce]"></span>
+        </span>
+        <div class="flex items-center gap-2.5">
+          {%- render 'icon-filter-lines', size: 18, class: 'h-[18px] w-[18px] text-foreground' -%}
+          <h2 class="font-secondary text-[18px] font-medium leading-[23.4px] text-foreground">
+            {{ 'facets.filters' | t }}
+          </h2>
+          <button
+            type="button"
+            class="ml-auto -mr-1 flex h-9 w-9 items-center justify-center text-foreground transition-colors hover:text-muted"
+            data-filter-close
+            aria-label="{{ 'accessibility.close' | t }}"
+          >
+            {%- render 'icon-close', size: 18, class: 'h-[18px] w-[18px]' -%}
+          </button>
+        </div>
+      </div>
+
+      <div class="min-h-0 flex-1 overflow-y-auto">
+        {%- render 'facet-filters', filter_source: search, filter_variant: 'sheet' -%}
+      </div>
+
+      <div class="flex shrink-0 items-center gap-3 border-t border-[#ece8e1] px-5 py-3.5">
+        <a
+          href="{{ search_clear_url }}"
+          class="inline-flex shrink-0 items-center justify-center rounded-[10px] border-[0.5px] border-primary px-5 py-3 font-secondary text-[13px] font-medium leading-[16.9px] text-primary transition-colors [@media(hover:hover)]:hover:bg-primary/10"
+          data-clear-filters
+        >
+          {{ 'facets.clear_all' | t }}
+        </a>
+        <button
+          type="button"
+          class="inline-flex flex-1 items-center justify-center rounded-[10px] bg-primary px-4 py-3 font-secondary text-[13px] font-medium leading-[16.9px] text-primary-foreground transition-colors [@media(hover:hover)]:hover:bg-green-dark"
+          data-filter-close
+        >
+          {{ 'facets.show_products' | t: count: search.results_count }}
+        </button>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{%- comment -%} Mobile sort sheet {%- endcomment -%}
+{%- if search.performed -%}
+  {%- render 'facet-sort-sheet', filter_source: search, current_sort: current_sort -%}
+{%- endif -%}
+
+{%- comment -%} JS {%- endcomment -%}
+<script src="{{ 'collection.js' | asset_url }}" defer></script>
+<script src="{{ 'facets.js' | asset_url }}" defer></script>
+
+{%- comment -%} Schema {%- endcomment -%}
+{% schema %}
+{
+  "name": "Search",
+  "class": "search-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products Per Page",
+      "min": 6,
+      "max": 50,
+      "step": 2,
+      "default": 24
+    },
+    {
+      "type": "checkbox",
+      "id": "show_concern_bar",
+      "label": "Show Concern Bar",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "concern_bar_position",
+      "label": "Concern Bar After Row",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Desktop Columns",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    }
+  ]
+}
+{% endschema %}

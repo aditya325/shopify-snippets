@@ -1,0 +1,160 @@
+{% doc %}
+  One level-2 page of the mobile drawer. Uses the same walk and row map as the desktop panel, so the
+  two viewports cannot drift.
+
+  @param {object} section - The header section, for settings
+  @param {object} block - The mega-menu block this level belongs to
+  @param {object} link - The top-level menu link this level-2 page belongs to
+{% enddoc %}
+
+{%- liquid
+  capture row_map
+    render 'mega-menu-row-map', block_type: block.type
+  endcapture
+  assign row_map_parts = row_map | strip | split: '|'
+  assign row_settings = row_map_parts[0] | split: ','
+  assign row_types = row_map_parts[1] | split: ','
+
+  assign level_promo_id = 'drawer-' | append: link.handle
+-%}
+
+<div
+  class="drawer__level absolute inset-0 flex translate-x-full flex-col transition-transform duration-300 ease-out motion-reduce:transition-none [&.drawer\_\_level--active]:translate-x-0"
+  data-drawer-level="{{ link.handle | escape }}"
+  hidden
+>
+  <div class="flex h-[52px] shrink-0 items-center gap-4 border-b border-[#e5e5e5] px-5">
+    <button
+      class="flex h-5 w-5 shrink-0 items-center justify-center"
+      type="button"
+      data-drawer-back
+      aria-label="{{ 'accessibility.back' | t }}"
+    >
+      {% render 'icon-chevron-left', size: 20 %}
+    </button>
+
+    <span class="font-primary text-[16px]/[24px] font-medium text-foreground">{{ link.title | escape }}</span>
+  </div>
+
+  <div class="drawer__body flex-1 overflow-y-auto overscroll-contain" data-single-open>
+    {%- for setting_id in row_settings -%}
+    {%- assign pane_row_type = row_types[forloop.index0] -%}
+    {%- for pane_row in block.settings[setting_id] -%}
+      {%- liquid
+        assign pair_key = link.handle | append: '-' | append: pane_row.system.handle
+
+        assign cta_url = pane_row.cta_target.value.url
+        if cta_url == blank and pane_row.cta_blog != blank
+          assign cta_url = blogs[pane_row.cta_blog].url
+        endif
+      -%}
+
+      {%- capture rail_pane -%}
+        {%- if pane_row.heading != blank and pane_row.heading != pane_row.title -%}
+          <h2 class="font-primary text-[16px]/[24px] font-medium text-foreground">
+            {{- pane_row.heading | escape -}}
+          </h2>
+        {%- endif -%}
+
+        {%- case pane_row_type -%}
+          {%- when 'need' -%}
+            {%- render 'mega-menu-group',
+              heading: pane_row.group_a_heading,
+              links: pane_row.group_a_links.value,
+              style: 'chips'
+            -%}
+
+            {%- render 'mega-menu-group',
+              heading: pane_row.group_b_heading,
+              links: pane_row.group_b_links.value,
+              style: 'links'
+            -%}
+
+            {%- render 'mega-menu-products',
+              collection: pane_row.collection.value,
+              count: pane_row.product_count,
+              layout: 'grid'
+            -%}
+
+          {%- when 'category' -%}
+            {%- render 'mega-menu-products',
+              collection: pane_row.collection.value,
+              count: pane_row.product_count,
+              layout: 'grid'
+            -%}
+
+          {%- when 'combo' -%}
+            {%- render 'mega-menu-pane-bundles',
+              bundles_featured: pane_row.featured_product.value,
+              bundles_collection: pane_row.bundles_collection.value,
+              bundles_count: pane_row.bundles_count,
+              bundles_cta_label: pane_row.bundle_cta_label
+            -%}
+
+          {%- when 'about-story' -%}
+            {%- render 'mega-menu-pane-about', row: pane_row -%}
+
+          {%- when 'about-history' -%}
+            {%- render 'mega-menu-pane-history',
+              history_image: pane_row.history_image.value,
+              history_caption: pane_row.history_caption,
+              history_year: pane_row.history_year,
+              history_link: cta_url
+            -%}
+
+          {%- when 'media-blogs' -%}
+            {%- render 'mega-menu-pane-media', articles: pane_row.articles.value, read_label: pane_row.read_label -%}
+
+          {%- when 'media-press' -%}
+            {%- render 'mega-menu-pane-press', articles: pane_row.articles.value -%}
+        {%- endcase -%}
+
+        {%- if cta_url != blank and pane_row.cta_label != blank -%}
+          {%- render 'button',
+            label: pane_row.cta_label,
+            link: cta_url,
+            variant: 'secondary',
+            size: 'lg',
+            class_name: 'w-full h-[38px]',
+            with_arrow: true
+          -%}
+        {%- endif -%}
+      {%- endcapture -%}
+
+      {%- capture rail_title_html -%}
+        <span class="flex items-center gap-3">
+          {%- if pane_row.icon.value != blank -%}
+            <img
+              class="h-5 w-5 shrink-0"
+              src="{{ pane_row.icon.value | image_url: width: 20 }}"
+              alt=""
+              width="20"
+              height="20"
+              loading="lazy"
+            >
+          {%- endif -%}
+          <span>{{ pane_row.title | escape }}</span>
+        </span>
+      {%- endcapture -%}
+
+      {% render 'accordion',
+        title: rail_title_html,
+        content: rail_pane,
+        unique_id: pair_key,
+        icon_type: 'chevron',
+        icon_size: 18,
+        title_class: 'px-5 py-3 font-secondary text-[14px]/[18px] font-medium text-foreground shadow-[inset_0_-1px_0_0_#e5e5e5]',
+        content_class: 'flex flex-col gap-5 px-5 pb-4 pt-5'
+      %}
+    {%- endfor -%}
+    {%- endfor -%}
+
+    {%- if block.settings.mega_show_promo -%}
+      <div class="p-5">
+        {%- render 'subscribe-save', layout: 'card', section_id: level_promo_id -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- render 'nav-utility-strip', section: section, orientation: 'vertical' -%}
+</div>

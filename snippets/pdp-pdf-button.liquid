@@ -1,0 +1,51 @@
+{% doc %}
+  One PDF button in a details tab — opens a document metaobject's file in the lab-report popup.
+
+  Shopify has no file picker input, so the block carries a metaobject setting a merchant connects to a
+  product file field by dynamic source. Variant and icon come from the render position rather than a
+  fourth setting, so the first button in a tab keeps the filled treatment the design draws.
+
+  @param {object} block - A pdf-button block (required)
+  @param {string} section_id - Section id, scoping the button and modal ids (required)
+  @param {number} [position] - 1-based position among the buttons in this tab (default: 1)
+{% enddoc %}
+
+{%- liquid
+  assign pdf_url = block.settings.pdf_doc.file.value.url
+
+  unless block.settings.pdf_label != blank and pdf_url != blank
+    break
+  endunless
+
+  assign pdf_position = position | default: 1
+
+  assign pdf_variant = 'secondary'
+  assign pdf_icon = 'list'
+  assign pdf_class = 'lg:border-2 lg:bg-white lg:px-[31px]'
+  if pdf_position == 1
+    assign pdf_variant = 'primary'
+    assign pdf_icon = 'file-text'
+    assign pdf_class = 'lg:min-w-[260px] lg:px-6'
+  endif
+
+  assign pdf_shared_class = 'h-10 w-full shrink-0 gap-2.5 whitespace-nowrap rounded-[10px] text-[14px]/[21px] font-semibold tracking-[-0.16px] lg:h-[57px] lg:w-auto lg:text-[18px]/[27px] lg:tracking-normal '
+  assign pdf_button_class = pdf_shared_class | append: pdf_class
+
+  assign pdf_scope = block.id | append: '-' | append: section_id
+  assign pdf_button_id = 'lab-report-open-' | append: pdf_scope
+  assign pdf_modal_id = 'lab-report-' | append: pdf_scope
+-%}
+
+{%- render 'button',
+  label: block.settings.pdf_label,
+  variant: pdf_variant,
+  icon: pdf_icon,
+  icon_position: 'leading',
+  icon_class: 'size-4 lg:size-5',
+  class_name: pdf_button_class,
+  id: pdf_button_id,
+  aria_controls: pdf_modal_id,
+  aria_haspopup: 'dialog',
+  aria_expanded: 'false',
+  data_attributes: 'data-lab-report-open'
+-%}

@@ -1,0 +1,59 @@
+{% doc %}
+  Cart Discount Code
+
+  The "Apply Discount Code" input plus the inline ticket carousel shown before "See all".
+  The input clears on a successful apply — applied codes are shown as chips by
+  cart-auto-applied-row.liquid, which owns removing them.
+
+  @param {object[]} offers_list - section.settings.offers_list
+  @param {number} drawer_coupon_count - section.settings.drawer_coupon_count
+{% enddoc %}
+
+<div class="cart-discount-code flex flex-col px-[22px] py-5">
+  <div class="flex items-center justify-between">
+    <h3 class="font-primary text-base text-foreground">{{ 'cart.apply_discount' | t }}</h3>
+    <button
+      type="button"
+      class="flex items-center gap-1 font-secondary text-sm font-semibold uppercase text-primary"
+      data-cart-offers-open
+    >
+      <span class="underline">{{ 'cart.see_all' | t }}</span>
+      {% render 'icon-chevron-right', class: 'h-4 w-4 text-primary [&_polyline]:stroke-[3px]' %}
+    </button>
+  </div>
+
+  <div class="mt-4 flex h-11 items-center justify-between gap-3 rounded-xl border border-border px-3">
+    <input
+      type="text"
+      class="min-w-0 flex-1 font-secondary text-sm text-foreground placeholder:text-muted focus:outline-none"
+      placeholder="{{ 'cart.discount_placeholder' | t }}"
+      data-discount-input
+    >
+    <button
+      type="button"
+      class="shrink-0 font-secondary text-sm font-semibold uppercase text-primary underline transition-opacity duration-150 disabled:cursor-not-allowed disabled:opacity-40"
+      data-discount-apply
+      disabled
+    >
+      {{ 'cart.apply' | t }}
+    </button>
+  </div>
+
+  <p
+    class="mt-2 font-secondary text-sm text-error"
+    data-discount-error
+    data-error-message="{{ 'cart.discount_invalid' | t }}"
+    data-duplicate-message="{{ 'cart.discount_already_applied' | t }}"
+    hidden
+  ></p>
+
+  {%- if offers_list.size > 0 -%}
+    <div class="scrollbar-hide mt-[10px] flex snap-x snap-mandatory gap-2 overflow-x-auto">
+      {%- for offer in offers_list limit: drawer_coupon_count -%}
+        <div class="min-w-0 shrink-0 basis-[92%] snap-start snap-always">
+          {% render 'coupon-ticket', offer: offer %}
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</div>

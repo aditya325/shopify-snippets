@@ -1,0 +1,85 @@
+{% doc %}
+  One full-bleed panel per header block that binds to a top-level menu item. Rows are the metaobject
+  entries picked on the block, so nothing is matched by handle. Panes are rendered and toggled, never
+  fetched; 2.3 owns opening them.
+
+  @param {object} section - The header section, for settings and blocks
+{% enddoc %}
+
+{%- for block in section.blocks -%}
+  {%- liquid
+    assign panel_handle = block.settings.mega_parent_handle | handleize
+
+    capture row_map
+      render 'mega-menu-row-map', block_type: block.type
+    endcapture
+    assign row_map_parts = row_map | strip | split: '|'
+    assign row_settings = row_map_parts[0] | split: ','
+    assign row_types = row_map_parts[1] | split: ','
+
+    assign rail_rows = ''
+    assign panel_panes = ''
+    assign row_count = 0
+  -%}
+
+  {%- for setting_id in row_settings -%}
+    {%- assign row_type = row_types[forloop.index0] -%}
+    {%- for row in block.settings[setting_id] -%}
+      {%- liquid
+        assign row_count = row_count | plus: 1
+        assign pair_key = panel_handle | append: '-' | append: row_count
+        assign tab_id = 'mm-tab-' | append: pair_key
+        assign pane_id = 'mm-pane-' | append: pair_key
+        assign is_first_row = false
+        if row_count == 1
+          assign is_first_row = true
+        endif
+      -%}
+
+      {%- capture rail_row_html -%}
+        {%- render 'mega-menu-rail-row',
+          row: row,
+          tab_id: tab_id,
+          pane_id: pane_id,
+          is_first: is_first_row
+        -%}
+      {%- endcapture -%}
+
+      {%- capture pane_html -%}
+        {%- render 'mega-menu-pane',
+          row: row,
+          row_type: row_type,
+          tab_id: tab_id,
+          pane_id: pane_id,
+          is_first: is_first_row,
+          show_promo: block.settings.mega_show_promo
+        -%}
+      {%- endcapture -%}
+
+      {%- assign rail_rows = rail_rows | append: rail_row_html -%}
+      {%- assign panel_panes = panel_panes | append: pane_html -%}
+    {%- endfor -%}
+  {%- endfor -%}
+
+  {%- if row_count > 0 -%}
+    <div
+      class="mega-menu invisible absolute inset-x-0 top-full z-40 h-0 overflow-hidden border-t border-[#e5e5e5] bg-background tracking-normal max-lg:hidden [&.mega-menu--open]:visible [&.mega-menu--open]:h-[var(--mega-menu-height,auto)]"
+      id="mega-panel-{{ panel_handle }}"
+      data-mega-panel="{{ panel_handle }}"
+      inert
+      {{ block.shopify_attributes }}
+    >
+      <div class="mega-menu__container py-8">
+        <div class="page-width flex items-start gap-8">
+          {%- render 'mega-menu-rail', panel_title: block.settings.mega_panel_title, rows: rail_rows -%}
+
+          <div class="mega-menu__panes min-w-0 flex-[267]">
+            {{ panel_panes }}
+          </div>
+        </div>
+      </div>
+
+      {%- render 'nav-utility-strip', section: section -%}
+    </div>
+  {%- endif -%}
+{%- endfor -%}

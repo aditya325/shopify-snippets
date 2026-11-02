@@ -1,0 +1,27 @@
+{% doc %}
+  The Media panel's News & Events content — press cards. Shared by desktop and drawer. Renders
+  nothing when there are no articles. press-card takes no label; its read affordance is a locale string.
+
+  Cards resolve through press-grid-card so the article-to-primitive mapping — publisher and external
+  destination on metafields, the date format — lives in exactly one place and cannot drift from the grid.
+
+  @param {object[]} [articles] - Articles to render, in order
+{% enddoc %}
+
+{%- capture media_press_cards -%}
+  {%- for media_article in articles -%}
+    <div class="w-full lg:min-w-0 lg:flex-1">
+      {%- render 'press-grid-card',
+        card_item: media_article.handle,
+        card_kind: 'article',
+        card_source: articles
+      -%}
+    </div>
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- if media_press_cards != blank -%}
+  <div class="mega-menu__news flex flex-col gap-3 lg:flex-row lg:gap-4">
+    {{ media_press_cards }}
+  </div>
+{%- endif -%}

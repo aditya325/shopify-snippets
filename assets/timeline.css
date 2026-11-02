@@ -1,0 +1,59 @@
+@keyframes timeline-fill {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.timeline .timeline__scroller {
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.timeline .timeline__scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.timeline .timeline__fill {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: opacity 400ms ease;
+}
+
+.timeline .timeline__fill.is-running {
+  animation: timeline-fill var(--timeline-total, 6000ms) linear forwards;
+}
+
+.timeline .timeline__fill.is-resetting {
+  opacity: 0;
+}
+
+.timeline .timeline__dot {
+  transition: box-shadow 250ms ease;
+}
+
+.timeline .timeline__dot.is-active {
+  box-shadow: 0 0 0 3px #eab308;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline .timeline__scroller {
+    scroll-behavior: auto;
+  }
+
+  .timeline .timeline__fill {
+    transform: scaleX(1);
+    transition: none;
+  }
+
+  .timeline .timeline__fill.is-running {
+    animation: none;
+  }
+
+  .timeline .timeline__dot {
+    transition: none;
+  }
+}

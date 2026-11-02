@@ -1,0 +1,29 @@
+{% doc %}
+  Cart Offer Banner
+
+  Embla carousel (same library/pattern as sections/announcement-bar.liquid) rotating through
+  3 fixed messages inside the cart drawer. Initialized by CartDrawer's _initOfferBanner() in
+  assets/cart-drawer.js. The 3 messages are hardcoded slides below, not schema/block-driven —
+  only the rotation speed (rotation_interval) is a merchant setting.
+
+  @param {number} rotation_interval - Seconds between message changes
+{% enddoc %}
+
+<div class="cart-offer-banner flex h-7 shrink-0 items-center bg-primary px-5" data-cart-offer-banner>
+  <div
+    class="cart-offer-banner__viewport cart-offer-banner__carousel h-full w-full overflow-hidden"
+    data-autoplay-delay="{{ rotation_interval | times: 1000 }}"
+  >
+    <div class="cart-offer-banner__container flex h-full">
+      <div class="flex h-full shrink-0 basis-full items-center justify-center font-secondary text-xs font-medium text-primary-foreground">
+        {{ 'cart.offer_return' | t }}
+      </div>
+      <div class="flex h-full shrink-0 basis-full items-center justify-center font-secondary text-xs font-medium text-primary-foreground">
+        {{ 'cart.offer_delivery' | t }}
+      </div>
+      <div class="flex h-full shrink-0 basis-full items-center justify-center font-secondary text-xs font-medium text-primary-foreground">
+        {{ 'cart.offer_free_delivery' | t }}
+      </div>
+    </div>
+  </div>
+</div>

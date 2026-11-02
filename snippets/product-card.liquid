@@ -1,0 +1,282 @@
+{% doc %}
+  Product Card
+
+  Renders the shared product card used by every product grid and slider. Card data comes
+  from the custom product metafields; the whole card is clickable via a stretched link on
+  the title.
+
+  @param {product} card_product - Product object (required)
+  @param {boolean} [show_featured_image] - True renders the featured image, false renders the card_image metafield with its radiator (default: true)
+  @param {boolean} [hide_price] - Remove the price row entirely (default: false)
+  @param {boolean} [hide_add_to_cart] - Remove the Add to Cart button entirely (default: false)
+  @param {boolean} [hide_wishlist] - Remove the wishlist heart entirely (default: false)
+  @param {boolean} [lazy_load] - Lazy load the card image (default: true)
+  @param {boolean} [show_button_price] - Show the price inside the Add to Cart button (default: false)
+  @param {string} [card_class] - Additional CSS classes on the card root (optional)
+
+  All styling is Tailwind. Three utilities are load-bearing and easy to remove by accident:
+
+  tracking-normal on the root — base.css sets body { letter-spacing: 0.01em }, which computes against the body's 16px
+  and inherits as a flat 0.16px into every child regardless of its own size. The design specifies 0 tracking on the
+  title, highlight and compare-at price, so the root resets it and only the category (1px) and the price tokens override
+  again.
+
+  flex-wrap on the price row plus whitespace-nowrap on each price part — this store's money format renders "Rs. 1,499",
+  which alongside a compare-at price and a discount cannot fit one line on a 170px card. Without both, a single price
+  splits into "Rs." / "1,499".
+
+  Unprefixed utilities passed via card_class override this snippet's lg: utilities at EVERY width, because media queries
+  add no specificity. Pair both breakpoints in card_class.
+
+  @example
+  {% render 'product-card', card_product: product %}
+{% enddoc %}
+
+{%- liquid
+  assign card_product = card_product | default: blank
+
+  unless card_product != blank
+    break
+  endunless
+
+  if show_featured_image == null
+    assign show_featured_image = true
+  endif
+  if hide_price == null
+    assign hide_price = false
+  endif
+  if hide_add_to_cart == null
+    assign hide_add_to_cart = false
+  endif
+  if hide_wishlist == null
+    assign hide_wishlist = false
+  endif
+  if lazy_load == null
+    assign lazy_load = true
+  endif
+  if show_button_price == null
+    assign show_button_price = false
+  endif
+  assign card_class = card_class | default: ''
+
+  assign card_badge = card_product.metafields.custom.product_badge.value
+  assign card_category = card_product.metafields.custom.category_label.value
+  assign card_highlight = card_product.metafields.custom.highlight_text.value
+  assign card_accent_color = card_product.metafields.custom.highlight_color.value
+  assign card_metafield_image = card_product.metafields.custom.card_image.value
+  assign card_radiator_image = card_product.metafields.custom.radiator_image.value
+
+  assign card_media_image = card_product.featured_image
+  assign card_show_radiator = false
+  unless show_featured_image
+    if card_metafield_image != blank
+      assign card_media_image = card_metafield_image
+      if card_radiator_image != blank
+        assign card_show_radiator = true
+      endif
+    endif
+  endunless
+
+  assign card_media_alt = card_media_image.alt | default: card_product.title
+
+  assign card_focal = card_radiator_image.presentation.focal_point | default: '50% 50%'
+  assign card_focal_parts = card_focal | split: ' '
+  assign card_focal_x = card_focal_parts[0] | default: '50%'
+  assign card_focal_y = card_focal_parts[1] | default: '50%'
+
+  assign card_image_focal = card_media_image.presentation.focal_point | default: '50% 50%'
+
+  assign card_discount_percent = 0
+  assign card_has_compare_price = false
+  if card_product.compare_at_price > card_product.price
+    assign card_has_compare_price = true
+    assign card_price_difference = card_product.compare_at_price | minus: card_product.price
+    assign card_discount_scaled = card_price_difference | times: 100.0
+    assign card_discount_percent = card_discount_scaled | divided_by: card_product.compare_at_price | round
+  endif
+
+  assign card_url = card_product.url | within: collection
+  assign card_accent_text = 'text-[color:var(--product-card-accent,rgb(var(--color-muted)))]'
+
+  assign card_rating_is_placeholder = true
+  assign card_rating_value = 4.7
+  assign card_rating_count = 132
+  assign card_rating_fill = card_rating_value | times: 20 | round
+-%}
+
+{%- capture card_star_row -%}
+  {%- for star_index in (1..5) -%}
+    {%- render 'icon-star', class: 'h-3 w-3 shrink-0 max-374:h-2.5 max-374:w-2.5' -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+<div
+  class="product-card relative flex flex-col overflow-hidden rounded-xl border-[0.5px] border-accent bg-white tracking-normal lg:rounded-[20px] {{ card_class }}"
+  data-product-card
+  {%- if card_accent_color != blank %}
+    style="--product-card-accent: {{ card_accent_color | escape }};"
+  {% endif %}
+>
+  <div class="product-card__media relative flex items-center justify-center overflow-hidden aspect-[315/226]">
+    {%- if card_show_radiator -%}
+      <div class="product-card__radiator absolute inset-x-0 bottom-0 mx-auto w-[90%] lg:w-[85.7%]">
+        {% render 'image',
+          image: card_radiator_image,
+          alt: '',
+          class_name: 'pointer-events-none block h-auto w-full',
+          lazy: lazy_load,
+          decoding: 'async',
+          width: 270,
+          height: 138,
+          base_width: 560,
+          mobile_width: 280,
+          breakpoint: 1024
+        %}
+
+        {%- if card_media_image != blank -%}
+          <div
+            class="product-card__media-img absolute aspect-[120/122] w-[60%] -translate-x-1/2 -translate-y-1/2 lg:aspect-[157/160] lg:w-[58.1%]"
+            style="left: {{ card_focal_x }}; top: {{ card_focal_y }};"
+          >
+            {% render 'image',
+              image: card_media_image,
+              alt: card_media_alt,
+              class_name: 'block h-full w-full object-contain object-center',
+              lazy: lazy_load,
+              decoding: 'async',
+              base_width: 700,
+              mobile_width: 400,
+              breakpoint: 1024
+            %}
+          </div>
+        {%- endif -%}
+      </div>
+    {%- elsif card_media_image != blank -%}
+      <div
+        class="product-card__media-img relative h-[78.2%] w-[70.6%] lg:h-[70.8%] lg:w-[49.8%]"
+        style="--card-object-pos: {{ card_image_focal }};"
+      >
+        {% render 'image',
+          image: card_media_image,
+          alt: card_media_alt,
+          class_name: 'block h-full w-full object-contain object-[var(--card-object-pos)]',
+          lazy: lazy_load,
+          decoding: 'async',
+          base_width: 700,
+          mobile_width: 400,
+          breakpoint: 1024
+        %}
+      </div>
+    {%- else -%}
+      <div class="flex h-full w-full items-center justify-center bg-cream-alt text-muted">
+        {%- render 'icon-cart', size: 48 -%}
+      </div>
+    {%- endif -%}
+
+    {%- if card_badge != blank or hide_wishlist == false -%}
+      <div class="product-card__overlay absolute left-0 right-0 top-0 flex items-center justify-between p-2.5 lg:p-3.5">
+        {%- if card_badge != blank -%}
+          {% render 'button',
+            variant: 'badge',
+            size: 'badge',
+            label: card_badge,
+            class_name: 'product-card__badge h-[21px] rounded-md px-[7px] text-[10px] leading-[12px] lg:h-[30px] lg:rounded-lg lg:px-2.5 lg:text-xs lg:leading-[15px]'
+          %}
+        {%- endif -%}
+
+        {%- unless hide_wishlist -%}
+          <span
+            class="product-card__wishlist relative z-[4] ml-auto inline-flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-[5px] bg-accent/10 text-[#2A7A50] lg:h-[30px] lg:w-[30px] lg:rounded-lg lg:bg-cream"
+          >
+            {%- render 'icon-wishlist', class: 'product-card__wishlist-icon icon--stroke-hairline h-3.5 w-3.5 lg:h-4 lg:w-4' -%}
+          </span>
+        {%- endunless -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div class="product-card__body flex flex-1 flex-col gap-2.5 px-2.5 py-2.5 lg:gap-3.5 lg:px-3.5 lg:py-3.5 lg:pt-2">
+    <div class="product-card__stack flex h-full flex-col justify-between gap-1 lg:gap-2">
+      <div class="product-card__text flex flex-col gap-1 lg:gap-1.5">
+        {%- if card_category != blank -%}
+          <span
+            class="product-card__eyebrow font-primary text-[10px] font-medium uppercase leading-[12px] tracking-[1px] {{ card_accent_text }} lg:text-xs lg:leading-4 max-374:text-[8px]"
+          >
+            {{- card_category | escape -}}
+          </span>
+        {%- endif -%}
+
+        <a
+          href="{{ card_url }}"
+          class="product-card__title line-clamp-2 text-[14px] font-semibold leading-[21px] text-foreground after:absolute after:inset-0 after:z-[3] lg:text-lg lg:leading-[27px] max-374:text-[12px] max-374:leading-[16px]"
+        >
+          {{- card_product.title | escape -}}
+        </a>
+
+        {%- if card_highlight != blank -%}
+          <p class="line-clamp-1 text-body font-medium {{ card_accent_text }} max-374:text-[8px]">
+            {{- card_highlight | escape -}}
+          </p>
+        {%- endif -%}
+      </div>
+
+      {%- if card_rating_is_placeholder or hide_price == false -%}
+        <div class="flex flex-col gap-0.5">
+          {%- if card_rating_is_placeholder -%}
+            <div class="product-card__rating flex flex-wrap items-center gap-0.5 py-px lg:gap-1" aria-hidden="true">
+              <span class="flex items-center gap-[3px] lg:gap-[5px]">
+                <span class="text-xs font-medium leading-4 tracking-[-0.12px] text-[#404040] max-374:text-[8px]">
+                  {{- card_rating_value -}}
+                </span>
+                <span class="relative inline-flex h-3 w-16 shrink-0 max-374:w-14">
+                  <span class="absolute inset-0 flex gap-px text-[#E5E5E5]">{{ card_star_row }}</span>
+                  <span
+                    class="absolute inset-y-0 left-0 overflow-hidden"
+                    style="width: {{ card_rating_fill }}%"
+                  >
+                    <span class="flex h-full w-16 gap-px text-[#FACC15]">{{ card_star_row }}</span>
+                  </span>
+                </span>
+              </span>
+
+              <span class="product-card__reviews-short whitespace-nowrap text-[10px] font-normal leading-4 text-[#737373] lg:hidden max-374:text-[8px]">
+                (
+                {{- card_rating_count }} Reviews)
+              </span>
+
+              <span class="product-card__reviews-long hidden items-center gap-1 whitespace-nowrap lg:flex">
+                <span class="text-[14px] font-normal leading-[21px] tracking-[-0.16px] text-[#737373]">|</span>
+                <span class="text-xs font-normal leading-4 tracking-[-0.12px] text-[#737373]">
+                  {{- card_rating_count -}}
+                </span>
+                <span class="text-[10px] font-normal leading-4 text-[#737373]">Reviews</span>
+              </span>
+            </div>
+          {%- endif -%}
+
+          {%- unless hide_price -%}
+            <div class="flex flex-wrap items-center gap-0.5">
+              <span class="whitespace-nowrap text-label-lg font-bold text-foreground max-374:text-xs">
+                {{- card_product.price | money_without_trailing_zeros | replace: ' ', '' -}}
+              </span>
+              {%- if card_has_compare_price -%}
+                <s class="ml-1 whitespace-nowrap text-[14px] font-medium leading-5 text-[#999999] max-374:text-[10px]">
+                  {{- card_product.compare_at_price | money_without_trailing_zeros | replace: ' ', '' -}}
+                </s>
+                <span class="whitespace-nowrap text-label-xs font-semibold text-sale max-374:text-[8px]">
+                  ({{ card_discount_percent }}%)
+                </span>
+              {%- endif -%}
+            </div>
+          {%- endunless -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    {% unless hide_add_to_cart -%}
+      <div class="relative z-[4] mt-auto">
+        {% render 'add-to-cart-button', product: card_product, show_price: show_button_price %}
+      </div>
+    {%- endunless %}
+  </div>
+</div>

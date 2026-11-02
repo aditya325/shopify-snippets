@@ -1,0 +1,177 @@
+{% doc %}
+  Product Gallery
+
+  The PDP media column. Desktop puts a vertical thumb rail left of the main image; mobile stacks a
+  swipeable main carousel above a horizontal thumb carousel. One DOM serves both — the order flips
+  with `order-*` so alt text and media order have a single source.
+
+  Arrows sit over the main image on the same vertical line as the wishlist/share column, and their
+  hidden state is the `disabled` attribute rather than a class, so CSS owns the appearance. Prev ships
+  disabled from Liquid because slide 1 is always active on load — otherwise it flashes before JS runs.
+
+  Decorative rings are not drawn here: they belong to the product photography.
+
+  @param {product} product - Product whose media is rendered (required)
+  @param {boolean} [enable_share] - Renders the share control (default: false)
+  @param {boolean} [enable_wishlist] - Renders the wishlist placeholder (default: false)
+{% enddoc %}
+
+{%- liquid
+  assign gallery_media = product.media
+  assign gallery_count = gallery_media.size
+
+  unless gallery_count > 0
+    break
+  endunless
+
+  assign gallery_is_single = false
+  if gallery_count <= 1
+    assign gallery_is_single = true
+  endif
+
+  assign gallery_has_actions = false
+  if enable_share or enable_wishlist
+    assign gallery_has_actions = true
+  endif
+
+  assign gallery_wishlist_class = 'size-3.5 [stroke-width:2] lg:size-5 lg:[stroke-width:3]'
+  assign gallery_share_class = 'size-3.5 [stroke-width:2] lg:size-5 lg:[stroke-width:3]'
+  assign gallery_thumb_class = 'product-gallery__thumb relative grid size-12 flex-none place-items-center overflow-hidden rounded-lg border border-neutral-300 bg-[#c6c6c6] aria-[current=true]:border-2 aria-[current=true]:border-neutral-400 lg:size-[73px] lg:rounded-xl'
+  assign gallery_action_class = 'product-gallery__action grid size-[26px] place-items-center rounded bg-cream-alt text-green-secondary transition-opacity duration-200 motion-reduce:transition-none lg:size-10 lg:bg-accent/10 lg:text-primary [@media(hover:hover)]:hover:opacity-70'
+  assign gallery_arrow_class = 'product-gallery__arrow pointer-events-auto grid size-7 place-items-center rounded-full bg-black/20 text-white backdrop-blur-sm transition-opacity duration-200 disabled:pointer-events-none disabled:opacity-0 motion-reduce:transition-none lg:size-[38px]'
+-%}
+
+<div class="product-gallery flex flex-col gap-2.5 lg:flex-row" data-product-gallery>
+  <div
+    class="product-gallery__main relative order-1 h-[310px] overflow-hidden rounded-md bg-white lg:order-2 lg:h-[640px] lg:min-w-0 lg:grow lg:rounded-xl"
+  >
+    {%- if product.metafields.custom.product_badge.value != blank -%}
+      <span
+        class="product-gallery__badge absolute left-2.5 top-2.5 z-20 inline-flex h-[26px] items-center rounded bg-accent px-[6.5px] font-secondary text-[11px]/[15px] font-medium text-primary lg:left-1 lg:top-0 lg:h-8 lg:rounded-md lg:px-3 lg:text-[14px]/[21px]"
+      >
+        {{ product.metafields.custom.product_badge.value | escape }}
+      </span>
+    {%- endif -%}
+
+    <div class="product-gallery__viewport relative z-10 h-full overflow-hidden" data-gallery-viewport>
+      <div class="product-gallery__track flex h-full">
+        {%- for media in gallery_media -%}
+          {%- liquid
+            assign slide_alt = media.alt | default: product.title
+            assign slide_lazy = true
+            if forloop.first
+              assign slide_lazy = false
+            endif
+          -%}
+          <div class="product-gallery__slide flex h-full flex-none basis-full items-center justify-center">
+            {%- case media.media_type -%}
+              {%- when 'image' -%}
+                {%- render 'image',
+                  image: media.preview_image,
+                  alt: slide_alt,
+                  lazy: slide_lazy,
+                  decoding: 'async',
+                  responsive_widths: '390:640,1024:1300',
+                  class_name: 'size-full object-contain'
+                -%}
+              {%- when 'video' -%}
+                {{ media | video_tag: controls: true, muted: true, class: 'size-full object-contain' }}
+              {%- when 'external_video' -%}
+                {{ media | external_video_tag: class: 'size-full object-contain' }}
+            {%- endcase -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+
+    {%- unless gallery_is_single -%}
+      <div
+        class="product-gallery__controls pointer-events-none absolute inset-y-0 left-2.5 right-2.5 z-20 flex items-center justify-between lg:left-2 lg:right-2"
+      >
+        <button
+          type="button"
+          class="{{ gallery_arrow_class }}"
+          aria-label="Previous image"
+          aria-hidden="true"
+          disabled
+          data-gallery-prev
+        >
+          {%- render 'icon-arrow-left', class: 'size-4 lg:size-5' -%}
+        </button>
+
+        <button type="button" class="{{ gallery_arrow_class }}" aria-label="Next image" data-gallery-next>
+          {%- render 'icon-arrow-right', class: 'size-4 lg:size-5' -%}
+        </button>
+      </div>
+    {%- endunless -%}
+
+    {%- if gallery_has_actions -%}
+      <div
+        class="product-gallery__actions absolute right-1.5 top-1.5 z-20 flex flex-col gap-1 lg:right-0 lg:top-0 lg:gap-3"
+      >
+        {%- if enable_wishlist -%}
+          <button
+            type="button"
+            class="{{ gallery_action_class }}"
+            aria-label="Add to wishlist"
+            aria-disabled="true"
+            data-gallery-wishlist
+          >
+            {%- render 'icon-wishlist', class: gallery_wishlist_class -%}
+          </button>
+        {%- endif -%}
+
+        {%- if enable_share -%}
+          <button type="button" class="{{ gallery_action_class }}" aria-label="Share this product" data-gallery-share>
+            {%- render 'icon-share', class: gallery_share_class -%}
+          </button>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- unless gallery_is_single -%}
+    <div
+      class="product-gallery__rail order-2 overflow-hidden lg:order-1 lg:shrink-0"
+      data-gallery-rail
+    >
+      <div class="product-gallery__rail-track flex gap-1 lg:flex-col lg:gap-2">
+        {%- for media in gallery_media -%}
+          {%- liquid
+            assign thumb_alt = media.alt | default: product.title
+            assign thumb_current = false
+            if forloop.first
+              assign thumb_current = true
+            endif
+          -%}
+          <button
+            type="button"
+            class="{{ gallery_thumb_class }}"
+            {% if thumb_current %}
+              aria-current="true"
+            {% endif %}
+            aria-label="{{ 'Show image ' | append: forloop.index | escape }}"
+            data-gallery-thumb
+          >
+            {%- render 'image',
+              image: media.preview_image,
+              alt: thumb_alt,
+              decoding: 'async',
+              responsive_widths: '390:96,1024:146',
+              class_name: 'size-full object-cover'
+            -%}
+
+            {%- unless media.media_type == 'image' -%}
+              <span
+                class="product-gallery__play absolute grid size-7 place-items-center rounded-full bg-black/20 text-white backdrop-blur-sm"
+                aria-hidden="true"
+              >
+                {%- render 'icon-chevron-right', class: 'size-3' -%}
+              </span>
+            {%- endunless -%}
+          </button>
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endunless -%}
+</div>

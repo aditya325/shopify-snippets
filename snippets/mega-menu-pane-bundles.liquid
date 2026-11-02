@@ -1,0 +1,60 @@
+{% doc %}
+  Mega Menu Pane Bundles
+
+  The Combo pane's content — a featured bundle card beside a stacked list of popular bundle rows.
+  Shared by the desktop mega menu and the drawer with no layout parameter: header-mobile is lg:hidden
+  and mega-menu-panel is max-lg:hidden, so unprefixed utilities are only ever seen on mobile and lg:
+  only on desktop. The two viewports therefore cannot drift.
+
+  Renders nothing, leaving no container, when there is neither a featured product nor a row to show.
+  The featured bundle is excluded from the rows, so a kit of three yields two rows, not a duplicate.
+  The pane heading and the See All button belong to the caller, not to this snippet.
+
+  Widths derive: flex-[175]/flex-[161] over gap-3 computes to exactly 350/322 inside the 684px pane,
+  and scales proportionally to 1068px when the subscribe promo is off.
+
+  @param {product} [bundles_featured] - Product for the featured card
+  @param {collection} [bundles_collection] - Collection supplying the popular rows
+  @param {number} [bundles_count] - Maximum rows to render (default: 3)
+  @param {string} [bundles_cta_label] - Row link label
+{% enddoc %}
+
+{%- liquid
+  assign bundles_featured = bundles_featured | default: blank
+  assign bundles_limit = bundles_count | default: 3
+-%}
+
+{%- comment -%} one pass: the capture is the only source of truth for both the rows and the track's existence {%- endcomment -%}
+{%- capture bundles_rows -%}
+  {%- if bundles_collection != blank -%}
+    {%- assign bundles_shown = 0 -%}
+    {%- for bundles_product in bundles_collection.products -%}
+      {%- if bundles_shown >= bundles_limit -%}
+        {%- break -%}
+      {%- endif -%}
+
+      {%- unless bundles_featured != blank and bundles_product.id == bundles_featured.id -%}
+        <div class="w-[calc((100%-10px)/2)] shrink-0 lg:w-full lg:flex-1">
+          {%- render 'bundle-row', row_product: bundles_product, row_cta_label: bundles_cta_label -%}
+        </div>
+        {%- assign bundles_shown = bundles_shown | plus: 1 -%}
+      {%- endunless -%}
+    {%- endfor -%}
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- if bundles_featured != blank or bundles_rows != blank -%}
+  <div class="mega-menu__bundles flex flex-col gap-2.5 lg:flex-row lg:items-stretch lg:gap-3">
+    {%- if bundles_featured != blank -%}
+      <div class="min-w-0 lg:flex-[175]">
+        {%- render 'bundle-card-featured', bundle_product: bundles_featured -%}
+      </div>
+    {%- endif -%}
+
+    {%- if bundles_rows != blank -%}
+      <div class="mega-menu__bundles-list scrollbar-hide flex gap-2.5 overflow-x-auto lg:min-w-0 lg:flex-[161] lg:flex-col lg:gap-3 lg:overflow-x-visible">
+        {{ bundles_rows }}
+      </div>
+    {%- endif -%}
+  </div>
+{%- endif -%}

@@ -1,0 +1,119 @@
+{% doc %}
+  Press Grid Block
+
+  One six-item unit of the Press Grid — a 2x2 featured cell plus five 1x1 cards, laid out as a single
+  3x3 grid on desktop and a stacked column on mobile. Shared verbatim by the News & TVCs blog view and
+  the All News archive, which is why both the mirror and the source are parameters rather than layouts.
+
+  One grid, not nested ones: every 1x1 card is a real cell of the same track, so the five of them are
+  identical at any width and the featured cell is exactly two of them plus the gap. Figma's own numbers
+  confirm the single 24px gap on both axes: the featured 644 is 310 + 24 + 310.
+
+  The grid's Figma card is 424x310 — a 154 media over a 154 body between 1px borders — where the nav
+  pane's media is 160. press-card defaults to the nav's, so the grid passes its own.
+
+  lg:auto-rows-fr equalises the three rows. Without it the last row sizes to its own cards, and a
+  three-line headline there makes its cards taller than the two beside the featured cell.
+
+  Column width is never declared. lg:grid-cols-3 with lg:gap-6 derives 424 on the 1320 content width,
+  and the featured cell's lg:col-span-2 derives 872 — correct at any container width.
+
+  The featured cell's height is the two rows it spans plus the gap, so the side cards define it and
+  the 2x2 stays exactly 2x2. It takes the Figma's 218/161 only when there are no side cards to derive
+  that from: a grid item carrying a ratio is not stretched to its span, and it transfers the ratio
+  back into a minimum width, which lg:min-w-0 keeps from blowing the cell out over its neighbours.
+
+  Mirroring moves the cells with lg:col-start-*, never flex-row-reverse or order, so DOM order stays
+  reading order and the tab sequence survives the flip.
+
+  Every cell in the first two rows is placed explicitly. Auto-placement only moves forward, so a side
+  card left to find its own cell would drop below a mirrored featured cell instead of beside it.
+
+  Two sources feed the same layout. Blocks are merchant-authored on the Press Grid section, so items
+  are block objects. Articles are the paginated archive, and because Liquid cannot build an array of
+  objects the caller filters to handles and passes the array they resolve against as block_source.
+
+  This snippet only places cells. press-grid-card owns every source-to-primitive mapping, so the
+  featured cell and the five standard cards resolve their fields through exactly the same path.
+
+  @param {object[]} block_items - Up to five standard items: blocks when block_kind is 'block', handles when 'article' (required)
+  @param {object} [block_lead] - The 2x2 hero item. Without one the grid degrades to a plain 3-column run
+  @param {string} block_kind - 'block' or 'article' (required)
+  @param {article[]} [block_source] - The article array handles resolve against. Required when block_kind is 'article'
+  @param {boolean} [block_mirrored] - Place the featured cell on the right (default: false)
+{% enddoc %}
+
+{%- liquid
+  assign block_items = block_items | default: blank
+  assign block_lead = block_lead | default: blank
+
+  unless block_items != blank or block_lead != blank
+    break
+  endunless
+
+  if block_mirrored
+    assign block_lead_position = 'lg:col-start-2'
+    assign block_side_position = 'lg:col-start-1'
+  else
+    assign block_lead_position = 'lg:col-start-1'
+    assign block_side_position = 'lg:col-start-3'
+  endif
+
+  # The 2x2 cell is what makes the lead row a lead row; with no hero every item is just a card
+  if block_lead != blank
+    assign block_side_items = block_items | slice: 0, 2
+    if block_items.size > 2
+      assign block_rest_items = block_items | slice: 2, 3
+    else
+      assign block_rest_items = blank
+    endif
+  else
+    assign block_side_items = blank
+    assign block_rest_items = block_items
+  endif
+
+  assign block_lead_shape = ''
+  if block_side_items == blank
+    assign block_lead_shape = 'lg:aspect-[218/161]'
+  endif
+-%}
+
+<div class="press-grid-block flex flex-col gap-4 lg:grid lg:auto-rows-fr lg:grid-cols-3 lg:gap-6">
+  {%- if block_lead != blank -%}
+    <div class="press-grid-block__featured hidden lg:relative lg:col-span-2 lg:row-span-2 lg:row-start-1 lg:block lg:min-w-0 {{ block_lead_shape }} {{ block_lead_position }}">
+      {%- render 'press-grid-card',
+        card_item: block_lead,
+        card_kind: block_kind,
+        card_variant: 'featured',
+        card_source: block_source
+      -%}
+    </div>
+  {%- endif -%}
+
+  {%- for block_item in block_side_items -%}
+    {%- liquid
+      if forloop.first
+        assign block_side_row = 'lg:row-start-1'
+      else
+        assign block_side_row = 'lg:row-start-2'
+      endif
+    -%}
+    <div class="press-grid-block__side {{ block_side_row }} {{ block_side_position }}">
+      {%- render 'press-grid-card',
+        card_item: block_item,
+        card_kind: block_kind,
+        card_source: block_source,
+        card_media_class: 'h-[154px]'
+      -%}
+    </div>
+  {%- endfor -%}
+
+  {%- for block_item in block_rest_items -%}
+    {%- render 'press-grid-card',
+      card_item: block_item,
+      card_kind: block_kind,
+      card_source: block_source,
+      card_media_class: 'h-[154px]'
+    -%}
+  {%- endfor -%}
+</div>

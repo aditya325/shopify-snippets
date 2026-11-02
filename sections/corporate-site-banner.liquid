@@ -1,0 +1,151 @@
+{%- liquid
+  assign corporate_heading = section.settings.corporate_heading
+  assign corporate_body = section.settings.corporate_body
+  assign corporate_button_label = section.settings.corporate_button_label
+
+  assign corporate_heading_plain = corporate_heading | strip_html | strip
+  assign corporate_body_plain = corporate_body | strip_html | strip
+
+  assign corporate_bg = section.settings.corporate_background
+  if corporate_bg == blank
+    assign corporate_bg = '#FDE047'
+  endif
+-%}
+
+{%- if corporate_heading_plain != blank or corporate_body_plain != blank or corporate_button_label != blank -%}
+  <div
+    class="corporate-site-banner mt-[var(--corporate-top-mobile)] mb-[var(--corporate-bottom-mobile)] lg:mt-[var(--corporate-top-desktop)] lg:mb-[var(--corporate-bottom-desktop)]"
+    style="
+      --corporate-top-mobile: {{ section.settings.corporate_top_mobile }}px;
+      --corporate-bottom-mobile: {{ section.settings.corporate_bottom_mobile }}px;
+      --corporate-top-desktop: {{ section.settings.corporate_top_desktop }}px;
+      --corporate-bottom-desktop: {{ section.settings.corporate_bottom_desktop }}px;
+    "
+  >
+    <div
+      class="corporate-site-banner__band py-6 lg:py-8"
+      style="background: {{ corporate_bg | escape }};"
+    >
+      <div class="page-width flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between lg:gap-20">
+        {%- if corporate_heading_plain != blank or corporate_body_plain != blank -%}
+          <div class="flex flex-col gap-2">
+            {%- if corporate_heading_plain != blank -%}
+              {%- render 'section-header',
+                heading: corporate_heading,
+                class_name: 'text-left text-section-heading lg:text-section-heading-d'
+              -%}
+            {%- endif -%}
+
+            {%- if corporate_body_plain != blank -%}
+              <div class="font-secondary text-body-d text-[#525252]">{{ corporate_body }}</div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- if corporate_button_label != blank -%}
+          {%- render 'button',
+            label: corporate_button_label,
+            link: section.settings.corporate_button_link,
+            variant: 'primary',
+            size: '2xl',
+            with_arrow: true,
+            class_name: 'w-full shrink-0 lg:w-[280px]'
+          -%}
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Corporate Banner",
+  "class": "corporate-banner-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "corporate_heading",
+      "label": "Heading",
+      "info": "Italicise a word to draw the smile underline.",
+      "default": "<p>Explore Our Corporate Site</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "corporate_body",
+      "label": "Body",
+      "default": "<p>\"Long hours at my desk always left me with neck and back pain. The Roll-On has become part of my evening routine—it starts working quickly, and I wake up feeling much better the next day. Definitely a must-have for anyone with a desk job.\"</p>"
+    },
+    {
+      "type": "text",
+      "id": "corporate_button_label",
+      "label": "Button label",
+      "default": "Visit Us"
+    },
+    {
+      "type": "url",
+      "id": "corporate_button_link",
+      "label": "Button link",
+      "info": "Leave empty and the button will not navigate."
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "corporate_background",
+      "label": "Background",
+      "default": "#FDE047"
+    },
+    {
+      "type": "range",
+      "id": "corporate_top_mobile",
+      "label": "Space above (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "corporate_bottom_mobile",
+      "label": "Space below (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "corporate_top_desktop",
+      "label": "Space above (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "corporate_bottom_desktop",
+      "label": "Space below (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "Corporate Banner"
+    }
+  ]
+}
+{% endschema %}

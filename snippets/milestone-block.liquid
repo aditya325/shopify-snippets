@@ -1,0 +1,119 @@
+{% doc %}
+  Milestone Block
+
+  One milestone in the spine — a large year sitting behind one or two image windows, with the
+  narrative below.
+
+  The image count drives the layout: two images render as a centred pair, one renders as a single
+  wider window. Desktop's Figma offsets (left: calc(50% ∓ 190px)) are computed values that only hold
+  at one card width, so this is a centred flex row instead.
+
+  The per-block year is the no-JS state. Once the section marks itself enhanced, the stylesheet hides
+  it and the section's sticky year takes over.
+
+  @param {object} block - Milestone block, supplying settings and shopify_attributes
+  @param {boolean} [is_first] - First milestone, whose images load eagerly
+  @param {boolean} [is_last] - Last milestone, which drops its trailing mobile gap
+{% enddoc %}
+
+{%- liquid
+  assign milestone_year = block.settings.milestone_year
+  assign milestone_body = block.settings.milestone_body
+  assign milestone_body_plain = milestone_body | strip_html | strip
+
+  assign image_one = block.settings.milestone_image_1
+  assign image_two = block.settings.milestone_image_2
+
+  # a blank first image promotes the second, so a half-filled block still renders one window
+  if image_one == blank
+    assign image_one = image_two
+    assign image_two = blank
+  endif
+
+  assign has_pair = false
+  if image_one != blank and image_two != blank
+    assign has_pair = true
+  endif
+
+  assign window_class = 'milestones-spine__window h-[290px] w-[350px] shrink-0 overflow-hidden rounded-[15px] drop-shadow-[0_16px_16px_rgba(0,0,0,0.08)] lg:h-[440px] lg:rounded-[30px]'
+  if has_pair
+    assign window_class = window_class | append: ' lg:w-[360px]'
+  else
+    assign window_class = window_class | append: ' lg:w-[670px]'
+  endif
+
+  assign image_lazy = true
+  if is_first
+    assign image_lazy = false
+  endif
+
+  assign block_class = 'milestones-spine__block relative z-10 flex flex-col items-center justify-center gap-[54px] px-5 py-10 max-lg:py-[110px] lg:gap-3.5 lg:px-0 lg:py-8'
+  # no roll follows the last milestone, so its trailing gap belongs to the section margin
+  if is_last
+    assign block_class = block_class | append: ' max-lg:pb-0'
+  endif
+
+  assign year_class = 'font-primary font-bold leading-[1.275] text-primary/20'
+-%}
+
+{%- if milestone_year != blank or image_one != blank or milestone_body_plain != blank -%}
+  <div
+    class="{{ block_class }}"
+    data-spine-block
+    {% if milestone_year != blank %}
+      data-spine-block-year="{{ milestone_year | escape }}"
+    {% endif %}
+    {{ block.shopify_attributes }}
+  >
+    {%- if milestone_year != blank -%}
+      <p
+        class="milestones-spine__block-year pointer-events-none absolute inset-0 -z-10 grid select-none place-items-center text-center {{ year_class }}"
+        aria-hidden="true"
+      >
+        {{- milestone_year | escape -}}
+      </p>
+    {%- endif -%}
+
+    {%- if image_one != blank -%}
+      <div
+        class="milestones-spine__media relative flex h-[217px] items-center justify-center gap-5 lg:h-[510px]"
+        data-spine-media
+        {% if milestone_year != blank %}
+          data-spine-block-year="{{ milestone_year | escape }}"
+        {% endif %}
+      >
+        <div class="{{ window_class }}">
+          {%- render 'image',
+            image: image_one,
+            alt: '',
+            class_name: 'h-full w-full object-cover',
+            lazy: image_lazy,
+            decoding: 'async',
+            responsive_widths: '390:350,1024:720'
+          -%}
+        </div>
+
+        {%- if has_pair -%}
+          <div class="{{ window_class }} hidden lg:block">
+            {%- render 'image',
+              image: image_two,
+              alt: '',
+              class_name: 'h-full w-full object-cover',
+              lazy: image_lazy,
+              decoding: 'async',
+              responsive_widths: '390:350,1024:720'
+            -%}
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if milestone_body_plain != blank -%}
+      <div
+        class="milestones-spine__body w-full text-center font-primary text-[20px]/[28px] font-bold tracking-normal text-foreground lg:max-w-[1030px] lg:text-[24px]/[34px]"
+      >
+        {{ milestone_body }}
+      </div>
+    {%- endif -%}
+  </div>
+{%- endif -%}

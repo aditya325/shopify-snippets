@@ -1,0 +1,196 @@
+{%- liquid
+  assign spine_live_count = 0
+  for block in section.blocks
+    assign spine_body_plain = block.settings.milestone_body | strip_html | strip
+    if block.settings.milestone_year != blank or block.settings.milestone_image_1 != blank or block.settings.milestone_image_2 != blank or spine_body_plain != blank
+      assign spine_live_count = spine_live_count | plus: 1
+    endif
+  endfor
+
+  assign spine_first_year = ''
+  for block in section.blocks
+    if block.settings.milestone_year != blank
+      assign spine_first_year = block.settings.milestone_year
+      break
+    endif
+  endfor
+
+  assign spine_year_length = 0
+  for block in section.blocks
+    assign spine_year_size = block.settings.milestone_year | strip | size
+    if spine_year_size > spine_year_length
+      assign spine_year_length = spine_year_size
+    endif
+  endfor
+
+  assign spine_first_chars = spine_first_year | strip | split: ''
+
+-%}
+
+{%- if spine_live_count > 0 -%}
+  {{ 'milestones-spine-stylesheet.css' | asset_url | stylesheet_tag: preload: true }}
+
+  {%- comment -%} No JS means no sticky year, so the per-block years are revealed as the fallback {%- endcomment -%}
+  <noscript>
+    <style>
+      .milestones-spine .milestones-spine__block-year { display: grid; }
+      .milestones-spine .milestones-spine__year { display: none; }
+    </style>
+  </noscript>
+
+  <div
+    class="milestones-spine mb-[var(--spine-bot-mob)] mt-[var(--spine-top-mob)] lg:mb-[var(--spine-bot-desk)] lg:mt-[var(--spine-top-desk)]"
+    style="
+      --spine-digits: {{ spine_year_length }};
+      --spine-top-mob: {{ section.settings.spine_top_mobile }}px;
+      --spine-bot-mob: {{ section.settings.spine_bottom_mobile }}px;
+      --spine-top-desk: {{ section.settings.spine_top_desktop }}px;
+      --spine-bot-desk: {{ section.settings.spine_bottom_desktop }}px;
+    "
+    data-spine-root
+  >
+    <div class="page-width lg:px-20">
+      <div class="milestones-spine__stack relative" data-spine-stack>
+        {%- if spine_first_year != blank -%}
+          <div class="milestones-spine__lead-in" data-spine-lead-in aria-hidden="true"></div>
+
+          <div
+            class="milestones-spine__year pointer-events-none z-0 h-0 select-none overflow-visible"
+            aria-hidden="true"
+          >
+            <p
+              class="milestones-spine__year-value -translate-y-1/2 flex justify-center font-primary font-bold leading-none text-primary/20"
+            >
+              {%- for spine_slot in (1..spine_year_length) -%}
+                <span
+                  class="milestones-spine__digit"
+                  data-spine-digit
+                  data-spine-digit-value="{{ spine_first_chars[forloop.index0] | escape }}"
+                >
+                  <span class="milestones-spine__digit-strip" data-spine-strip>
+                    <span class="milestones-spine__digit-cell" data-spine-cell></span>
+                    <span class="milestones-spine__digit-cell" data-spine-cell>
+                      {{- spine_first_chars[forloop.index0] | escape -}}
+                    </span>
+                    <span class="milestones-spine__digit-cell" data-spine-cell></span>
+                  </span>
+                </span>
+              {%- endfor -%}
+            </p>
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Second half of the lead-in: the numeral is settled, images not yet in view {%- endcomment -%}
+        <div class="milestones-spine__lead-out" aria-hidden="true"></div>
+
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'milestone' -%}
+              {%- render 'milestone-block', block: block, is_first: forloop.first, is_last: forloop.last -%}
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ 'milestones-spine-javascript.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Milestones Spine",
+  "class": "milestones-spine-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "spine_top_mobile",
+      "label": "Space Above (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "spine_bottom_mobile",
+      "label": "Space Below (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "spine_top_desktop",
+      "label": "Space Above (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "spine_bottom_desktop",
+      "label": "Space Below (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "max_blocks": 20,
+  "blocks": [
+    {
+      "type": "milestone",
+      "name": "Milestone",
+      "settings": [
+        {
+          "type": "text",
+          "id": "milestone_year",
+          "label": "Milestone Year",
+          "info": "Shown large behind the images."
+        },
+        {
+          "type": "image_picker",
+          "id": "milestone_image_1",
+          "label": "Milestone Image 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "milestone_image_2",
+          "label": "Milestone Image 2",
+          "info": "Optional. Shown beside the first on desktop only."
+        },
+        {
+          "type": "richtext",
+          "id": "milestone_body",
+          "label": "Milestone Body"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Milestones Spine",
+      "blocks": [
+        { "type": "milestone", "settings": { "milestone_year": "1930" } },
+        { "type": "milestone", "settings": { "milestone_year": "1940" } },
+        { "type": "milestone", "settings": { "milestone_year": "1960" } },
+        { "type": "milestone", "settings": { "milestone_year": "1975" } },
+        { "type": "milestone", "settings": { "milestone_year": "1990" } },
+        { "type": "milestone", "settings": { "milestone_year": "2005" } },
+        { "type": "milestone", "settings": { "milestone_year": "2025" } },
+        { "type": "milestone", "settings": { "milestone_year": "2026" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

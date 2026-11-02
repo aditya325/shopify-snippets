@@ -1,0 +1,53 @@
+{% doc %}
+  One step card in the How to Use panel (544:27037 / 544:33389).
+
+  @param {object} step - A how_to_use_step metaobject entry (required)
+  @param {number} index - Position in the steps loop; the card number is derived from it (required)
+{% enddoc %}
+
+{%- liquid
+  assign step_number = index | prepend: '0' | slice: -2, 2
+  assign step_image_alt = step.title | default: step.badge
+-%}
+
+<div
+  class="pdp-step flex flex-col gap-3 rounded-[15px] bg-white p-3.5 outline outline-[0.5px] -outline-offset-[0.5px] outline-[#e0dbd2] lg:flex-1 lg:rounded-[20px] lg:p-4"
+>
+  <div class="flex items-center justify-between">
+    <span class="text-[22px]/[29px] font-semibold text-foreground lg:text-[32px]/[42px] lg:font-bold">
+      {{ step_number | escape }}
+    </span>
+
+    {%- if step.badge != blank -%}
+      <span class="rounded-md bg-primary/10 px-2.5 py-1 text-label-sm text-primary">
+        {{ step.badge | escape }}
+      </span>
+    {%- endif -%}
+  </div>
+
+  {%- if step.image != blank -%}
+    <div class="overflow-hidden rounded-lg lg:rounded-xl">
+      {%- render 'image',
+        image: step.image.value,
+        alt: step_image_alt,
+        class_name: 'h-[220px] w-full object-cover',
+        width: 395,
+        height: 220
+      -%}
+    </div>
+  {%- endif -%}
+
+  <div class="flex flex-col gap-0.5 lg:gap-1">
+    {%- if step.title != blank -%}
+      <span class="text-subheading-d font-medium text-foreground lg:text-[20px]/[30px] lg:tracking-normal">
+        {{ step.title | escape }}
+      </span>
+    {%- endif -%}
+
+    {%- if step.description != blank -%}
+      <p class="text-[14px]/[20px] tracking-normal text-[#525252] lg:text-[16px]/[24px]">
+        {{ step.description | escape | newline_to_br }}
+      </p>
+    {%- endif -%}
+  </div>
+</div>

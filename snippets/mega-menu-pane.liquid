@@ -1,0 +1,117 @@
+{% doc %}
+  One pane of a mega-menu panel. row_type names the definition the content came from, so the body is
+  dispatched rather than inferred from which fields happen to be populated.
+
+  @param {object} [row] - The metaobject entry for this row. Blank renders an empty pane
+  @param {string} row_type - 'need', 'category', 'combo', 'about-story', 'about-history', 'media-blogs' or 'media-press'
+  @param {string} tab_id - DOM id of the rail row that controls this pane
+  @param {string} pane_id - DOM id of this pane
+  @param {boolean} [is_first] - Renders visible when true, hidden otherwise (default: false)
+  @param {boolean} [show_promo] - Renders the subscribe promo column (default: false)
+{% enddoc %}
+
+{%- liquid
+  assign pane_cta_url = row.cta_target.value.url
+  if pane_cta_url == blank and row.cta_blog != blank
+    assign pane_cta_url = blogs[row.cta_blog].url
+  endif
+
+  assign pane_has_groups = false
+  if row.group_a_links != blank or row.group_b_links != blank
+    assign pane_has_groups = true
+  endif
+
+  assign pane_gap = 'gap-4'
+  if pane_has_groups
+    assign pane_gap = 'gap-6'
+  endif
+-%}
+
+<div
+  class="mega-menu__pane flex gap-8"
+  id="{{ pane_id }}"
+  role="tabpanel"
+  aria-labelledby="{{ tab_id }}"
+  {% unless is_first %}
+    hidden
+  {% endunless %}
+>
+  <div class="mega-menu__pane-main flex min-w-0 flex-[171] flex-col {{ pane_gap }}">
+    {%- comment -%} A row entry is matched by handle, so a renamed menu item silently empties the pane {%- endcomment -%}
+    {%- if row == blank and request.design_mode -%}
+      <p class="rounded-md bg-[#fef3c7] p-3 text-[14px]/[20px] text-[#92400e]">
+        No content found for this menu item. Create an entry whose handle matches the menu item, then reload.
+      </p>
+    {%- endif -%}
+
+    {%- if row.heading != blank -%}
+      <h2 class="font-primary text-[16px]/[24px] font-medium text-foreground">{{ row.heading | escape }}</h2>
+    {%- endif -%}
+
+    {%- case row_type -%}
+      {%- when 'need' -%}
+        {%- if pane_has_groups -%}
+          <div class="flex flex-col gap-8">
+            {%- render 'mega-menu-group',
+              heading: row.group_a_heading,
+              links: row.group_a_links.value,
+              style: 'chips'
+            -%}
+
+            {%- render 'mega-menu-group',
+              heading: row.group_b_heading,
+              links: row.group_b_links.value,
+              style: 'links'
+            -%}
+          </div>
+        {%- endif -%}
+
+        {%- render 'mega-menu-products', collection: row.collection.value, count: row.product_count, layout: 'track' -%}
+
+      {%- when 'category' -%}
+        {%- render 'mega-menu-products', collection: row.collection.value, count: row.product_count, layout: 'track' -%}
+
+      {%- when 'combo' -%}
+        {%- render 'mega-menu-pane-bundles',
+          bundles_featured: row.featured_product.value,
+          bundles_collection: row.bundles_collection.value,
+          bundles_count: row.bundles_count,
+          bundles_cta_label: row.bundle_cta_label
+        -%}
+
+      {%- when 'about-story' -%}
+        {%- render 'mega-menu-pane-about', row: row -%}
+
+      {%- when 'about-history' -%}
+        {%- render 'mega-menu-pane-history',
+          history_image: row.history_image.value,
+          history_caption: row.history_caption,
+          history_year: row.history_year,
+          history_link: pane_cta_url
+        -%}
+
+      {%- when 'media-blogs' -%}
+        {%- render 'mega-menu-pane-media', articles: row.articles.value, read_label: row.read_label -%}
+
+      {%- when 'media-press' -%}
+        {%- render 'mega-menu-pane-press', articles: row.articles.value -%}
+    {%- endcase -%}
+
+    {%- if pane_cta_url != blank and row.cta_label != blank -%}
+      {%- render 'button',
+        label: row.cta_label,
+        link: pane_cta_url,
+        variant: 'secondary',
+        size: 'lg',
+        class_name: 'w-full text-[20px]/[30px] font-bold tracking-[-0.4px]',
+        with_arrow: true
+      -%}
+    {%- endif -%}
+  </div>
+
+  {%- if show_promo -%}
+    <div class="min-w-0 flex-[88]">
+      {%- render 'subscribe-save', layout: 'card', section_id: pane_id -%}
+    </div>
+  {%- endif -%}
+</div>

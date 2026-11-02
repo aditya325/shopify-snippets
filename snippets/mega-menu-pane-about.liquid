@@ -1,0 +1,39 @@
+{% doc %}
+  The About panel's Our Story content — up to two content cards. Shared by desktop and drawer.
+
+  @param {object} row - The mega_menu_about_story entry supplying both cards
+{% enddoc %}
+
+{%- capture about_cards -%}
+  {%- capture about_card_one -%}
+    {%- render 'nav-content-card',
+      card_image: row.card_1_image.value,
+      card_title: row.card_1_title,
+      card_desc: row.card_1_description,
+      card_link: row.card_1_page.value.url
+    -%}
+  {%- endcapture -%}
+
+  {%- capture about_card_two -%}
+    {%- render 'nav-content-card',
+      card_image: row.card_2_image.value,
+      card_title: row.card_2_title,
+      card_desc: row.card_2_description,
+      card_link: row.card_2_page.value.url
+    -%}
+  {%- endcapture -%}
+
+  {%- if about_card_one != blank -%}
+    <div class="w-full lg:min-w-0 lg:flex-1">{{ about_card_one }}</div>
+  {%- endif -%}
+
+  {%- if about_card_two != blank -%}
+    <div class="w-full lg:min-w-0 lg:flex-1">{{ about_card_two }}</div>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- if about_cards != blank -%}
+  <div class="mega-menu__about-cards flex flex-col gap-2.5 lg:flex-row lg:items-start lg:gap-5">
+    {{ about_cards }}
+  </div>
+{%- endif -%}

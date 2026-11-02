@@ -1,0 +1,261 @@
+{%- liquid
+  assign container_title = section.settings.container_title
+  assign container_body = section.settings.container_body
+  assign container_title_plain = container_title | strip_html | strip
+  assign container_body_plain = container_body | strip_html | strip
+
+  assign desk_video = section.settings.container_desk_video
+  assign mob_video = section.settings.container_mob_video
+  assign desk_image = section.settings.container_desk_image
+  assign mob_image = section.settings.container_mob_image
+
+  assign container_has_media = false
+  if desk_video != blank or mob_video != blank or desk_image != blank or mob_image != blank
+    assign container_has_media = true
+  endif
+
+  assign container_align = 'text-left'
+  if section.settings.container_title_align == 'center'
+    assign container_align = 'text-center'
+  endif
+
+  assign container_color = 'text-foreground'
+  if section.settings.container_title_color == 'primary'
+    assign container_color = 'text-primary'
+  endif
+
+  # text-section-heading-d contains the substring section-header detects, so the default size is suppressed
+  assign container_size = ''
+  if section.settings.container_title_size_mob == 'large'
+    assign container_size = ' text-[32px]/[40px] lg:text-section-heading-d'
+  endif
+
+  assign container_head_class = container_align | append: ' ' | append: container_color | append: container_size
+
+  assign container_body_class = 'font-secondary text-[20px]/[30px] tracking-normal text-[#525252] lg:text-[24px]/[38px]'
+  if section.settings.container_title_align == 'center'
+    assign container_body_class = container_body_class | append: ' lg:mx-auto lg:max-w-[870px]'
+  endif
+-%}
+
+{%- if container_title_plain != blank or container_body_plain != blank or container_has_media -%}
+  <div
+    class="about-container pb-[var(--container-bot-mob)] pt-[var(--container-top-mob)] lg:pb-[var(--container-bot-desk)] lg:pt-[var(--container-top-desk)]"
+    style="
+      --container-top-mob: {{ section.settings.container_top_mobile }}px;
+      --container-bot-mob: {{ section.settings.container_bottom_mobile }}px;
+      --container-top-desk: {{ section.settings.container_top_desktop }}px;
+      --container-bot-desk: {{ section.settings.container_bottom_desktop }}px;
+      --container-media-h-mob: {{ section.settings.container_media_h_mob }}px;
+      --container-media-h-desk: {{ section.settings.container_media_h_desk }}px;
+    "
+  >
+    <div class="about-container__inner page-width flex flex-col gap-5">
+      {%- if container_title_plain != blank or container_body_plain != blank -%}
+        <div class="about-container__text flex flex-col gap-1.5 lg:gap-6">
+          {%- if container_title_plain != blank -%}
+            {%- render 'section-header',
+              heading: container_title,
+              heading_level: 'h1',
+              class_name: container_head_class
+            -%}
+          {%- endif -%}
+
+          {%- if container_body_plain != blank -%}
+            <div class="about-container__body {{ container_align }} {{ container_body_class }}">
+              {{ container_body }}
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- if container_has_media -%}
+        <div
+          class="about-container__media h-[var(--container-media-h-mob)] overflow-hidden rounded-[15px] lg:h-[var(--container-media-h-desk)] lg:rounded-[20px]"
+        >
+          {%- if desk_video != blank or mob_video != blank -%}
+            {%- if desk_video != blank -%}
+              {%- liquid
+                assign desk_video_class = 'h-full w-full object-cover'
+                if mob_video != blank
+                  assign desk_video_class = 'h-full w-full object-cover max-lg:hidden'
+                endif
+              -%}
+              {{
+                desk_video
+                | video_tag: autoplay: true, loop: true, muted: true, controls: false, image_size: '1400x', class: desk_video_class
+              }}
+            {%- endif -%}
+            {%- if mob_video != blank -%}
+              {%- liquid
+                assign mob_video_class = 'h-full w-full object-cover'
+                if desk_video != blank
+                  assign mob_video_class = 'h-full w-full object-cover lg:hidden'
+                endif
+              -%}
+              {{
+                mob_video
+                | video_tag: autoplay: true, loop: true, muted: true, controls: false, image_size: '760x', class: mob_video_class
+              }}
+            {%- endif -%}
+          {%- else -%}
+            {%- render 'image',
+              image: desk_image,
+              mobile_image: mob_image,
+              alt: '',
+              class_name: 'h-full w-full object-cover',
+              lazy: false,
+              decoding: 'async',
+              responsive_widths: '390:760,1024:1440'
+            -%}
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "About Container",
+  "class": "about-container-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "container_title",
+      "label": "Container Title"
+    },
+    {
+      "type": "richtext",
+      "id": "container_body",
+      "label": "Container Body"
+    },
+    {
+      "type": "image_picker",
+      "id": "container_desk_image",
+      "label": "Container Desk Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "container_mob_image",
+      "label": "Container Mob Image",
+      "info": "Falls back to the desktop image when empty."
+    },
+    {
+      "type": "video",
+      "id": "container_desk_video",
+      "label": "Container Desk Video",
+      "info": "Takes priority over the image."
+    },
+    {
+      "type": "video",
+      "id": "container_mob_video",
+      "label": "Container Mob Video",
+      "info": "Takes priority over the image."
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "container_title_color",
+      "label": "Container Title Color",
+      "options": [
+        { "value": "foreground", "label": "Dark" },
+        { "value": "primary", "label": "Green" }
+      ],
+      "default": "foreground"
+    },
+    {
+      "type": "select",
+      "id": "container_title_align",
+      "label": "Container Title Align",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "container_title_size_mob",
+      "label": "Container Mob Size",
+      "options": [
+        { "value": "section", "label": "Standard (24px)" },
+        { "value": "large", "label": "Large (32px)" }
+      ],
+      "default": "section"
+    },
+    {
+      "type": "range",
+      "id": "container_media_h_mob",
+      "label": "Container Media H Mob",
+      "min": 100,
+      "max": 600,
+      "step": 5,
+      "unit": "px",
+      "default": 415
+    },
+    {
+      "type": "range",
+      "id": "container_media_h_desk",
+      "label": "Container Media H Desk",
+      "min": 200,
+      "max": 700,
+      "step": 5,
+      "unit": "px",
+      "default": 415
+    },
+    {
+      "type": "range",
+      "id": "container_top_mobile",
+      "label": "Space Above (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "container_bottom_mobile",
+      "label": "Space Below (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "container_top_desktop",
+      "label": "Space Above (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "container_bottom_desktop",
+      "label": "Space Below (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "About Container"
+    }
+  ]
+}
+{% endschema %}

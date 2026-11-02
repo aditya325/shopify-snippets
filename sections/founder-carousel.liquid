@@ -1,0 +1,170 @@
+{%- liquid
+  assign founder_live_count = 0
+  for founder_block in section.blocks
+    assign founder_heading_plain = founder_block.settings.founder_heading | strip_html | strip
+    assign founder_desc_plain = founder_block.settings.founder_desc | strip_html | strip
+    if founder_heading_plain != blank or founder_desc_plain != blank or founder_block.settings.founder_name != blank
+      assign founder_live_count = founder_live_count | plus: 1
+    endif
+  endfor
+-%}
+
+{%- if founder_live_count > 0 -%}
+  <div
+    class="founder-carousel mb-[var(--founder-bot-mob)] mt-[var(--founder-top-mob)] lg:mb-[var(--founder-bot-desk)] lg:mt-[var(--founder-top-desk)]"
+    style="
+      --founder-top-mob: {{ section.settings.founder_top_mobile }}px;
+      --founder-bot-mob: {{ section.settings.founder_bottom_mobile }}px;
+      --founder-top-desk: {{ section.settings.founder_top_desktop }}px;
+      --founder-bot-desk: {{ section.settings.founder_bottom_desktop }}px;
+    "
+    data-founder-root
+  >
+    <div class="page-width">
+      <div
+        class="founder-carousel__card relative rounded-[15px] bg-primary/20 p-4 outline outline-2 outline-primary max-md:min-h-[366px] lg:rounded-[20px] lg:p-10 lg:outline-4"
+      >
+        <div
+          class="founder-carousel__viewport scrollbar-hide overflow-x-auto data-[embla=ready]:overflow-hidden"
+          data-founder-viewport
+        >
+          <div class="founder-carousel__track flex">
+            {%- for block in section.blocks -%}
+              {%- case block.type -%}
+                {%- when 'founder-slide' -%}
+                  {%- render 'founder-slide',
+                    block: block,
+                    index: forloop.index0,
+                    section_id: section.id
+                  -%}
+              {%- endcase -%}
+            {%- endfor -%}
+          </div>
+        </div>
+
+        {%- if founder_live_count > 1 -%}
+          <div
+            class="founder-carousel__controls mt-3 flex justify-end gap-1.5 lg:absolute lg:bottom-10 lg:right-10 lg:mt-0 lg:gap-2.5"
+            data-founder-controls
+          >
+            <button
+              class="grid size-[30px] place-items-center rounded-full bg-primary text-primary-foreground lg:size-[34px]"
+              type="button"
+              aria-label="{{ 'general.previous' | t: fallback: 'Previous' }}"
+              data-founder-prev
+            >
+              {%- render 'icon-arrow-left', class: 'icon size-5' -%}
+            </button>
+
+            <button
+              class="grid size-[30px] place-items-center rounded-full bg-primary text-primary-foreground lg:size-[34px]"
+              type="button"
+              aria-label="{{ 'general.next' | t: fallback: 'Next' }}"
+              data-founder-next
+            >
+              {%- render 'icon-arrow-right', class: 'size-5' -%}
+            </button>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ 'founder-carousel-javascript.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Founder Carousel",
+  "class": "founder-carousel-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "founder_top_mobile",
+      "label": "Space Above (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "founder_bottom_mobile",
+      "label": "Space Below (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "founder_top_desktop",
+      "label": "Space Above (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "founder_bottom_desktop",
+      "label": "Space Below (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "founder-slide",
+      "name": "Founder Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "founder_profile_img",
+          "label": "Profile Image"
+        },
+        {
+          "type": "richtext",
+          "id": "founder_heading",
+          "label": "Heading"
+        },
+        {
+          "type": "richtext",
+          "id": "founder_desc",
+          "label": "Description"
+        },
+        {
+          "type": "text",
+          "id": "founder_name",
+          "label": "Name"
+        },
+        {
+          "type": "text",
+          "id": "founder_designation",
+          "label": "Designation"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Founder Carousel",
+      "blocks": [
+        {
+          "type": "founder-slide"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

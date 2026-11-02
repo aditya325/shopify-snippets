@@ -1,0 +1,84 @@
+{% doc %}
+  FAQ Category Group
+
+  One category's questions in the FAQ body, rendered from the block's faq metaobject list.
+  data-single-open lets the shared accordion.js close a sibling when another row opens.
+
+  @param {object} block - faq-category block, supplying settings and shopify_attributes
+  @param {number} index - Zero-based renderable index, pairing the group with its tab
+  @param {string} section_id - Section id, keeping accordion element ids unique
+{% enddoc %}
+
+{%- liquid
+  assign group_faqs = block.settings.faq_category_faqs
+
+  assign group_faq_count = 0
+  for faq_entry in group_faqs
+    if faq_entry.question != blank
+      assign group_faq_count = group_faq_count | plus: 1
+    endif
+  endfor
+
+  assign group_hidden = 'hidden'
+  if index == 0
+    assign group_hidden = ''
+  endif
+
+  assign group_item_class = 'faq__item rounded-xl bg-brand-yellow/10 px-4 py-3 lg:rounded-[20px]'
+  assign group_question_class = 'faq__question font-secondary text-[14px]/[21px] font-medium tracking-[-0.16px] text-foreground lg:text-[18px]/[28px] lg:tracking-normal'
+  assign group_answer_class = 'faq__answer mt-3 border-t-[0.5px] border-[#D8D9E0]/50 pt-3 font-secondary text-[14px]/[21px] tracking-[-0.16px] text-[#404040] lg:text-[16px]/[24px] lg:tracking-[-0.18px]'
+-%}
+
+<div
+  class="faq__group flex flex-col gap-3 {{ group_hidden }}"
+  id="faq-group-{{ section_id }}-{{ index }}"
+  data-faq-group
+  data-faq-index="{{ index }}"
+  {{ block.shopify_attributes }}
+>
+  <h2
+    class="faq__group-title font-primary text-[20px]/[30px] font-bold tracking-normal text-foreground lg:text-[24px]/[48px]"
+  >
+    {{ block.settings.faq_category_name }}
+  </h2>
+
+  {%- if group_faq_count > 0 -%}
+    <div class="faq__group-items flex flex-col gap-2" data-single-open>
+      {%- for faq_entry in group_faqs -%}
+        {%- if faq_entry.question != blank -%}
+          {%- liquid
+            assign faq_question = faq_entry.question
+            assign faq_haystack = faq_question | strip_html | downcase
+            assign faq_row_id = section_id | append: '-' | append: index | append: '-' | append: forloop.index
+          -%}
+
+          <div class="faq__row" data-faq-row data-faq-question="{{ faq_haystack | escape }}">
+            {%- if faq_entry.answer != blank -%}
+              {%- capture faq_answer_html -%}
+                {{ faq_entry.answer | metafield_tag }}
+              {%- endcapture -%}
+
+              {%- render 'accordion',
+                title: faq_question,
+                content: faq_answer_html,
+                unique_id: faq_row_id,
+                default_open: false,
+                icon_type: 'chevron',
+                icon_size: 16,
+                icon_box_class: 'h-4 w-4 text-muted',
+                class_name: group_item_class,
+                title_class: group_question_class,
+                content_class: group_answer_class
+              -%}
+            {%- else -%}
+              {%- comment -%} No answer means nothing to reveal, so the row is not a control {%- endcomment -%}
+              <div class="{{ group_item_class }}">
+                <p class="{{ group_question_class }}">{{ faq_question }}</p>
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</div>

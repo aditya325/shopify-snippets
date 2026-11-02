@@ -1,0 +1,114 @@
+{%- liquid
+  assign error_crumb_label = '404.breadcrumb' | t
+  assign error_image = section.settings.error_image
+  assign error_heading = section.settings.error_heading
+  assign error_heading_plain = error_heading | strip_html | strip
+  assign error_image_alt = error_image.alt | default: error_heading_plain
+  assign error_button_label = section.settings.error_button_label
+  assign error_button_url = section.settings.error_button_url | default: routes.root_url
+
+  assign error_background = section.settings.error_background
+  if error_background == blank
+    assign error_background = '#F8FAF7'
+  endif
+-%}
+
+<div class="error-404 flex shrink-0 grow basis-auto flex-col [main:has(&)]:flex [main:has(&)]:flex-col">
+  <div class="error-404__breadcrumbs page-width w-full py-2.5">
+    {%- render 'breadcrumbs', breadcrumb_current: error_crumb_label -%}
+  </div>
+
+  <div
+    class="error-404__body flex shrink-0 grow basis-auto items-center justify-center py-5 lg:py-15"
+    style="background-color: {{ error_background | escape }};"
+  >
+    <div class="page-width w-full">
+      <div class="error-404__content flex flex-col items-start gap-10 lg:items-center">
+        <div class="error-404__stack flex w-full flex-col items-start gap-6 lg:items-center">
+          {%- if error_image != blank -%}
+            <div class="error-404__figure relative h-[380px] w-[314px] max-w-full lg:h-[440px] lg:w-[356px]">
+              {%- render 'image',
+                image: error_image,
+                alt: error_image_alt,
+                lazy: false,
+                class_name: 'h-full w-auto max-w-full object-contain'
+              -%}
+            </div>
+          {%- endif -%}
+
+          {%- if error_heading_plain != blank -%}
+            <div class="error-404__headline flex w-full flex-col items-center gap-2 lg:gap-1.5">
+              {%- render 'section-header',
+                heading: error_heading,
+                heading_level: 'h1',
+                class_name: 'error-404__heading !font-secondary !text-[28px] !font-semibold !leading-9 !tracking-normal text-center lg:!text-[46px] lg:!leading-[60px]'
+              -%}
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- if error_button_label != blank -%}
+          <div class="error-404__cta-wrap w-full lg:w-[260px]">
+            {%- render 'button',
+              label: error_button_label,
+              link: error_button_url,
+              variant: 'primary',
+              icon: 'arrow-left',
+              icon_position: 'leading',
+              icon_size: 22,
+              icon_class: 'stroke-[1.3px]',
+              class_name: 'error-404__cta h-[52px] w-full gap-2.5 rounded-lg text-subheading-d font-semibold lg:rounded-xl'
+            -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "404 Error Page",
+  "class": "error-404-section flex shrink-0 grow basis-auto flex-col",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "image_picker",
+      "id": "error_image",
+      "label": "Error Image"
+    },
+    {
+      "type": "richtext",
+      "id": "error_heading",
+      "label": "Error Heading",
+      "default": "<p>Looks like your click took a wrong turn.</p>"
+    },
+    {
+      "type": "text",
+      "id": "error_button_label",
+      "label": "Error Button Text",
+      "default": "Back to Home"
+    },
+    {
+      "type": "url",
+      "id": "error_button_url",
+      "label": "Error Button URL",
+      "info": "Defaults to the store home page."
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "error_background",
+      "label": "Error Background",
+      "default": "#F8FAF7"
+    }
+  ]
+}
+{% endschema %}

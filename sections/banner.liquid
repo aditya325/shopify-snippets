@@ -1,0 +1,202 @@
+{%- liquid
+  assign banner_desk_image = section.settings.banner_desk_image
+  assign banner_mob_image = section.settings.banner_mob_image
+  assign banner_desk_video = section.settings.banner_desk_video
+  assign banner_mob_video = section.settings.banner_mob_video
+  assign banner_link = section.settings.banner_link
+
+  assign banner_image = banner_desk_image | default: banner_mob_image
+
+  assign banner_has_video = false
+  if banner_desk_video != blank or banner_mob_video != blank
+    assign banner_has_video = true
+  endif
+
+  assign banner_has_media = false
+  if banner_has_video or banner_image != blank
+    assign banner_has_media = true
+  endif
+
+  assign banner_image_lazy = true
+  assign banner_video_loading = 'lazy'
+  if section.settings.banner_above_fold
+    assign banner_image_lazy = false
+    assign banner_video_loading = 'eager'
+  endif
+
+  # A blank video yields no aspect_ratio, and var() needs a complete value
+  assign banner_desk_ratio = banner_desk_video.aspect_ratio | default: 1.78
+  assign banner_mob_ratio = banner_mob_video.aspect_ratio | default: 1.78
+
+  assign banner_desk_video_class = 'block aspect-[var(--banner-desk-ratio)] h-auto w-full'
+  assign banner_mob_video_class = 'block aspect-[var(--banner-mob-ratio)] h-auto w-full'
+  if banner_desk_video != blank and banner_mob_video != blank
+    assign banner_desk_video_class = banner_desk_video_class | append: ' max-lg:hidden'
+    assign banner_mob_video_class = banner_mob_video_class | append: ' lg:hidden'
+  endif
+-%}
+
+{%- capture banner_media -%}
+  {%- if banner_has_video -%}
+    {%- if banner_desk_video != blank -%}
+      {{
+        banner_desk_video
+        | video_tag:
+          autoplay: true,
+          loop: true,
+          muted: true,
+          controls: false,
+          loading: banner_video_loading,
+          image_size: '1600x',
+          class: banner_desk_video_class
+      }}
+    {%- endif -%}
+    {%- if banner_mob_video != blank -%}
+      {{
+        banner_mob_video
+        | video_tag:
+          autoplay: true,
+          loop: true,
+          muted: true,
+          controls: false,
+          loading: banner_video_loading,
+          image_size: '900x',
+          class: banner_mob_video_class
+      }}
+    {%- endif -%}
+  {%- elsif banner_image != blank -%}
+    {%- render 'image',
+      image: banner_image,
+      mobile_image: banner_mob_image,
+      class_name: 'block h-auto w-full',
+      lazy: banner_image_lazy,
+      decoding: 'async',
+      responsive_widths: '430:900,768:1600,1024:2000'
+    -%}
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- if banner_has_media -%}
+  <div
+    class="banner mt-[var(--banner-mar-top-m)] mb-[var(--banner-mar-bot-m)] lg:mt-[var(--banner-mar-top-d)] lg:mb-[var(--banner-mar-bot-d)]"
+    style="
+      --banner-mar-top-m: {{ section.settings.banner_mar_top_m }}px;
+      --banner-mar-bot-m: {{ section.settings.banner_mar_bot_m }}px;
+      --banner-mar-top-d: {{ section.settings.banner_mar_top_d }}px;
+      --banner-mar-bot-d: {{ section.settings.banner_mar_bot_d }}px;
+      --banner-desk-ratio: {{ banner_desk_ratio }};
+      --banner-mob-ratio: {{ banner_mob_ratio }};
+    "
+  >
+    {%- if banner_link != blank -%}
+      {%- comment -%} Wrapping the media means the image alt becomes the link's accessible name {%- endcomment -%}
+      <a href="{{ banner_link | escape }}" class="block">
+        {{ banner_media }}
+      </a>
+    {%- else -%}
+      {{ banner_media }}
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Banner",
+  "class": "banner-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "image_picker",
+      "id": "banner_desk_image",
+      "label": "Banner Desktop Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "banner_mob_image",
+      "label": "Banner Mobile Image",
+      "info": "Falls back to the desktop image."
+    },
+    {
+      "type": "video",
+      "id": "banner_desk_video",
+      "label": "Banner Desktop Video",
+      "info": "Takes priority over both images."
+    },
+    {
+      "type": "video",
+      "id": "banner_mob_video",
+      "label": "Banner Mobile Video",
+      "info": "Set only one video and it plays at every width."
+    },
+    {
+      "type": "url",
+      "id": "banner_link",
+      "label": "Banner Link",
+      "info": "Leave empty and the banner will not navigate."
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "banner_mar_top_m",
+      "label": "Banner Margin Top Mob",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "banner_mar_bot_m",
+      "label": "Banner Margin Bot Mob",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "banner_mar_top_d",
+      "label": "Banner Margin Top Desk",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "banner_mar_bot_d",
+      "label": "Banner Margin Bot Desk",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "checkbox",
+      "id": "banner_above_fold",
+      "label": "Banner Above The Fold",
+      "info": "Loads the media eagerly. Enable only when the banner is the first thing on the page.",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Banner"
+    }
+  ]
+}
+{% endschema %}

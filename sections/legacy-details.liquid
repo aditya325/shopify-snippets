@@ -1,0 +1,118 @@
+{%- liquid
+  assign legacy_live_count = 0
+  for block in section.blocks
+    if block.settings.legacy_title != blank or block.settings.legacy_subtitle != blank
+      assign legacy_live_count = legacy_live_count | plus: 1
+    endif
+  endfor
+-%}
+
+{%- if legacy_live_count > 0 -%}
+  <div
+    class="legacy-details mb-[var(--legacy-bot-mob)] mt-[var(--legacy-top-mob)] lg:mb-[var(--legacy-bot-desk)] lg:mt-[var(--legacy-top-desk)]"
+    style="
+      --legacy-top-mob: {{ section.settings.legacy_top_mobile }}px;
+      --legacy-bot-mob: {{ section.settings.legacy_bottom_mobile }}px;
+      --legacy-top-desk: {{ section.settings.legacy_top_desktop }}px;
+      --legacy-bot-desk: {{ section.settings.legacy_bottom_desktop }}px;
+    "
+  >
+    <div class="legacy-details__grid page-width grid grid-cols-2 gap-2 lg:grid-cols-4 lg:gap-5">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'legacy-item' -%}
+            {%- render 'legacy-item', block: block -%}
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Legacy Details",
+  "class": "legacy-details-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "legacy_top_mobile",
+      "label": "Space Above (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "legacy_bottom_mobile",
+      "label": "Space Below (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "legacy_top_desktop",
+      "label": "Space Above (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "legacy_bottom_desktop",
+      "label": "Space Below (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "legacy-item",
+      "name": "Legacy Item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "legacy_icon",
+          "label": "Legacy Icon",
+          "info": "Decorative mark, shown faded in the corner."
+        },
+        {
+          "type": "text",
+          "id": "legacy_title",
+          "label": "Legacy Title",
+          "info": "The headline value, e.g. ISO or 1.2M."
+        },
+        {
+          "type": "text",
+          "id": "legacy_subtitle",
+          "label": "Legacy Subtitle"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Legacy Details",
+      "blocks": [
+        { "type": "legacy-item", "settings": { "legacy_title": "ISO", "legacy_subtitle": "Certified" } },
+        { "type": "legacy-item", "settings": { "legacy_title": "AYUSH Approved", "legacy_subtitle": "Fast Relief Formulations" } },
+        { "type": "legacy-item", "settings": { "legacy_title": "1.2M", "legacy_subtitle": "Users" } },
+        { "type": "legacy-item", "settings": { "legacy_title": "128+", "legacy_subtitle": "Years of Legacy" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

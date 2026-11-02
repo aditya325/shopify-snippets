@@ -1,0 +1,128 @@
+{% doc %}
+  Search Modal
+
+  Desktop overlay panel over a blurred backdrop; mobile full-screen takeover
+  below the site header. Holds recent searches, popular products and predictive results.
+
+  @example
+  {% render 'search-modal' %}
+{% enddoc %}
+
+<div
+  class="search-modal group/search fixed inset-0 z-[60] hidden bg-background opacity-0 transition-opacity duration-[250ms] ease-out motion-reduce:transition-none lg:bg-black/20 lg:backdrop-blur-[6px]"
+  id="search-modal"
+  data-search-state="default"
+  aria-hidden="true"
+  aria-modal="true"
+  role="dialog"
+  aria-label="{{ 'accessibility.search' | t }}"
+>
+  <div class="flex h-full justify-center max-lg:items-stretch lg:items-start lg:pt-[30px]">
+    <div
+      data-search-panel
+      class="relative flex min-h-0 w-full translate-y-4 flex-col opacity-0 transition-all duration-[250ms] ease-out motion-reduce:transition-none lg:w-[83.333%] xl:w-[1200px] xl:max-w-[calc(100vw-120px)]"
+    >
+      <button
+        type="button"
+        data-search-close
+        class="absolute -right-[54px] top-0 flex h-11 w-11 items-center justify-center rounded-xl bg-white/20 max-lg:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        aria-label="{{ 'accessibility.close' | t }}"
+      >
+        {%- render 'icon-close', size: 24 -%}
+      </button>
+
+      {%- comment -%} Search bar {%- endcomment -%}
+      <div
+        data-search-bar
+        class="shrink-0 cursor-text bg-background px-[18px] pt-2.5 lg:rounded-[20px] lg:px-10 lg:py-1.5"
+      >
+        <div class="flex h-12 items-center gap-2.5 border-b border-[rgba(33,33,33,0.1)] lg:border-b-0">
+          <input
+            type="search"
+            id="predictive-search-input"
+            class="min-w-0 flex-1 border-0 bg-transparent p-0 text-[16px] text-foreground placeholder:text-muted focus:outline-none"
+            data-section-id="search-results"
+            placeholder="{{ 'search.placeholder' | t }}"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+          >
+          <button
+            type="button"
+            class="hidden h-11 shrink-0 items-center px-1 text-[16px] text-muted transition-colors hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            data-search-clear
+          >
+            {{ 'search.clear' | t }}
+          </button>
+          <button
+            type="button"
+            data-search-close
+            class="-mr-2.5 flex h-11 w-11 shrink-0 items-center justify-center lg:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            aria-label="{{ 'accessibility.close' | t }}"
+          >
+            {%- render 'icon-close', size: 24 -%}
+          </button>
+        </div>
+      </div>
+
+      <div
+        data-search-panel-body
+        class="min-h-0 flex-1 overflow-y-auto bg-background p-5 transition-[height] duration-[250ms] ease-out motion-reduce:transition-none lg:mt-2.5 lg:max-h-[741px] lg:flex-none lg:rounded-[20px] lg:px-10 lg:py-[18px] lg:group-data-[search-state=results]/search:max-h-[551px]"
+      >
+        <div
+          id="predictive-search-results"
+          aria-live="polite"
+          class="hidden transition-opacity duration-[250ms] ease-out motion-reduce:transition-none"
+        ></div>
+        <div
+          id="predictive-search-loading"
+          role="status"
+          class="hidden flex flex-col items-center justify-center gap-3 py-12 text-sm text-muted transition-opacity duration-[250ms] ease-out motion-reduce:transition-none"
+        >
+          <p>{{ 'general.loading' | t }}</p>
+        </div>
+
+        <div
+          id="search-default-content"
+          class="flex flex-col gap-6 transition-opacity duration-[250ms] ease-out motion-reduce:transition-none"
+        >
+          {%- render 'search-modal-recent-searches' -%}
+
+          {%- comment -%} Browse by concern {%- endcomment -%}
+          {%- if settings.search_concern_menu != blank and settings.search_concern_menu.links.size > 0 -%}
+            <div class="flex flex-col gap-3">
+              {%- render 'search-group-heading',
+                heading_icon: 'grid',
+                heading_title: settings.search_concern_heading
+              -%}
+              <div class="flex flex-wrap gap-2.5">
+                {%- for concern_link in settings.search_concern_menu.links limit: 6 -%}
+                  {%- render 'search-chip',
+                    chip_label: concern_link.title,
+                    chip_url: concern_link.url,
+                    chip_variant: 'concern'
+                  -%}
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endif -%}
+
+          {%- comment -%} Popular products {%- endcomment -%}
+          {%- if settings.popular_collection != blank and settings.popular_collection.products.size > 0 -%}
+            <div class="flex flex-col gap-3">
+              {%- render 'search-group-heading', heading_icon: 'box', heading_title: settings.popular_heading -%}
+              <div class="grid grid-cols-2 gap-2.5 lg:grid-cols-4 lg:gap-5">
+                {%- for popular_product in settings.popular_collection.products
+                  limit: settings.popular_products_count
+                -%}
+                  {%- render 'product-card', card_product: popular_product, show_featured_image: false -%}
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,109 @@
+{% doc %}
+  Article Card
+
+  Renders the shared blog article card used by the blog listing and featured-blogs. The article image
+  fills the card behind a gradient wash, with a category badge at the top and the title, date and
+  read affordance at the bottom. Badge text and colours come from article metafields; the whole card
+  is clickable via a stretched link on the title.
+
+  @param {article} article - Article object (required)
+  @param {string} read_label - Text for the read affordance, supplied by the calling section (required)
+
+  All styling is Tailwind. Three utilities are load-bearing and easy to remove by accident:
+
+  isolate on the root, with -z-20 on the image and -z-10 on the gradient — this keeps the ROOT as the
+  containing block for the title's ::after, so the stretched link covers the whole card including its
+  padding. Giving the content layer position: relative (the obvious way to stack it above the image)
+  would make that layer the containing block instead, silently shrinking the click target to exclude
+  the padding. isolate stops the negative indices painting behind an ancestor's background.
+
+  Padding lives on the content layer, never the root — an absolutely positioned child resolves
+  inset-0 against its ancestor's padding box, so padding on the root would inset the image and
+  gradient and leave a visible frame.
+
+  tracking-normal on the root — base.css sets body { letter-spacing: 0.01em }, which computes against
+  the body's 16px and inherits as a flat 0.16px into every child regardless of its own size. The
+  design specifies -0.16px on the title, so the root resets it and the type tokens override again.
+
+  The read affordance is a span, never an anchor — it sits under the stretched ::after and is purely
+  visual, which is what keeps this card to a single anchor.
+
+  @example
+  {% render 'article-card', article: article, read_label: section.settings.blog_read_label %}
+{% enddoc %}
+
+{%- liquid
+  assign article = article | default: blank
+
+  unless article != blank
+    break
+  endunless
+
+  assign badge_label = article.metafields.custom.category_label.value
+  assign badge_background = article.metafields.custom.category_background_color.value
+  assign badge_foreground = article.metafields.custom.category_text_color.value
+  assign article_read_time = article.metafields.custom.read_time.value
+  assign article_date = article.published_at | date: '%b %d'
+  assign article_image_alt = article.image.alt | default: article.title
+
+  if badge_background == blank
+    assign badge_background = 'rgb(var(--color-green-secondary))'
+  endif
+
+  if badge_foreground == blank
+    assign badge_foreground = '#FFFFFF'
+  endif
+-%}
+
+<article class="article-card group relative isolate flex flex-col overflow-hidden aspect-[180/249] tracking-normal rounded-xl border border-[#A3A3A380] lg:aspect-[318/420] lg:rounded-[20px]">
+  {%- if article.image != blank -%}
+    <div class="absolute inset-0 -z-20">
+      {%- render 'image',
+        image: article.image,
+        alt: article_image_alt,
+        class_name: 'h-full w-full object-cover',
+        base_width: 640,
+        mobile_width: 400,
+        breakpoint: 1024,
+        lazy: true,
+        decoding: 'async'
+      -%}
+    </div>
+  {%- endif -%}
+
+  <div class="absolute inset-0 -z-10 bg-gradient-to-b from-foreground/0 to-foreground"></div>
+
+  <div class="flex flex-col justify-end h-full p-2.5 lg:p-5">
+    {%- if badge_label != blank -%}
+      <span
+        class="self-start mb-auto px-2.5 py-1 whitespace-nowrap font-secondary text-[10px] font-medium leading-[15px] text-[color:var(--article-card-badge-fg)] bg-[color:var(--article-card-badge-bg)] rounded-md lg:px-3.5 lg:py-1.5 lg:text-label-sm lg:rounded-[10px]"
+        style="--article-card-badge-bg: {{ badge_background | escape }}; --article-card-badge-fg: {{ badge_foreground | escape }};"
+      >
+        {{ badge_label | escape }}
+      </span>
+    {%- endif -%}
+
+    <div class="flex flex-col gap-[5px]">
+      <h3>
+        <a
+          href="{{ article.url }}"
+          class="line-clamp-2 font-primary text-[14px] font-medium leading-[21px] tracking-[-0.16px] text-white after:absolute after:inset-0 lg:line-clamp-1 lg:text-[18px] lg:leading-[27px]"
+        >
+          {{ article.title | escape }}
+        </a>
+      </h3>
+
+      {%- comment -%} Never transform the title's ancestors — that would make them the ::after containing block {%- endcomment -%}
+      <div class="flex flex-col gap-1 transition-transform duration-300 lg:gap-3.5 [@media(hover:hover)]:group-hover:-translate-y-0.5">
+        <p class="font-secondary text-body text-[#E5E5E5] lg:text-body-d">{{ article_date }}{% if article_read_time != blank %} &middot; {{ article_read_time | escape }}{% endif %}</p>
+
+        <span class="flex items-center gap-1.5 font-secondary text-[14px] font-semibold leading-[21px] text-white lg:text-label-lg">
+          {{ read_label | escape }}
+          {%- render 'icon-arrow-right',
+            class: 'transition-transform duration-300 [@media(hover:hover)]:group-hover:translate-x-1'
+          -%}
+        </span>
+      </div>
+    </div>
+  </div>
+</article>

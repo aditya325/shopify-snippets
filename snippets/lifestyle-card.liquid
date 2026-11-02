@@ -1,0 +1,77 @@
+{% doc %}
+  @param {object} block - Lifestyle Card block, supplying settings and shopify_attributes
+{% enddoc %}
+
+{%- liquid
+  assign lifestyle_image = block.settings.lifestyle_image
+  assign lifestyle_video = block.settings.lifestyle_video
+  assign lifestyle_title = block.settings.lifestyle_title
+  assign lifestyle_subline = block.settings.lifestyle_subline
+  assign lifestyle_link = block.settings.lifestyle_link
+
+  assign lifestyle_title_plain = lifestyle_title | strip_html | strip
+  assign lifestyle_subline_plain = lifestyle_subline | strip_html | strip
+
+  assign lifestyle_is_linked = false
+  if lifestyle_link != blank and lifestyle_title_plain != blank
+    assign lifestyle_is_linked = true
+  endif
+
+  assign lifestyle_title_class = 'col-start-1 row-start-2 self-end font-secondary text-[16px] font-semibold leading-[24px] tracking-[-1px] capitalize lg:text-[20px] lg:leading-[30px]'
+-%}
+
+<div
+  class="shop-by-lifestyle__card group relative isolate grid row-span-3 grid-rows-subgrid grid-cols-[1fr_auto] overflow-hidden tracking-normal text-white rounded-xl px-2.5 pb-2.5 lg:rounded-[20px] lg:px-4 lg:pb-4"
+  {{ block.shopify_attributes }}
+>
+  <div class="absolute inset-0 -z-10">
+    {%- if lifestyle_video != blank -%}
+      {{
+        lifestyle_video
+        | video_tag:
+          autoplay: true,
+          loop: true,
+          muted: true,
+          loading: 'lazy',
+          image_size: '500x',
+          class: 'h-full w-full object-cover'
+      }}
+    {%- elsif lifestyle_image != blank -%}
+      {%- render 'image',
+        image: lifestyle_image,
+        alt: '',
+        class_name: 'h-full w-full object-cover',
+        decoding: 'async',
+        responsive_widths: '390:320,1024:500'
+      -%}
+    {%- else -%}
+      {{ 'image' | placeholder_svg_tag: 'h-full w-full' }}
+    {%- endif -%}
+  </div>
+
+  <div class="absolute inset-0 -z-10 bg-gradient-to-b from-foreground/0 to-foreground/70"></div>
+
+  {%- if lifestyle_is_linked -%}
+    <a
+      href="{{ lifestyle_link | escape }}"
+      class="{{ lifestyle_title_class }} after:absolute after:inset-0 after:z-10"
+    >
+      {{- lifestyle_title -}}
+    </a>
+  {%- elsif lifestyle_title_plain != blank -%}
+    <div class="{{ lifestyle_title_class }}">{{ lifestyle_title }}</div>
+  {%- endif -%}
+
+  {%- if lifestyle_subline_plain != blank -%}
+    {%- comment -%} Never transform the title's ancestors — that would make them the ::after containing block {%- endcomment -%}
+    <div class="col-start-1 row-start-3 min-w-0 font-secondary text-[10px] font-normal leading-[15px] transition-transform duration-300 lg:text-[12px] lg:leading-[18px] [@media(hover:hover)]:group-hover:-translate-y-0.5">
+      {{ lifestyle_subline }}
+    </div>
+  {%- endif -%}
+
+  <div class="col-start-2 row-start-3 self-start pl-2.5">
+    {%- render 'icon-arrow-right',
+      class: 'h-3 w-3 [stroke-width:1px] transition-transform duration-300 lg:h-4 lg:w-4 lg:[stroke-width:1.3px] [@media(hover:hover)]:group-hover:translate-x-1'
+    -%}
+  </div>
+</div>

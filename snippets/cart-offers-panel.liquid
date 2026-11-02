@@ -1,0 +1,17 @@
+{% doc %}
+  Cart Offers Panel
+
+  Full list of custom.offer entries, shown when the drawer's data-cart-state is "offers".
+  Renders every entry in offers_list — no fixed count. The Figma view-all-offers frame draws
+  6 identical placeholder cards; this renders however many real entries exist (5 today).
+
+  @param {object[]} offers_list - section.settings.offers_list
+{% enddoc %}
+
+{%- if offers_list.size > 0 -%}
+  <div class="cart-offers-panel flex flex-col gap-2">
+    {%- for offer in offers_list -%}
+      {% render 'coupon-ticket', offer: offer %}
+    {%- endfor -%}
+  </div>
+{%- endif -%}
