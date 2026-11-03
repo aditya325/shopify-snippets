@@ -1,0 +1,6 @@
+{% doc %}
+  Renders a notice paragraph when a message is provided.
+
+  @param {string} [message] - Notice text to render
+{% enddoc %}
+{%- if message != blank -%}<p class="aidlc-notice">{{ message }}</p>{%- endif -%}
