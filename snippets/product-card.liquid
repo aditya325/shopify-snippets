@@ -6,7 +6,7 @@
   the title.
 
   @param {product} card_product - Product object (required)
-  @param {boolean} [show_featured_image] - True renders the featured image, false renders the card_image metafield with its radiator (default: true)
+  @param {boolean} [show_featured_image] - Deprecated: card always displays featured_image (default: true)
   @param {boolean} [hide_price] - Remove the price row entirely (default: false)
   @param {boolean} [hide_add_to_cart] - Remove the Add to Cart button entirely (default: false)
   @param {boolean} [hide_wishlist] - Remove the wishlist heart entirely (default: false)
@@ -63,27 +63,9 @@
   assign card_category = card_product.metafields.custom.category_label.value
   assign card_highlight = card_product.metafields.custom.highlight_text.value
   assign card_accent_color = card_product.metafields.custom.highlight_color.value
-  assign card_metafield_image = card_product.metafields.custom.card_image.value
-  assign card_radiator_image = card_product.metafields.custom.radiator_image.value
 
   assign card_media_image = card_product.featured_image
-  assign card_show_radiator = false
-  unless show_featured_image
-    if card_metafield_image != blank
-      assign card_media_image = card_metafield_image
-      if card_radiator_image != blank
-        assign card_show_radiator = true
-      endif
-    endif
-  endunless
-
   assign card_media_alt = card_media_image.alt | default: card_product.title
-
-  assign card_focal = card_radiator_image.presentation.focal_point | default: '50% 50%'
-  assign card_focal_parts = card_focal | split: ' '
-  assign card_focal_x = card_focal_parts[0] | default: '50%'
-  assign card_focal_y = card_focal_parts[1] | default: '50%'
-
   assign card_image_focal = card_media_image.presentation.focal_point | default: '50% 50%'
 
   assign card_discount_percent = 0
@@ -118,40 +100,7 @@
   {% endif %}
 >
   <div class="product-card__media relative flex items-center justify-center overflow-hidden aspect-[315/226]">
-    {%- if card_show_radiator -%}
-      <div class="product-card__radiator absolute inset-x-0 bottom-0 mx-auto w-[90%] lg:w-[85.7%]">
-        {% render 'image',
-          image: card_radiator_image,
-          alt: '',
-          class_name: 'pointer-events-none block h-auto w-full',
-          lazy: lazy_load,
-          decoding: 'async',
-          width: 270,
-          height: 138,
-          base_width: 560,
-          mobile_width: 280,
-          breakpoint: 1024
-        %}
-
-        {%- if card_media_image != blank -%}
-          <div
-            class="product-card__media-img absolute aspect-[120/122] w-[60%] -translate-x-1/2 -translate-y-1/2 lg:aspect-[157/160] lg:w-[58.1%]"
-            style="left: {{ card_focal_x }}; top: {{ card_focal_y }};"
-          >
-            {% render 'image',
-              image: card_media_image,
-              alt: card_media_alt,
-              class_name: 'block h-full w-full object-contain object-center',
-              lazy: lazy_load,
-              decoding: 'async',
-              base_width: 700,
-              mobile_width: 400,
-              breakpoint: 1024
-            %}
-          </div>
-        {%- endif -%}
-      </div>
-    {%- elsif card_media_image != blank -%}
+    {%- if card_media_image != blank -%}
       <div
         class="product-card__media-img relative h-[78.2%] w-[70.6%] lg:h-[70.8%] lg:w-[49.8%]"
         style="--card-object-pos: {{ card_image_focal }};"

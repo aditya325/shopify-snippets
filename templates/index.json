@@ -133,7 +133,6 @@
           "just-dropped",
           "best-sellers"
         ],
-        "tabs_use_featured_image": false,
         "tabs_view_all_label": "View All",
         "tabs_space_above_mobile": 24,
         "tabs_space_below_mobile": 24,
@@ -334,7 +333,6 @@
         "bundles_heading": "<p>Curated Wellness Bundles</p>",
         "bundles_collection": "best-sellers",
         "bundles_show_price": false,
-        "bundles_featured_image": false,
         "bundles_background": "#466E2E33",
         "bundles_top_mobile": 0,
         "bundles_bottom_mobile": 0,
