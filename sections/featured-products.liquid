@@ -58,8 +58,7 @@
               {%- for bundles_product in bundles_products -%}
                 {%- render 'product-card',
                   card_product: bundles_product,
-                  hide_price: bundles_hide_price,
-                  show_featured_image: section.settings.bundles_featured_image
+                  hide_price: bundles_hide_price
                 -%}
               {%- endfor -%}
             </div>
@@ -111,13 +110,6 @@
       "label": "Show price",
       "info": "Off by default: this placement hides price by design.",
       "default": false
-    },
-    {
-      "type": "checkbox",
-      "id": "bundles_featured_image",
-      "label": "Use featured image",
-      "info": "Off uses the product's Card image metafield and its Radiator image artwork instead.",
-      "default": true
     },
     {
       "type": "header",

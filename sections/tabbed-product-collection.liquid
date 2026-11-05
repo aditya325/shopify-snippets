@@ -82,8 +82,7 @@
             <div class="grid w-full grid-cols-2 gap-2.5 lg:grid-cols-4 lg:gap-5">
               {%- for tabs_product in tabs_collection.products limit: 4 -%}
                 {%- render 'product-card',
-                  card_product: tabs_product,
-                  show_featured_image: section.settings.tabs_use_featured_image
+                  card_product: tabs_product
                 -%}
               {%- endfor -%}
             </div>
@@ -121,13 +120,6 @@
       "label": "Collections",
       "info": "One tab per collection, named after the collection. Collections with no products are skipped.",
       "limit": 3
-    },
-    {
-      "type": "checkbox",
-      "id": "tabs_use_featured_image",
-      "label": "Use featured image",
-      "info": "Off uses the product's Card image metafield and its Radiator image artwork instead.",
-      "default": true
     },
     {
       "type": "text",
