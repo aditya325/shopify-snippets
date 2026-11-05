@@ -1,0 +1,12 @@
+# AIDLC sandbox for this repository. Dependencies install into /opt/aidlc-environment at image build time;
+# commands then run in the checkout (/workspace) with no network.
+image: node:20-slim
+install:
+  - npm ci --no-audit --no-fund
+files: [package.json, package-lock.json]
+checks:
+  # Tailwind compiles every .liquid file's classes; output goes to /tmp so the committed assets/tailwind.css is untouched.
+  - name: tailwind-build
+    command: /opt/aidlc-environment/node_modules/.bin/tailwindcss -i ./src/input.css -o /tmp/tailwind.css
+  - name: js-syntax
+    command: 'for f in assets/*.js; do node --check "$f" || exit 1; done'
