@@ -294,6 +294,7 @@
     "submenu": "More {{ title }} pages",
     "back": "Back",
     "play_video": "Play video",
-    "pause_video": "Pause video"
+    "pause_video": "Pause video",
+    "back_to_top": "Back to top"
   }
 }
