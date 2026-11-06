@@ -26,6 +26,10 @@
       <div class="flex flex-wrap items-center gap-2 text-sm text-muted">
         {%- assign date = article.published_at | time_tag: format: 'date' -%}
         <span>{{ 'blog.article_metadata_html' | t: date: date, author: article.author }}</span>
+        {%- if section.settings.show_reading_time -%}
+          <span aria-hidden="true">&middot;</span>
+          <span>{%- render 'reading-time', article: article -%}</span>
+        {%- endif -%}
       </div>
     </header>
 
@@ -157,6 +161,13 @@
 {
   "name": "Article",
   "class": "article-section",
-  "settings": []
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_reading_time",
+      "label": "Show reading time",
+      "default": true
+    }
+  ]
 }
 {% endschema %}

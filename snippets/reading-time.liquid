@@ -1,0 +1,23 @@
+{% doc %}
+  Reading Time
+
+  Calculates an article's estimated reading time from its HTML-stripped word count
+  (200 words per minute, rounded up, minimum 1) and outputs the localized label.
+
+  @param {article} article - Article object (required)
+
+  @example
+  {% render 'reading-time', article: article %}
+{% enddoc %}
+
+{%- liquid
+  assign article = article | default: blank
+
+  unless article != blank
+    break
+  endunless
+
+  assign word_count = article.content | strip_html | split: ' ' | size
+  assign reading_time = word_count | divided_by: 200.0 | ceil | at_least: 1
+  echo 'blog.reading_time' | t: count: reading_time
+-%}

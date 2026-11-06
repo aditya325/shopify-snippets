@@ -95,7 +95,7 @@
 
       {%- comment -%} Never transform the title's ancestors — that would make them the ::after containing block {%- endcomment -%}
       <div class="flex flex-col gap-1 transition-transform duration-300 lg:gap-3.5 [@media(hover:hover)]:group-hover:-translate-y-0.5">
-        <p class="font-secondary text-body text-[#E5E5E5] lg:text-body-d">{{ article_date }}{% if article_read_time != blank %} &middot; {{ article_read_time | escape }}{% endif %}</p>
+        <p class="font-secondary text-body text-[#E5E5E5] lg:text-body-d">{{ article_date }}{% if article_read_time != blank %} &middot; {{ article_read_time | escape }}{% else %} &middot; {%- render 'reading-time', article: article -%}{% endif %}</p>
 
         <span class="flex items-center gap-1.5 font-secondary text-[14px] font-semibold leading-[21px] text-white lg:text-label-lg">
           {{ read_label | escape }}
