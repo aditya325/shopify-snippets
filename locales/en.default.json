@@ -44,7 +44,11 @@
     "no_articles": "No articles found.",
     "comment_posted": "Your comment has been posted successfully.",
     "opens_external": "(opens in a new tab)",
-    "load_more": "Load More"
+    "load_more": "Load More",
+    "reading_time": {
+      "one": "{{ count }} min read",
+      "other": "{{ count }} min read"
+    }
   },
   "cart": {
     "checkout": "Checkout",
